@@ -1949,180 +1949,303 @@ footer {
             margin-bottom: 24px;
         }
 
+        /* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    width: 25px;
+    height: 3px;
+    background: var(--text);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 6px);
+}
+
+.hamburger.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -6px);
+}
+
         /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links a:not(.btn) { display: none; }
+        /* Mobile Responsive */
+@media (max-width: 768px) {
+    /* Show hamburger on mobile */
+    .hamburger {
+        display: flex;
+    }
 
-            .nav-links .btn-wallet {
-                padding: 8px 12px;
-                font-size: 0.75rem;
-            }
+    /* Mobile menu overlay */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 10, 15, 0.98);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 24px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        padding: 2rem;
+        z-index: 1000;
+    }
 
-            .nav-links .btn-primary {
-                display: none;
-            }
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+    }
 
-            .logo-img {
-                width: 50px;
-                height: 50px;
-            }
+    .nav-links a {
+        display: block;
+        font-size: 1.2rem;
+        padding: 8px 16px;
+        color: var(--text);
+    }
 
-            .logo-text {
-                font-size: 0.75rem;
-            }
+    .btn-wallet {
+        width: 100%;
+        max-width: 220px;
+        justify-content: center;
+        padding: 12px 20px;
+    }
 
-            .wallet-modal-content {
-                padding: 24px;
-                margin: 16px;
-            }
+    .btn-primary {
+        width: 100%;
+        max-width: 220px;
+        text-align: center;
+        padding: 12px 20px;
+        display: block;
+    }
 
-            .wallet-option {
-                padding: 12px;
-            }
+    .music-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+    }
 
-            .wallet-option img {
-                width: 32px;
-                height: 32px;
-            }
-            
-            .steps {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                max-width: 400px;
-                margin: 0 auto;
-            }
+    nav {
+        padding: 12px 16px;
+    }
 
-            .step {
-                padding: 30px 24px;
-            }
+    .logo-img {
+        width: 45px;
+        height: 45px;
+    }
 
-            .step-icon {
-                font-size: 2.5rem;
-                margin-bottom: 16px;
-            }
+    .logo-text {
+        font-size: 0.75rem;
+    }
 
-            .how-it-works {
-                padding: 60px 20px;
-            }
+    /* Rest of your existing mobile styles... */
+    .steps {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
 
-            .how-it-works .section-title {
-                margin-bottom: 40px;
-            }
+    .step {
+        padding: 30px 24px;
+    }
 
-            .battle-arena {
-                height: 400px;
-            }
+    .step-icon {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+    }
 
-            .battle-menu {
-                grid-template-columns: 1fr;
-            }
+    .how-it-works {
+        padding: 60px 20px;
+    }
 
-            .battle-log {
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-                max-height: 80px;
-            }
+    .battle-arena {
+        height: 400px;
+    }
 
-            .character-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+    .battle-menu {
+        grid-template-columns: 1fr;
+    }
 
-            .sprite-player-back {
-                width: 220px;
-                height: 220px;
-                left: -20px;
-                bottom: -30px;
-            }
+    .battle-log {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 80px;
+    }
 
-            .sprite-enemy {
-                width: 120px;
-                height: 120px;
-                right: 5%;
-                bottom: 60px;
-            }
+    .character-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
 
-            .hp-box {
-                min-width: 115px;
-                padding: 6px 8px;
-            }
+    .sprite-player-back {
+        width: 220px;
+        height: 220px;
+        left: -20px;
+        bottom: -30px;
+    }
 
-            .hp-box .pokemon-name {
-                font-size: 0.75rem;
-            }
+    .sprite-enemy {
+        width: 120px;
+        height: 120px;
+        right: 5%;
+        bottom: 60px;
+    }
 
-            .hp-box .level {
-                font-size: 0.6rem;
-                padding: 2px 6px;
-            }
+    .hp-box {
+        min-width: 115px;
+        padding: 6px 8px;
+    }
 
-            .hp-box.player {
-                bottom: 6px;
-                right: 6px;
-            }
+    .hp-box .pokemon-name {
+        font-size: 0.75rem;
+    }
 
-            .hp-box.enemy {
-                top: 8px;
-                left: 8px;
-            }
+    .hp-box .level {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
 
-            .turn-indicator {
-                font-size: 0.5rem;
-                padding: 6px 12px;
-            }
+    .hp-box.player {
+        bottom: 6px;
+        right: 6px;
+    }
 
-            /* Character Grid Mobile */
-            .character-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
+    .hp-box.enemy {
+        top: 8px;
+        left: 8px;
+    }
 
-            .char-card {
-                padding: 14px 10px;
-            }
+    .turn-indicator {
+        font-size: 0.5rem;
+        padding: 6px 12px;
+    }
 
-            .char-card img {
-                width: 70px;
-                height: 70px;
-            }
+    .char-card {
+        padding: 14px 10px;
+    }
 
-            .char-card .name {
-                font-size: 0.6rem;
-            }
+    .char-card img {
+        width: 70px;
+        height: 70px;
+    }
 
-            .char-card .type-badge {
-                font-size: 0.55rem;
-                padding: 2px 8px;
-            }
+    .char-card .name {
+        font-size: 0.6rem;
+    }
 
-            .char-card .role {
-                font-size: 0.6rem;
-            }
+    .char-card .type-badge {
+        font-size: 0.55rem;
+        padding: 2px 8px;
+    }
 
-            .char-card .description {
-                font-size: 0.6rem;
-                min-height: 28px;
-                margin-bottom: 8px;
-            }
+    .char-card .role {
+        font-size: 0.6rem;
+    }
 
-            .char-card .stats {
-                gap: 4px;
-            }
+    .char-card .description {
+        font-size: 0.6rem;
+        min-height: 28px;
+        margin-bottom: 8px;
+    }
 
-            .char-card .stat {
-                padding: 3px 6px;
-                font-size: 0.55rem;
-            }
+    .char-card .stats {
+        gap: 4px;
+    }
 
-            .modal-content {
-                padding: 20px 16px;
-                max-height: 85vh;
-            }
+    .char-card .stat {
+        padding: 3px 6px;
+        font-size: 0.55rem;
+    }
 
-            .modal-title {
-                font-size: 0.85rem;
-                margin-bottom: 16px;
-            }
-        }
+    .modal-content {
+        padding: 20px 16px;
+        max-height: 85vh;
+    }
+
+    .modal-title {
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+    }
+
+    .wallet-modal-content {
+        padding: 24px;
+        margin: 16px;
+    }
+
+    .wallet-option {
+        padding: 12px;
+    }
+
+    .wallet-option img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .ca-container {
+        padding: 10px 14px;
+        font-size: 0.7rem;
+    }
+
+    .ca-address {
+        max-width: 120px;
+    }
+
+    .hero-title {
+        font-size: clamp(1.2rem, 4vw, 2rem);
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+        padding: 0 10px;
+    }
+
+    .char-avatar {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Extra small phones */
+@media (max-width: 380px) {
+    .logo-text {
+        font-size: 0.6rem;
+    }
+
+    .logo-img {
+        width: 38px;
+        height: 38px;
+    }
+
+    nav {
+        padding: 10px 12px;
+    }
+
+    .nav-links a {
+        font-size: 1rem;
+    }
+
+    .hero-title {
+        font-size: 1rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -2233,21 +2356,30 @@ footer {
     </div>
 
     <!-- Navigation -->
-    <nav>
-        <div class="logo">
-            <img src="assets/images/logo.png" alt="PumpFighters Logo" class="logo-img" onerror="this.style.display='none'">
-            <span class="logo-text">PUMPFIGHTERS</span>
-        </div>
-        <div class="nav-links">
-            <a href="#game">Play</a>
-            <a href="#how">How It Works</a>
-            <button class="music-btn" id="music-btn" onclick="toggleMusic()">🎵</button>
-            <button class="btn btn-wallet" id="wallet-btn" onclick="connectWallet()">
-                <span id="wallet-text">Connect Wallet</span>
-            </button>
-            <a href="#" class="btn btn-primary">Buy $PUMP</a>
-        </div>
-    </nav>
+ <!-- Navigation -->
+<nav>
+    <div class="logo">
+        <img src="assets/images/logo.png" alt="PumpFighters Logo" class="logo-img" onerror="this.style.display='none'">
+        <span class="logo-text">PUMPFIGHTERS</span>
+    </div>
+    
+    <!-- Add this hamburger button -->
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+    
+    <div class="nav-links" id="nav-links">
+        <a href="#game">Play</a>
+        <a href="#how">How It Works</a>
+        <button class="music-btn" id="music-btn" onclick="toggleMusic()">🎵</button>
+        <button class="btn btn-wallet" id="wallet-btn" onclick="connectWallet()">
+            <span id="wallet-text">Connect Wallet</span>
+        </button>
+        <a href="#" class="btn btn-primary">Buy $PUMP</a>
+    </div>
+</nav>
 
     <!-- Hero -->
     <section class="hero">
@@ -2440,6 +2572,35 @@ footer {
     </div>
 
     <script>
+
+        // Mobile Menu Toggle
+function toggleMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+    document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+}
+
+// Close menu when clicking links
+document.querySelectorAll('.nav-links a, .nav-links .btn').forEach(el => {
+    el.addEventListener('click', () => {
+        document.getElementById('hamburger').classList.remove('active');
+        document.getElementById('nav-links').classList.remove('active');
+        document.body.style.overflow = '';
+    });
+});
+
+// Auto-close on resize to desktop
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        document.getElementById('hamburger').classList.remove('active');
+        document.getElementById('nav-links').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
+
         // Wallet Connection System
         const WalletSystem = {
             connected: false,
