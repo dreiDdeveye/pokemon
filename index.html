@@ -29,6 +29,7 @@
         }
 
         /* Animated Background */
+        /* ===== POKEMON RETRO BATTLE BACKGROUND ===== */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -37,8 +38,97 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(255, 95, 95, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255, 217, 61, 0.12) 0%, transparent 50%),
+                linear-gradient(180deg, 
+                    #0a0a1a 0%,
+                    #1a1a3a 25%,
+                    #0d1f3c 50%,
+                    #1a0a2e 75%,
+                    #0a0a1a 100%
+                );
         }
 
+        /* Retro Scanlines */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.5;
+        }
+
+        /* CRT Glow Effect */
+        .crt-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 150px rgba(255, 217, 61, 0.03);
+            pointer-events: none;
+        }
+
+        /* Pixel Stars */
+        .pixel-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            animation: twinkle 2s ease-in-out infinite;
+            image-rendering: pixelated;
+        }
+
+        .star.small { width: 2px; height: 2px; }
+        .star.medium { width: 3px; height: 3px; box-shadow: 0 0 8px #fff, 0 0 12px rgba(255,255,255,0.5); }
+        .star.large { width: 4px; height: 4px; box-shadow: 0 0 12px #ffd93d, 0 0 24px #ffd93d, 0 0 36px rgba(255,217,61,0.3); }
+
+        .star:nth-child(1) { left: 5%; top: 10%; animation-delay: 0s; }
+        .star:nth-child(2) { left: 15%; top: 25%; animation-delay: 0.3s; }
+        .star:nth-child(3) { left: 25%; top: 8%; animation-delay: 0.6s; }
+        .star:nth-child(4) { left: 35%; top: 30%; animation-delay: 0.9s; }
+        .star:nth-child(5) { left: 45%; top: 15%; animation-delay: 1.2s; }
+        .star:nth-child(6) { left: 55%; top: 5%; animation-delay: 0.2s; }
+        .star:nth-child(7) { left: 65%; top: 20%; animation-delay: 0.5s; }
+        .star:nth-child(8) { left: 75%; top: 12%; animation-delay: 0.8s; }
+        .star:nth-child(9) { left: 85%; top: 28%; animation-delay: 1.1s; }
+        .star:nth-child(10) { left: 95%; top: 8%; animation-delay: 1.4s; }
+        .star:nth-child(11) { left: 10%; top: 45%; animation-delay: 0.4s; }
+        .star:nth-child(12) { left: 30%; top: 55%; animation-delay: 0.7s; }
+        .star:nth-child(13) { left: 50%; top: 40%; animation-delay: 1s; }
+        .star:nth-child(14) { left: 70%; top: 50%; animation-delay: 1.3s; }
+        .star:nth-child(15) { left: 90%; top: 45%; animation-delay: 0.1s; }
+        .star:nth-child(16) { left: 20%; top: 70%; animation-delay: 0.6s; }
+        .star:nth-child(17) { left: 40%; top: 75%; animation-delay: 0.9s; }
+        .star:nth-child(18) { left: 60%; top: 65%; animation-delay: 1.2s; }
+        .star:nth-child(19) { left: 80%; top: 72%; animation-delay: 0.3s; }
+        .star:nth-child(20) { left: 8%; top: 85%; animation-delay: 0.8s; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.8); }
+        }
+
+        /* Pokemon Type Energy Orbs */
         .orb {
             position: absolute;
             border-radius: 50%;
@@ -47,49 +137,90 @@
             animation: orbFloat 20s ease-in-out infinite;
         }
 
+        /* Fire Type - Red/Orange */
         .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 100%);
-            top: -100px;
-            left: -100px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, 
+                rgba(255, 95, 95, 0.8) 0%, 
+                rgba(255, 60, 0, 0.5) 30%,
+                rgba(255, 165, 0, 0.3) 50%,
+                transparent 70%
+            );
+            top: -200px;
+            left: -200px;
             animation-delay: 0s;
         }
 
+        /* Water Type - Blue */
         .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, #ffd93d 0%, #ff9500 100%);
-            top: 50%;
-            right: -50px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, 
+                rgba(59, 130, 246, 0.8) 0%, 
+                rgba(37, 99, 235, 0.5) 30%,
+                rgba(96, 165, 250, 0.3) 50%,
+                transparent 70%
+            );
+            top: 35%;
+            right: -150px;
             animation-delay: -5s;
         }
 
+        /* Electric Type - Yellow */
         .orb-3 {
-            width: 350px;
-            height: 350px;
-            background: linear-gradient(135deg, #00d4aa 0%, #00a8cc 100%);
-            bottom: -100px;
-            left: 30%;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, 
+                rgba(255, 217, 61, 0.9) 0%, 
+                rgba(250, 204, 21, 0.5) 30%,
+                rgba(253, 224, 71, 0.3) 50%,
+                transparent 70%
+            );
+            bottom: -200px;
+            left: 15%;
             animation-delay: -10s;
         }
 
+        /* Psychic Type - Purple */
         .orb-4 {
-            width: 250px;
-            height: 250px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
-            top: 30%;
-            left: 50%;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, 
+                rgba(168, 85, 247, 0.8) 0%, 
+                rgba(139, 92, 246, 0.5) 30%,
+                rgba(192, 132, 252, 0.3) 50%,
+                transparent 70%
+            );
+            top: 55%;
+            left: 55%;
             animation-delay: -15s;
         }
 
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(50px, -50px) scale(1.1); }
-            50% { transform: translate(-30px, 30px) scale(0.9); }
-            75% { transform: translate(40px, 20px) scale(1.05); }
+        /* Grass Type - Green (new) */
+        .orb-5 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, 
+                rgba(34, 197, 94, 0.7) 0%, 
+                rgba(22, 163, 74, 0.4) 30%,
+                rgba(74, 222, 128, 0.2) 50%,
+                transparent 70%
+            );
+            top: 20%;
+            left: 40%;
+            animation-delay: -8s;
+            animation-duration: 25s;
         }
 
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            25% { transform: translate(40px, -50px) scale(1.15); opacity: 0.6; }
+            50% { transform: translate(-30px, 30px) scale(0.9); opacity: 0.35; }
+            75% { transform: translate(35px, 25px) scale(1.1); opacity: 0.55; }
+        }
+
+        /* Pixel Grid Pattern */
         .grid-pattern {
             position: absolute;
             top: 0;
@@ -97,46 +228,389 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
+                linear-gradient(rgba(255,217,61,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,217,61,0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            opacity: 0.6;
         }
 
-        .particles {
+        /* Floating Pokeballs */
+        .pokeball-particles {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none;
         }
 
-        .particle {
+        .pokeball {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--primary);
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            opacity: 0.6;
-            animation: particleFloat 15s linear infinite;
+            background: linear-gradient(180deg, 
+                #ff5f5f 0%, #ff5f5f 45%, 
+                #2a2a3e 45%, #2a2a3e 55%, 
+                #fff 55%, #fff 100%
+            );
+            opacity: 0.12;
+            animation: floatPokeball 25s linear infinite;
+            box-shadow: 0 0 10px rgba(255, 95, 95, 0.3);
         }
 
-        .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
-        .particle:nth-child(2) { left: 20%; top: 80%; animation-delay: -2s; }
-        .particle:nth-child(3) { left: 30%; top: 40%; animation-delay: -4s; }
-        .particle:nth-child(4) { left: 50%; top: 60%; animation-delay: -6s; }
-        .particle:nth-child(5) { left: 70%; top: 30%; animation-delay: -8s; }
-        .particle:nth-child(6) { left: 80%; top: 70%; animation-delay: -10s; }
-        .particle:nth-child(7) { left: 90%; top: 50%; animation-delay: -12s; }
-        .particle:nth-child(8) { left: 40%; top: 90%; animation-delay: -14s; }
-
-        @keyframes particleFloat {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        .pokeball::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            border: 2px solid #2a2a3e;
+            box-shadow: 0 0 4px rgba(255,255,255,0.5);
         }
 
-        /* Floating Pills */
+        .pokeball:nth-child(1) { left: 5%; animation-delay: 0s; animation-duration: 28s; }
+        .pokeball:nth-child(2) { left: 15%; animation-delay: -4s; animation-duration: 24s; width: 18px; height: 18px; }
+        .pokeball:nth-child(3) { left: 25%; animation-delay: -8s; animation-duration: 30s; width: 28px; height: 28px; }
+        .pokeball:nth-child(4) { left: 35%; animation-delay: -2s; animation-duration: 22s; }
+        .pokeball:nth-child(5) { left: 45%; animation-delay: -12s; animation-duration: 26s; width: 20px; height: 20px; }
+        .pokeball:nth-child(6) { left: 55%; animation-delay: -6s; animation-duration: 28s; width: 26px; height: 26px; }
+        .pokeball:nth-child(7) { left: 65%; animation-delay: -14s; animation-duration: 25s; }
+        .pokeball:nth-child(8) { left: 75%; animation-delay: -1s; animation-duration: 30s; width: 18px; height: 18px; }
+        .pokeball:nth-child(9) { left: 85%; animation-delay: -10s; animation-duration: 23s; width: 28px; height: 28px; }
+        .pokeball:nth-child(10) { left: 92%; animation-delay: -7s; animation-duration: 27s; }
+
+        @keyframes floatPokeball {
+            0% { 
+                transform: translateY(110vh) rotate(0deg); 
+                opacity: 0;
+            }
+            3% { opacity: 0.12; }
+            97% { opacity: 0.12; }
+            100% { 
+                transform: translateY(-10vh) rotate(1080deg); 
+                opacity: 0;
+            }
+        }
+
+        /* Battle Energy Sparkles */
+        .sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: transparent;
+            animation: sparkleAnim 2.5s ease-in-out infinite;
+        }
+
+        .sparkle::before,
+        .sparkle::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #ffd93d, transparent);
+            border-radius: 2px;
+        }
+
+        .sparkle::before {
+            width: 100%;
+            height: 3px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .sparkle::after {
+            width: 3px;
+            height: 100%;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, transparent, #ffd93d, transparent);
+        }
+
+        .sparkle:nth-child(1) { left: 8%; top: 15%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { left: 22%; top: 35%; animation-delay: 0.4s; }
+        .sparkle:nth-child(3) { left: 38%; top: 18%; animation-delay: 0.8s; }
+        .sparkle:nth-child(4) { left: 52%; top: 42%; animation-delay: 1.2s; }
+        .sparkle:nth-child(5) { left: 68%; top: 22%; animation-delay: 1.6s; }
+        .sparkle:nth-child(6) { left: 82%; top: 38%; animation-delay: 2s; }
+        .sparkle:nth-child(7) { left: 12%; top: 58%; animation-delay: 0.2s; }
+        .sparkle:nth-child(8) { left: 42%; top: 68%; animation-delay: 0.6s; }
+        .sparkle:nth-child(9) { left: 72%; top: 62%; animation-delay: 1s; }
+        .sparkle:nth-child(10) { left: 88%; top: 52%; animation-delay: 1.4s; }
+        .sparkle:nth-child(11) { left: 18%; top: 82%; animation-delay: 1.8s; }
+        .sparkle:nth-child(12) { left: 58%; top: 78%; animation-delay: 0.3s; }
+
+        @keyframes sparkleAnim {
+            0%, 100% { 
+                opacity: 0; 
+                transform: scale(0) rotate(0deg);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.2) rotate(180deg);
+            }
+        }
+
+        /* Type Symbol Particles */
+        .type-symbols {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .type-symbol {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.08;
+            animation: floatSymbol 30s linear infinite;
+            filter: blur(1px);
+        }
+
+        .type-symbol:nth-child(1) { left: 8%; content: '🔥'; animation-delay: 0s; }
+        .type-symbol:nth-child(2) { left: 18%; animation-delay: -5s; }
+        .type-symbol:nth-child(3) { left: 28%; animation-delay: -10s; }
+        .type-symbol:nth-child(4) { left: 38%; animation-delay: -15s; }
+        .type-symbol:nth-child(5) { left: 48%; animation-delay: -20s; }
+        .type-symbol:nth-child(6) { left: 58%; animation-delay: -3s; }
+        .type-symbol:nth-child(7) { left: 68%; animation-delay: -8s; }
+        .type-symbol:nth-child(8) { left: 78%; animation-delay: -13s; }
+        .type-symbol:nth-child(9) { left: 88%; animation-delay: -18s; }
+        .type-symbol:nth-child(10) { left: 95%; animation-delay: -23s; }
+
+        @keyframes floatSymbol {
+            0% { 
+                transform: translateY(110vh) rotate(0deg) scale(1); 
+                opacity: 0;
+            }
+            5% { opacity: 0.08; }
+            50% { transform: translateY(50vh) rotate(180deg) scale(1.2); }
+            95% { opacity: 0.08; }
+            100% { 
+                transform: translateY(-10vh) rotate(360deg) scale(1); 
+                opacity: 0;
+            }
+        }
+
+        /* Energy Wave at Bottom */
+        .energy-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 200px;
+            background: linear-gradient(180deg, 
+                transparent 0%,
+                rgba(153, 69, 255, 0.08) 30%,
+                rgba(20, 241, 149, 0.1) 60%,
+                rgba(255, 217, 61, 0.08) 100%
+            );
+            animation: waveMove 12s linear infinite;
+        }
+
+        .energy-wave::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255, 217, 61, 0.05) 25%,
+                transparent 50%,
+                rgba(59, 130, 246, 0.05) 75%,
+                transparent 100%
+            );
+            animation: waveShimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes waveShimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Battle Ready Pulse Border */
+        .battle-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            box-shadow: 
+                inset 0 0 100px rgba(255, 217, 61, 0.03),
+                inset 0 0 200px rgba(139, 92, 246, 0.02);
+            animation: borderPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            25% { transform: translate(30px, -40px) scale(1.1); opacity: 0.7; }
+            50% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.4; }
+            75% { transform: translate(25px, 15px) scale(1.05); opacity: 0.6; }
+        }
+
+        /* Retro Pixel Grid */
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.5;
+        }
+
+        /* Floating Pokeball Particles */
+        .pokeball-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .pokeball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ff5f5f 0%, #ff5f5f 45%, #1a1a2e 45%, #1a1a2e 55%, #fff 55%, #fff 100%);
+            opacity: 0.15;
+            animation: floatPokeball 20s linear infinite;
+        }
+
+        .pokeball::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            border: 2px solid #1a1a2e;
+        }
+
+        .pokeball:nth-child(1) { left: 5%; animation-delay: 0s; animation-duration: 25s; }
+        .pokeball:nth-child(2) { left: 15%; animation-delay: -3s; animation-duration: 22s; width: 15px; height: 15px; }
+        .pokeball:nth-child(3) { left: 25%; animation-delay: -6s; animation-duration: 28s; width: 25px; height: 25px; }
+        .pokeball:nth-child(4) { left: 35%; animation-delay: -2s; animation-duration: 20s; }
+        .pokeball:nth-child(5) { left: 45%; animation-delay: -8s; animation-duration: 24s; width: 18px; height: 18px; }
+        .pokeball:nth-child(6) { left: 55%; animation-delay: -4s; animation-duration: 26s; width: 22px; height: 22px; }
+        .pokeball:nth-child(7) { left: 65%; animation-delay: -10s; animation-duration: 23s; }
+        .pokeball:nth-child(8) { left: 75%; animation-delay: -1s; animation-duration: 27s; width: 16px; height: 16px; }
+        .pokeball:nth-child(9) { left: 85%; animation-delay: -7s; animation-duration: 21s; width: 24px; height: 24px; }
+        .pokeball:nth-child(10) { left: 95%; animation-delay: -5s; animation-duration: 25s; }
+
+        @keyframes floatPokeball {
+            0% { 
+                transform: translateY(110vh) rotate(0deg); 
+                opacity: 0;
+            }
+            5% { opacity: 0.15; }
+            95% { opacity: 0.15; }
+            100% { 
+                transform: translateY(-10vh) rotate(720deg); 
+                opacity: 0;
+            }
+        }
+
+        /* Energy Sparkles */
+        .sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: transparent;
+            animation: sparkleAnim 3s ease-in-out infinite;
+        }
+
+        .sparkle::before,
+        .sparkle::after {
+            content: '';
+            position: absolute;
+            background: #ffd93d;
+        }
+
+        .sparkle::before {
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .sparkle::after {
+            width: 2px;
+            height: 100%;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+        }
+
+        .sparkle:nth-child(1) { left: 8%; top: 15%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { left: 22%; top: 35%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { left: 38%; top: 20%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { left: 52%; top: 45%; animation-delay: 1.5s; }
+        .sparkle:nth-child(5) { left: 68%; top: 25%; animation-delay: 2s; }
+        .sparkle:nth-child(6) { left: 82%; top: 40%; animation-delay: 2.5s; }
+        .sparkle:nth-child(7) { left: 12%; top: 60%; animation-delay: 0.3s; }
+        .sparkle:nth-child(8) { left: 42%; top: 70%; animation-delay: 0.8s; }
+        .sparkle:nth-child(9) { left: 72%; top: 65%; animation-delay: 1.3s; }
+        .sparkle:nth-child(10) { left: 92%; top: 55%; animation-delay: 1.8s; }
+        .sparkle:nth-child(11) { left: 18%; top: 82%; animation-delay: 1.8s; }
+        .sparkle:nth-child(12) { left: 58%; top: 78%; animation-delay: 0.3s; }
+
+        @keyframes sparkleAnim {
+            0%, 100% { 
+                opacity: 0; 
+                transform: scale(0) rotate(0deg);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.2) rotate(180deg);
+            }
+        }
+
+        /* Floating Character Pills */
         .floating-pills {
             position: fixed;
             top: 0;
@@ -145,39 +619,42 @@
             height: 100%;
             overflow: hidden;
             pointer-events: none;
-            z-index: 0;
+            z-index: 2;
         }
 
         .floating-pill {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            opacity: 0.15;
-            animation: floatPillUp 18s linear infinite;
+            width: 55px;
+            height: 55px;
+            opacity: 0.2;
+            animation: floatPillUp 20s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 217, 61, 0.6)) drop-shadow(0 0 30px rgba(139, 92, 246, 0.3));
         }
 
         .floating-pill img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            border-radius: 50%;
         }
 
-        .floating-pill:nth-child(1) { left: 5%; bottom: -60px; animation-delay: 0s; animation-duration: 20s; }
-        .floating-pill:nth-child(2) { left: 15%; bottom: -60px; animation-delay: 3s; animation-duration: 18s; width: 30px; height: 30px; }
-        .floating-pill:nth-child(3) { left: 25%; bottom: -60px; animation-delay: 6s; animation-duration: 22s; width: 50px; height: 50px; }
-        .floating-pill:nth-child(4) { left: 35%; bottom: -60px; animation-delay: 2s; animation-duration: 19s; }
-        .floating-pill:nth-child(5) { left: 45%; bottom: -60px; animation-delay: 8s; animation-duration: 21s; width: 35px; height: 35px; }
-        .floating-pill:nth-child(6) { left: 55%; bottom: -60px; animation-delay: 4s; animation-duration: 17s; width: 45px; height: 45px; }
-        .floating-pill:nth-child(7) { left: 65%; bottom: -60px; animation-delay: 10s; animation-duration: 23s; }
-        .floating-pill:nth-child(8) { left: 75%; bottom: -60px; animation-delay: 1s; animation-duration: 16s; width: 30px; height: 30px; }
-        .floating-pill:nth-child(9) { left: 85%; bottom: -60px; animation-delay: 7s; animation-duration: 20s; width: 50px; height: 50px; }
-        .floating-pill:nth-child(10) { left: 95%; bottom: -60px; animation-delay: 5s; animation-duration: 18s; }
+        .floating-pill:nth-child(1) { left: 5%; bottom: -60px; animation-delay: 0s; animation-duration: 25s; }
+        .floating-pill:nth-child(2) { left: 15%; bottom: -60px; animation-delay: 3s; animation-duration: 22s; width: 35px; height: 35px; }
+        .floating-pill:nth-child(3) { left: 25%; bottom: -60px; animation-delay: 6s; animation-duration: 28s; width: 55px; height: 55px; }
+        .floating-pill:nth-child(4) { left: 35%; bottom: -60px; animation-delay: 2s; animation-duration: 24s; }
+        .floating-pill:nth-child(5) { left: 45%; bottom: -60px; animation-delay: 8s; animation-duration: 26s; width: 40px; height: 40px; }
+        .floating-pill:nth-child(6) { left: 55%; bottom: -60px; animation-delay: 4s; animation-duration: 21s; width: 50px; height: 50px; }
+        .floating-pill:nth-child(7) { left: 65%; bottom: -60px; animation-delay: 10s; animation-duration: 27s; }
+        .floating-pill:nth-child(8) { left: 75%; bottom: -60px; animation-delay: 1s; animation-duration: 20s; width: 35px; height: 35px; }
+        .floating-pill:nth-child(9) { left: 85%; bottom: -60px; animation-delay: 7s; animation-duration: 24s; width: 55px; height: 55px; }
+        .floating-pill:nth-child(10) { left: 92%; bottom: -60px; animation-delay: 5s; animation-duration: 22s; }
 
         @keyframes floatPillUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            5% { opacity: 0.15; }
-            95% { opacity: 0.15; }
-            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+            5% { opacity: 0.25; }
+            50% { transform: translateY(-55vh) rotate(180deg) scale(1); }
+            95% { opacity: 0.25; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(0.8); opacity: 0; }
         }
 
         /* Simple Nav */
@@ -289,6 +766,151 @@
             border: 1px solid var(--border);
         }
 
+        .btn-wallet {
+            background: linear-gradient(135deg, #9945FF 0%, #14F195 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            padding: 10px 16px;
+        }
+
+        .btn-wallet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(153, 69, 255, 0.4);
+        }
+
+        .btn-wallet.connected {
+            background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
+        }
+
+        .btn-wallet .wallet-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Wallet Modal */
+        .wallet-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wallet-modal.show {
+            display: flex;
+        }
+
+        .wallet-modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid var(--border);
+        }
+
+        .wallet-modal-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--primary);
+        }
+
+        .wallet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .wallet-option:hover {
+            border-color: var(--primary);
+            background: rgba(255, 217, 61, 0.05);
+        }
+
+        .wallet-option img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .wallet-option-info {
+            flex: 1;
+        }
+
+        .wallet-option-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .wallet-option-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .wallet-option-status {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: var(--green);
+            color: #000;
+        }
+
+        .wallet-option-status.not-installed {
+            background: var(--border);
+            color: var(--text-muted);
+        }
+
+        .wallet-modal-close {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .wallet-modal-close:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* Connected wallet display */
+        .wallet-address {
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        .wallet-balance {
+            font-size: 0.7rem;
+            color: var(--green);
+            margin-left: 4px;
+        }
+
         .btn-secondary:hover {
             border-color: var(--primary);
         }
@@ -304,6 +926,26 @@
             padding: 100px 24px 60px;
             position: relative;
             z-index: 10;
+            background-image: url('assets/images/hero-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Hero background overlay for text readability */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                rgba(10, 10, 26, 0.7) 0%,
+                rgba(10, 10, 26, 0.5) 50%,
+                rgba(10, 10, 26, 0.8) 100%
+            );
+            z-index: -1;
         }
 
         .hero-badge {
@@ -311,7 +953,8 @@
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
-            background: var(--bg-card);
+            background: rgba(18, 18, 30, 0.9);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border);
             border-radius: 50px;
             font-size: 0.8rem;
@@ -326,15 +969,17 @@
             font-size: clamp(1.8rem, 5vw, 3rem);
             margin-bottom: 16px;
             line-height: 1.3;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
-        .hero-title .highlight { color: var(--primary); }
+        .hero-title .highlight { color: var(--primary); text-shadow: 0 0 30px rgba(255, 217, 61, 0.5); }
 
         .hero-subtitle {
             font-size: 1.1rem;
             color: var(--text-muted);
             max-width: 500px;
             margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         /* Character Preview */
@@ -350,16 +995,19 @@
             width: 80px;
             height: 80px;
             border-radius: 12px;
-            background: var(--bg-card);
+            background: rgba(18, 18, 30, 0.8);
+            backdrop-filter: blur(5px);
             border: 2px solid var(--border);
             overflow: hidden;
             transition: all 0.3s;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .char-avatar:hover {
             border-color: var(--primary);
-            transform: scale(1.05);
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 217, 61, 0.3);
         }
 
         .char-avatar img {
@@ -375,9 +1023,17 @@
             justify-content: center;
         }
 
+        .cta-buttons .btn {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-buttons .btn-primary {
+            box-shadow: 0 4px 25px rgba(255, 217, 61, 0.4);
+        }
+
         /* Game Section */
         .game-wrapper {
-            background: #0a0a0f;
+            background: transparent;
             position: relative;
             z-index: 50;
         }
@@ -400,29 +1056,45 @@
 
         /* Battle Arena */
         .battle-arena {
-            background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 40%, #90EE90 60%, #228B22 100%);
+            background-color: #228B22;
+            background-image: url('assets/images/battle-bg.png');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
             border-radius: 16px;
-            height: 450px;
+            height: 480px;
             position: relative;
             overflow: hidden;
             margin-bottom: 16px;
             border: 3px solid #1a1a2e;
-            perspective: 800px;
+            image-rendering: pixelated;
         }
 
-        /* Battle field floor with perspective */
-        .battle-field {
+        /* Fallback gradient if no image */
+        .battle-arena::before {
+            content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
             right: 0;
-            height: 55%;
-            background: linear-gradient(180deg, #90EE90 0%, #228B22 50%, #1a5c1a 100%);
-            transform: rotateX(45deg);
-            transform-origin: bottom center;
+            bottom: 0;
+            background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 45%, #90EE90 65%, #228B22 100%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        /* Sun */
+        /* Show fallback if image fails */
+        .battle-arena.no-bg::before {
+            opacity: 1;
+        }
+
+        /* Battle field floor - no perspective, just flat ground */
+        .battle-field {
+            display: none;
+        }
+
+        /* Sun - only show if no custom background (fallback mode) */
         .sun {
             position: absolute;
             top: 20px;
@@ -433,37 +1105,21 @@
             border-radius: 50%;
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
             z-index: 2;
+            display: none;
         }
 
-        /* Ground Platforms with 3D perspective */
+        /* Show sun only when no background image */
+        .battle-arena.no-bg .sun {
+            display: block;
+        }
+
+        /* Ground Platforms - hidden for cleaner look */
         .ground-player {
-            position: absolute;
-            left: 5%;
-            bottom: 80px;
-            width: 220px;
-            height: 25px;
-            background: linear-gradient(90deg, #1a5c1a 0%, #228B22 30%, #32CD32 50%, #228B22 70%, #1a5c1a 100%);
-            border-radius: 50%;
-            box-shadow: 
-                0 8px 0 #0d3d0d,
-                0 12px 20px rgba(0,0,0,0.3);
-            transform: perspective(200px) rotateX(20deg);
-            z-index: 8;
+            display: none;
         }
 
         .ground-enemy {
-            position: absolute;
-            right: 10%;
-            top: 175px;
-            width: 130px;
-            height: 18px;
-            background: linear-gradient(90deg, #1a5c1a 0%, #228B22 30%, #32CD32 50%, #228B22 70%, #1a5c1a 100%);
-            border-radius: 50%;
-            box-shadow: 
-                0 5px 0 #0d3d0d,
-                0 8px 15px rgba(0,0,0,0.25);
-            transform: perspective(200px) rotateX(20deg);
-            z-index: 3;
+            display: none;
         }
 
         /* Character Sprites - Front view (hidden, using back instead) */
@@ -477,13 +1133,13 @@
             object-fit: contain;
         }
 
-        /* Back POV sprite - Pokemon style (large, bottom left) */
+        /* Back POV sprite - GROUNDED half-body style (bottom-left, cut off at bottom) */
         .sprite-player-back {
             position: absolute;
-            left: 2%;
-            bottom: 85px;
-            width: 200px;
-            height: 200px;
+            left: -20px;
+            bottom: -40px;
+            width: 400px;
+            height:400px;
             animation: bounceBack 2.5s ease-in-out infinite;
             z-index: 10;
         }
@@ -492,7 +1148,8 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.5));
+            object-position: center bottom;
+            filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
         }
 
         @keyframes bounceBack {
@@ -507,7 +1164,7 @@
 
         @keyframes attackBack {
             0% { transform: translateX(0) translateY(0); }
-            50% { transform: translateX(50px) translateY(-15px) scale(1.08); }
+            50% { transform: translateX(80px) translateY(-20px) scale(1.1); }
             100% { transform: translateX(0) translateY(0); }
         }
 
@@ -518,19 +1175,19 @@
 
         @keyframes damagedBack {
             0%, 100% { transform: translateX(0); opacity: 1; }
-            20% { transform: translateX(-10px); opacity: 0.4; filter: brightness(2); }
-            40% { transform: translateX(10px); opacity: 0.6; }
-            60% { transform: translateX(-5px); opacity: 0.8; }
-            80% { transform: translateX(5px); opacity: 0.9; }
+            20% { transform: translateX(-15px); opacity: 0.4; filter: brightness(2); }
+            40% { transform: translateX(15px); opacity: 0.6; }
+            60% { transform: translateX(-8px); opacity: 0.8; }
+            80% { transform: translateX(8px); opacity: 0.9; }
         }
 
-        /* Enemy sprite - smaller, top right (far away for depth) */
+        /* Enemy sprite - GROUNDED on the right side, standing on grass */
         .sprite-enemy {
             position: absolute;
-            right: 10%;
-            top: 60px;
-            width: 115px;
-            height: 115px;
+            right: 5%;
+            bottom: 80px;
+            width: 400px;
+            height: 400px;
             animation: bounce 2.5s ease-in-out infinite;
             animation-delay: 0.5s;
             z-index: 5;
@@ -540,12 +1197,12 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(3px 6px 10px rgba(0,0,0,0.4));
+            filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.35));
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+            50% { transform: translateY(-8px); }
         }
 
         /* Attack animation for enemy */
@@ -555,7 +1212,7 @@
 
         @keyframes attackEnemy {
             0% { transform: translateX(0) translateY(0); }
-            50% { transform: translateX(-50px) translateY(15px) scale(1.15); }
+            50% { transform: translateX(-80px) translateY(10px) scale(1.15); }
             100% { transform: translateX(0) translateY(0); }
         }
 
@@ -566,10 +1223,10 @@
 
         @keyframes damagedEnemy {
             0%, 100% { transform: translateX(0); opacity: 1; }
-            20% { transform: translateX(8px); opacity: 0.4; filter: brightness(2); }
-            40% { transform: translateX(-8px); opacity: 0.6; }
-            60% { transform: translateX(4px); opacity: 0.8; }
-            80% { transform: translateX(-4px); opacity: 0.9; }
+            20% { transform: translateX(10px); opacity: 0.4; filter: brightness(2); }
+            40% { transform: translateX(-10px); opacity: 0.6; }
+            60% { transform: translateX(5px); opacity: 0.8; }
+            80% { transform: translateX(-5px); opacity: 0.9; }
         }
 
         /* HP Boxes */
@@ -719,15 +1376,17 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -120px);
+            transform: translate(-50%, -50%);
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.6rem;
-            background: rgba(0,0,0,0.85);
+            font-size: 0.65rem;
+            background: rgba(0,0,0,0.9);
             color: var(--primary);
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             border: 2px solid var(--primary);
             z-index: 50;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .turn-indicator.enemy { color: var(--red); border-color: var(--red); }
@@ -894,9 +1553,9 @@
         /* How It Works */
         .how-it-works {
             padding: 100px 24px;
-            background: #0a0a0f;
+            background: transparent;
             position: relative;
-            z-index: 200;
+            z-index: 10;
         }
 
         .how-container {
@@ -920,9 +1579,10 @@
         .step {
             text-align: center;
             padding: 40px 28px;
-            background: #1a1a2e !important;
+            background: rgba(26, 26, 46, 0.85) !important;
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            border: 1px solid #2a2a3e !important;
+            border: 1px solid rgba(42, 42, 62, 0.8) !important;
             transition: transform 0.3s, border-color 0.3s;
             display: block !important;
         }
@@ -958,10 +1618,10 @@
         footer {
             padding: 50px 24px;
             text-align: center;
-            border-top: 1px solid var(--border);
-            background: #0a0a0f;
+            border-top: 1px solid rgba(42, 42, 58, 0.5);
+            background: transparent;
             position: relative;
-            z-index: 200;
+            z-index: 10;
         }
 
         .footer-content {
@@ -1022,56 +1682,156 @@
             background: var(--bg-card);
             border-radius: 20px;
             padding: 32px;
-            max-width: 600px;
-            width: 90%;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-title {
             font-family: 'Press Start 2P', cursive;
-            font-size: 1rem;
+            font-size: 1.1rem;
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             color: var(--primary);
+            text-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
         }
 
         .character-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 20px;
             margin-bottom: 24px;
         }
 
         .char-card {
-            background: var(--bg);
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9) 0%, rgba(18, 18, 30, 0.95) 100%);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 16px;
+            padding: 20px 16px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .char-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .char-card:hover {
             border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 217, 61, 0.15);
+        }
+
+        .char-card:hover::before {
+            opacity: 1;
         }
 
         .char-card.selected {
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
+            box-shadow: 0 0 30px rgba(255, 217, 61, 0.3), inset 0 0 20px rgba(255, 217, 61, 0.05);
+        }
+
+        .char-card.selected::before {
+            opacity: 1;
         }
 
         .char-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            transition: transform 0.3s;
+        }
+
+        .char-card:hover img {
+            transform: scale(1.1);
         }
 
         .char-card .name {
+            font-family: 'Press Start 2P', cursive;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-bottom: 6px;
         }
+
+        .char-card .type-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .char-card .type-badge.water { background: #3b82f6; color: #fff; }
+        .char-card .type-badge.electric { background: #fbbf24; color: #000; }
+        .char-card .type-badge.fire { background: #ef4444; color: #fff; }
+        .char-card .type-badge.normal { background: #a3a3a3; color: #000; }
+        .char-card .type-badge.dark { background: #374151; color: #fff; }
+        .char-card .type-badge.psychic { background: #ec4899; color: #fff; }
+        .char-card .type-badge.grass { background: #22c55e; color: #fff; }
+
+        .char-card .role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .char-card .description {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 12px;
+            min-height: 36px;
+        }
+
+        .char-card .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            font-size: 0.6rem;
+        }
+
+        .char-card .stat {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+        }
+
+        .char-card .stat-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .char-card .stat-value {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .char-card .stat-value.high { color: #22c55e; }
+        .char-card .stat-value.medium { color: #fbbf24; }
+        .char-card .stat-value.low { color: #ef4444; }
 
         .modal-actions {
             display: flex;
@@ -1123,6 +1883,15 @@
         @media (max-width: 768px) {
             .nav-links a:not(.btn) { display: none; }
 
+            .nav-links .btn-wallet {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+
+            .nav-links .btn-primary {
+                display: none;
+            }
+
             .logo-img {
                 width: 32px;
                 height: 32px;
@@ -1130,6 +1899,20 @@
 
             .logo-text {
                 font-size: 0.75rem;
+            }
+
+            .wallet-modal-content {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            .wallet-option {
+                padding: 12px;
+            }
+
+            .wallet-option img {
+                width: 32px;
+                height: 32px;
             }
             
             .steps {
@@ -1175,87 +1958,208 @@
             }
 
             .sprite-player-back {
-                width: 150px;
-                height: 150px;
-                left: 1%;
-                bottom: 70px;
+                width: 220px;
+                height: 220px;
+                left: -20px;
+                bottom: -30px;
             }
 
             .sprite-enemy {
-                width: 85px;
-                height: 85px;
-                right: 8%;
-                top: 55px;
-            }
-
-            .ground-player {
-                width: 170px;
-                left: 1%;
-                bottom: 55px;
-                height: 18px;
-            }
-
-            .ground-enemy {
-                width: 95px;
-                right: 8%;
-                top: 135px;
-                height: 14px;
+                width: 120px;
+                height: 120px;
+                right: 5%;
+                bottom: 60px;
             }
 
             .hp-box {
-                min-width: 130px;
-                padding: 8px 10px;
+                min-width: 115px;
+                padding: 6px 8px;
+            }
+
+            .hp-box .pokemon-name {
+                font-size: 0.75rem;
+            }
+
+            .hp-box .level {
+                font-size: 0.6rem;
+                padding: 2px 6px;
             }
 
             .hp-box.player {
-                bottom: 8px;
-                right: 8px;
+                bottom: 6px;
+                right: 6px;
             }
 
             .hp-box.enemy {
-                top: 10px;
-                left: 10px;
+                top: 8px;
+                left: 8px;
             }
 
             .turn-indicator {
                 font-size: 0.5rem;
                 padding: 6px 12px;
             }
+
+            /* Character Grid Mobile */
+            .character-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .char-card {
+                padding: 14px 10px;
+            }
+
+            .char-card img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .char-card .name {
+                font-size: 0.6rem;
+            }
+
+            .char-card .type-badge {
+                font-size: 0.55rem;
+                padding: 2px 8px;
+            }
+
+            .char-card .role {
+                font-size: 0.6rem;
+            }
+
+            .char-card .description {
+                font-size: 0.6rem;
+                min-height: 28px;
+                margin-bottom: 8px;
+            }
+
+            .char-card .stats {
+                gap: 4px;
+            }
+
+            .char-card .stat {
+                padding: 3px 6px;
+                font-size: 0.55rem;
+            }
+
+            .modal-content {
+                padding: 20px 16px;
+                max-height: 85vh;
+            }
+
+            .modal-title {
+                font-size: 0.85rem;
+                margin-bottom: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
+    <!-- Pokemon Style Animated Background -->
     <div class="bg-animation">
+        <!-- Pokemon Type Energy Orbs -->
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
         <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+        
+        <!-- Retro Pixel Grid -->
         <div class="grid-pattern"></div>
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
+        
+        <!-- Pixel Stars -->
+        <div class="pixel-stars">
+            <div class="star small"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
+            <div class="star large"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
+            <div class="star large"></div>
+            <div class="star small"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
+            <div class="star large"></div>
+            <div class="star small"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
+            <div class="star medium"></div>
+            <div class="star small"></div>
         </div>
+        
+        <!-- Floating Pokeballs -->
+        <div class="pokeball-particles">
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+            <div class="pokeball"></div>
+        </div>
+        
+        <!-- Battle Energy Sparkles -->
+        <div class="sparkles">
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+        </div>
+        
+        <!-- Type Symbols -->
+        <div class="type-symbols">
+            <div class="type-symbol">🔥</div>
+            <div class="type-symbol">💧</div>
+            <div class="type-symbol">⚡</div>
+            <div class="type-symbol">🍃</div>
+            <div class="type-symbol">💜</div>
+            <div class="type-symbol">🔥</div>
+            <div class="type-symbol">💧</div>
+            <div class="type-symbol">⚡</div>
+            <div class="type-symbol">🍃</div>
+            <div class="type-symbol">💜</div>
+        </div>
+        
+        <!-- Energy Wave -->
+        <div class="energy-wave"></div>
+        
+        <!-- CRT Glow Effect -->
+        <div class="crt-glow"></div>
+        
+        <!-- Battle Border Pulse -->
+        <div class="battle-border"></div>
     </div>
+    
+    <!-- Retro Scanlines Overlay -->
+    <div class="scanlines"></div>
 
-    <!-- Floating Pills -->
+    <!-- Floating Character Pills -->
     <div class="floating-pills">
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
-        <div class="floating-pill"><img src="assets/images/pumpfun-logo.png" alt=""></div>
+        <div class="floating-pill"><img src="assets/images/characters/pepe.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/whale.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/cow.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/moodeng.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/catana.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/pepe.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/whale.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/cow.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="floating-pill"><img src="assets/images/characters/moodeng.png" alt="" onerror="this.parentElement.style.display='none'"></div>
     </div>
 
     <!-- Navigation -->
@@ -1268,6 +2172,9 @@
             <a href="#game">Play</a>
             <a href="#how">How It Works</a>
             <button class="music-btn" id="music-btn" onclick="toggleMusic()">🎵</button>
+            <button class="btn btn-wallet" id="wallet-btn" onclick="connectWallet()">
+                <span id="wallet-text">Connect Wallet</span>
+            </button>
             <a href="#" class="btn btn-primary">Buy $PUMP</a>
         </div>
     </nav>
@@ -1300,9 +2207,6 @@
             </div>
             <div class="char-avatar" onclick="selectAndPlay('moodeng')">
                 <img src="assets/images/characters/moodeng.png" alt="MOODENG">
-            </div>
-            <div class="char-avatar" onclick="selectAndPlay('alon')">
-                <img src="assets/images/characters/alon.png" alt="ALON">
             </div>
             <div class="char-avatar" onclick="selectAndPlay('catana')">
                 <img src="assets/images/characters/catana.png" alt="CATANA">
@@ -1377,11 +2281,11 @@
             </div>
         </div>
 
-        <div class="battle-menu" style="display: grid; grid-template-columns: 1fr 1.5fr; background: #12121a; border-radius: 16px; border: 1px solid #2a2a3a; overflow: hidden;">
-            <div class="battle-log" id="battle-log" style="padding: 16px; border-right: 1px solid #2a2a3a; background: #000; min-height: 120px; max-height: 150px; overflow-y: auto;">
+        <div class="battle-menu" style="display: grid; grid-template-columns: 1fr 1.5fr; background: rgba(18, 18, 26, 0.9); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(42, 42, 58, 0.8); overflow: hidden;">
+            <div class="battle-log" id="battle-log" style="padding: 16px; border-right: 1px solid rgba(42, 42, 58, 0.8); background: rgba(0, 0, 0, 0.8); min-height: 120px; max-height: 150px; overflow-y: auto;">
                 <div class="log-entry system">Choose a move to attack!</div>
             </div>
-            <div class="move-grid" id="move-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; background: #12121a;">
+            <div class="move-grid" id="move-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; background: rgba(18, 18, 26, 0.8);">
                 <!-- Moves will be inserted here -->
             </div>
         </div>
@@ -1389,22 +2293,22 @@
     </div>
 
     <!-- How It Works -->
-    <section class="how-it-works" id="how" style="background: #0a0a0f; position: relative; z-index: 200;">
+    <section class="how-it-works" id="how" style="background: transparent; position: relative; z-index: 10;">
         <div class="how-container" style="max-width: 1000px; margin: 0 auto;">
             <h2 class="section-title">How It <span class="highlight">Works</span></h2>
             
             <div class="steps" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
-                <div class="step" style="background: #1a1a2e; padding: 40px 28px; border-radius: 20px; border: 1px solid #2a2a3e; text-align: center;">
+                <div class="step" style="background: rgba(26, 26, 46, 0.85); backdrop-filter: blur(10px); padding: 40px 28px; border-radius: 20px; border: 1px solid rgba(42, 42, 62, 0.8); text-align: center;">
                     <span class="step-icon" style="font-size: 3.5rem; display: block; margin-bottom: 24px;">🎮</span>
                     <h3 class="step-title" style="color: #fff; font-size: 1.1rem; margin-bottom: 16px;">1. Choose Your Fighter</h3>
                     <p class="step-desc" style="color: #a0a0a0; font-size: 0.95rem; line-height: 1.7;">Pick from 6 iconic memecoin characters, each with unique stats and moves.</p>
                 </div>
-                <div class="step" style="background: #1a1a2e; padding: 40px 28px; border-radius: 20px; border: 1px solid #2a2a3e; text-align: center;">
+                <div class="step" style="background: rgba(26, 26, 46, 0.85); backdrop-filter: blur(10px); padding: 40px 28px; border-radius: 20px; border: 1px solid rgba(42, 42, 62, 0.8); text-align: center;">
                     <span class="step-icon" style="font-size: 3.5rem; display: block; margin-bottom: 24px;">⚔️</span>
                     <h3 class="step-title" style="color: #fff; font-size: 1.1rem; margin-bottom: 16px;">2. Battle Opponents</h3>
                     <p class="step-desc" style="color: #a0a0a0; font-size: 0.95rem; line-height: 1.7;">Fight in turn-based Pokemon-style combat. Use strategy to defeat enemies.</p>
                 </div>
-                <div class="step" style="background: #1a1a2e; padding: 40px 28px; border-radius: 20px; border: 1px solid #2a2a3e; text-align: center;">
+                <div class="step" style="background: rgba(26, 26, 46, 0.85); backdrop-filter: blur(10px); padding: 40px 28px; border-radius: 20px; border: 1px solid rgba(42, 42, 62, 0.8); text-align: center;">
                     <span class="step-icon" style="font-size: 3.5rem; display: block; margin-bottom: 24px;">💰</span>
                     <h3 class="step-title" style="color: #fff; font-size: 1.1rem; margin-bottom: 16px;">3. Earn $PUMP</h3>
                     <p class="step-desc" style="color: #a0a0a0; font-size: 0.95rem; line-height: 1.7;">Win battles to earn $PUMP tokens. The more you win, the more you earn.</p>
@@ -1414,12 +2318,12 @@
     </section>
 
     <!-- Footer -->
-    <footer style="background: #0a0a0f; position: relative; z-index: 200;">
+    <footer style="background: transparent; position: relative; z-index: 10; border-top: 1px solid rgba(42, 42, 58, 0.5);">
         <div class="footer-content" style="max-width: 600px; margin: 0 auto;">
-            <div class="social-links" style="display: flex; gap: 16px; justify-content: center; margin-bottom: 24px;">
-                <a href="#" style="color: #a0a0a0; text-decoration: none; padding: 12px 24px; border: 1px solid #2a2a3e; border-radius: 10px;">𝕏 Twitter</a>
-                <a href="#" style="color: #a0a0a0; text-decoration: none; padding: 12px 24px; border: 1px solid #2a2a3e; border-radius: 10px;">📄 Docs</a>
-                <a href="#" style="color: #a0a0a0; text-decoration: none; padding: 12px 24px; border: 1px solid #2a2a3e; border-radius: 10px;">💬 Telegram</a>
+            <div class="social-links" style="display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap;">
+                <a href="#" style="color: #a0a0a0; text-decoration: none; padding: 12px 24px; border: 1px solid rgba(42, 42, 62, 0.8); border-radius: 10px; background: rgba(26, 26, 46, 0.6); backdrop-filter: blur(5px);">𝕏 Twitter</a>
+                <a href="#" style="color: #a0a0a0; text-decoration: none; padding: 12px 24px; border: 1px solid rgba(42, 42, 62, 0.8); border-radius: 10px; background: rgba(26, 26, 46, 0.6); backdrop-filter: blur(5px);">📄 Docs</a>
+                <a href="#" style="color: #a0a0a0; text-decoration: none; padding: 12px 24px; border: 1px solid rgba(42, 42, 62, 0.8); border-radius: 10px; background: rgba(26, 26, 46, 0.6); backdrop-filter: blur(5px);">💬 Telegram</a>
             </div>
             <p class="copyright" style="color: #666;">© 2025 PumpFighters. Built on Solana.</p>
         </div>
@@ -1438,6 +2342,239 @@
             </div>
         </div>
     </div>
+
+    <!-- Wallet Connection Modal -->
+    <div class="wallet-modal" id="wallet-modal">
+        <div class="wallet-modal-content">
+            <h3 class="wallet-modal-title">Connect Wallet</h3>
+            <div class="wallet-list" id="wallet-list">
+                <!-- Wallet options will be inserted here -->
+            </div>
+            <button class="wallet-modal-close" onclick="closeWalletModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Wallet Connection System
+        const WalletSystem = {
+            connected: false,
+            address: null,
+            balance: 0,
+            provider: null,
+            
+            wallets: [
+                {
+                    name: 'Phantom',
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSJub25lIj48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjI2IiBmaWxsPSIjQUIwNUY3Ii8+PHBhdGggZD0iTTExMC40NCA2NC43MkgxMDguNUM5NS4wMiA2NC43MiA4NC4xMiA3NS42MiA4NC4xMiA4OS4xYzAgMTAuNjMgNi42NCAxMy4zNiAxMC45IDEzLjM2IDQuNTMgMCA3LjEtMy41NiA3LjEtOC4wOGE4LjA4IDguMDggMCAwIDEgOC4zMi04Ljk2di0yMC43eiIgZmlsbD0idXJsKCNhKSIvPjxwYXRoIGQ9Ik0xMTAuNDQgNjQuNzJIMTA4LjVDOTUuMDIgNjQuNzIgODQuMTIgNzUuNjIgODQuMTIgODkuMWMwIDEwLjYzIDYuNjQgMTMuMzYgMTAuOSAxMy4zNiA0LjUzIDAgNy4xLTMuNTYgNy4xLTguMDhhOC4wOCA4LjA4IDAgMCAxIDguMzItOC45NnYtMjAuN3oiIGZpbGw9InVybCgjYikiIGZpbGwtb3BhY2l0eT0iLjIiLz48cGF0aCBkPSJNOTMuNTIgOTMuNmMtMy4yIDAtNS44LTEuNjQtNS44LTUuODhzNS44LTExLjQgMTIuNi0xMS40IDcuOTIgNS42NCA3LjkyIDExLjI4YzAgNi44LTQuMiAxMS40LTguNzIgMTEuNGE2IDYgMCAwIDEtNi01LjR6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTM5LjQ4IDU4LjgyYy0uOTYgMy42IDEuMTIgNy4xNiA0LjY0IDcuOTJsNzEuMDQgMTUuMzZjMy42Ljc2IDcuMi0xLjU2IDcuOTYtNS4xNmwuNzYtMy41NmMuOC0zLjY0LTEuNDgtNy4yNC01LjA4LTcuOTZsLTY4LjA0LTEzYy0zLjYtLjY4LTcuMiAxLjY0LTcuOTYgNS4yNGwtMy4zMiAxLjE2eiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0xOS41MiA5My42aC0xLjk2Yy0xMy40OCAwLTI0LjM4IDEwLjktMjQuMzggMjQuMzggMCAxMC42MyA2LjY0IDEzLjM2IDEwLjkgMTMuMzYgNC41MyAwIDcuMS0zLjU2IDcuMS04LjA4YTguMDggOC4wOCAwIDAgMSA4LjM0LTguOTZ2LTIwLjd6IiBmaWxsPSJ1cmwoI2MpIi8+PHBhdGggZD0iTTE5LjUyIDkzLjZoLTEuOTZjLTEzLjQ4IDAtMjQuMzggMTAuOS0yNC4zOCAyNC4zOCAwIDEwLjYzIDYuNjQgMTMuMzYgMTAuOSAxMy4zNiA0LjUzIDAgNy4xLTMuNTYgNy4xLTguMDhhOC4wOCA4LjA4IDAgMCAxIDguMzQtOC45NnYtMjAuN3oiIGZpbGw9InVybCgjZCkiIGZpbGwtb3BhY2l0eT0iLjIiLz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIxMDUuMDYiIHkxPSI2NC43MiIgeDI9IjEwNS4wNiIgeTI9IjEwMi40NiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJiIiB4MT0iOTEuMTgiIHkxPSI2NC43MiIgeDI9IjkxLjE4IiB5Mj0iMTAyLjQ2IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImMiIHgxPSIxNC4xNCIgeTE9IjkzLjYiIHgyPSIxNC4xNCIgeTI9IjEzMS4zNCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJkIiB4MT0iLjI2IiB5MT0iOTMuNiIgeDI9Ii4yNiIgeTI9IjEzMS4zNCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjwvc3ZnPg==',
+                    getProvider: () => window.phantom?.solana,
+                    downloadUrl: 'https://phantom.app/'
+                },
+                {
+                    name: 'Solflare',
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iMjYiIGZpbGw9IiNGQzZEMDEiLz4KPHBhdGggZD0iTTk0IDM0SDM0VjU2SDk0VjM0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTk0IDcySDM0Vjk0SDk0VjcyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
+                    getProvider: () => window.solflare,
+                    downloadUrl: 'https://solflare.com/'
+                },
+                {
+                    name: 'Backpack',
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iMjYiIGZpbGw9IiNFMzM1MzUiLz4KPHBhdGggZD0iTTY0IDk0QzgwLjU2ODUgOTQgOTQgODAuNTY4NSA5NCA2NEM5NCA0Ny40MzE1IDgwLjU2ODUgMzQgNjQgMzRDNDcuNDMxNSAzNCAzNCA0Ny40MzE1IDM0IDY0QzM0IDgwLjU2ODUgNDcuNDMxNSA5NCA2NCA5NFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==',
+                    getProvider: () => window.backpack,
+                    downloadUrl: 'https://backpack.app/'
+                }
+            ],
+            
+            init() {
+                // Check if already connected (stored in localStorage)
+                const savedAddress = localStorage.getItem('walletAddress');
+                if (savedAddress) {
+                    this.checkExistingConnection();
+                }
+            },
+            
+            async checkExistingConnection() {
+                for (const wallet of this.wallets) {
+                    const provider = wallet.getProvider();
+                    if (provider?.isConnected) {
+                        try {
+                            const resp = await provider.connect({ onlyIfTrusted: true });
+                            this.handleConnection(resp.publicKey.toString(), provider, wallet.name);
+                            return;
+                        } catch (e) {
+                            // Silent fail for auto-reconnect
+                        }
+                    }
+                }
+            },
+            
+            openModal() {
+                const modal = document.getElementById('wallet-modal');
+                const list = document.getElementById('wallet-list');
+                
+                list.innerHTML = this.wallets.map(wallet => {
+                    const provider = wallet.getProvider();
+                    const isInstalled = !!provider;
+                    
+                    return `
+                        <div class="wallet-option" onclick="WalletSystem.connectTo('${wallet.name}')">
+                            <img src="${wallet.icon}" alt="${wallet.name}">
+                            <div class="wallet-option-info">
+                                <div class="wallet-option-name">${wallet.name}</div>
+                                <div class="wallet-option-desc">${isInstalled ? 'Click to connect' : 'Not installed'}</div>
+                            </div>
+                            <span class="wallet-option-status ${isInstalled ? '' : 'not-installed'}">
+                                ${isInstalled ? 'Detected' : 'Install'}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+                
+                modal.classList.add('show');
+            },
+            
+            closeModal() {
+                document.getElementById('wallet-modal').classList.remove('show');
+            },
+            
+            async connectTo(walletName) {
+                const wallet = this.wallets.find(w => w.name === walletName);
+                if (!wallet) return;
+                
+                const provider = wallet.getProvider();
+                
+                if (!provider) {
+                    // Wallet not installed, redirect to download
+                    window.open(wallet.downloadUrl, '_blank');
+                    return;
+                }
+                
+                try {
+                    const resp = await provider.connect();
+                    this.handleConnection(resp.publicKey.toString(), provider, walletName);
+                    this.closeModal();
+                } catch (err) {
+                    console.error('Connection failed:', err);
+                    alert('Failed to connect wallet. Please try again.');
+                }
+            },
+            
+            handleConnection(address, provider, walletName) {
+                this.connected = true;
+                this.address = address;
+                this.provider = provider;
+                
+                // Save to localStorage
+                localStorage.setItem('walletAddress', address);
+                localStorage.setItem('walletName', walletName);
+                
+                // Update UI
+                this.updateUI();
+                
+                // Get balance
+                this.getBalance();
+                
+                // Listen for disconnect
+                provider.on('disconnect', () => {
+                    this.disconnect();
+                });
+                
+                // Listen for account change
+                provider.on('accountChanged', (publicKey) => {
+                    if (publicKey) {
+                        this.address = publicKey.toString();
+                        this.updateUI();
+                        this.getBalance();
+                    } else {
+                        this.disconnect();
+                    }
+                });
+            },
+            
+            async getBalance() {
+                if (!this.address) return;
+                
+                try {
+                    // Using public Solana RPC
+                    const response = await fetch('https://api.mainnet-beta.solana.com', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: 1,
+                            method: 'getBalance',
+                            params: [this.address]
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.result?.value !== undefined) {
+                        this.balance = (data.result.value / 1e9).toFixed(4);
+                        this.updateUI();
+                    }
+                } catch (e) {
+                    console.log('Failed to get balance:', e);
+                }
+            },
+            
+            updateUI() {
+                const btn = document.getElementById('wallet-btn');
+                const text = document.getElementById('wallet-text');
+                
+                if (this.connected && this.address) {
+                    const shortAddress = this.address.slice(0, 4) + '...' + this.address.slice(-4);
+                    text.innerHTML = `
+                        <span class="wallet-address">${shortAddress}</span>
+                        ${this.balance ? `<span class="wallet-balance">${this.balance} SOL</span>` : ''}
+                    `;
+                    btn.classList.add('connected');
+                    btn.onclick = () => this.showDisconnectOption();
+                } else {
+                    text.textContent = 'Connect Wallet';
+                    btn.classList.remove('connected');
+                    btn.onclick = () => connectWallet();
+                }
+            },
+            
+            showDisconnectOption() {
+                if (confirm('Disconnect wallet?')) {
+                    this.disconnect();
+                }
+            },
+            
+            disconnect() {
+                if (this.provider?.disconnect) {
+                    this.provider.disconnect();
+                }
+                
+                this.connected = false;
+                this.address = null;
+                this.balance = 0;
+                this.provider = null;
+                
+                localStorage.removeItem('walletAddress');
+                localStorage.removeItem('walletName');
+                
+                this.updateUI();
+            }
+        };
+
+        // Global wallet functions
+        function connectWallet() {
+            if (WalletSystem.connected) {
+                WalletSystem.showDisconnectOption();
+            } else {
+                WalletSystem.openModal();
+            }
+        }
+        
+        function closeWalletModal() {
+            WalletSystem.closeModal();
+        }
+
+        // Initialize wallet system on load
+        document.addEventListener('DOMContentLoaded', () => {
+            WalletSystem.init();
+        });
+    </script>
 
     <script>
         // Audio System
@@ -1588,12 +2725,62 @@
         };
 
         const CHARACTERS = {
-            pepe: { name: 'PEPE', image: 'pepe.png', hp: 100, attack: 35, defense: 30, speed: 40, type: 'water' },
-            whale: { name: 'WHALE', image: 'whale.png', hp: 130, attack: 28, defense: 50, speed: 20, type: 'water' },
-            cow: { name: 'COW', image: 'cow.png', hp: 115, attack: 32, defense: 40, speed: 30, type: 'normal' },
-            moodeng: { name: 'MOODENG', image: 'moodeng.png', hp: 95, attack: 42, defense: 28, speed: 45, type: 'psychic' },
-            alon: { name: 'ALON', image: 'alon.png', hp: 88, attack: 40, defense: 25, speed: 52, type: 'electric' },
-            catana: { name: 'CATANA', image: 'catana.png', hp: 82, attack: 48, defense: 22, speed: 58, type: 'dark' }
+            pepe: { 
+                name: 'PEPE', 
+                image: 'pepe.png', 
+                hp: 100, 
+                attack: 35, 
+                defense: 30, 
+                speed: 40, 
+                type: 'water',
+                description: 'The OG memecoin legend. Balanced stats with healing powers.',
+                role: 'Balanced'
+            },
+            whale: { 
+                name: 'WHALE', 
+                image: 'whale.png', 
+                hp: 130, 
+                attack: 28, 
+                defense: 50, 
+                speed: 20, 
+                type: 'water',
+                description: 'Massive HP pool and crushing defense. Slow but unstoppable.',
+                role: 'Tank'
+            },
+            cow: { 
+                name: 'COW', 
+                image: 'cow.png', 
+                hp: 115, 
+                attack: 32, 
+                defense: 40, 
+                speed: 30, 
+                type: 'normal',
+                description: 'Sacred bovine with earthquake powers. Well-rounded bruiser.',
+                role: 'Bruiser'
+            },
+            moodeng: { 
+                name: 'MOODENG', 
+                image: 'moodeng.png', 
+                hp: 95, 
+                attack: 42, 
+                defense: 28, 
+                speed: 45, 
+                type: 'psychic',
+                description: 'Viral hippo with psychic chomps. High attack potential.',
+                role: 'Attacker'
+            },
+
+            catana: { 
+                name: 'CATANA', 
+                image: 'catana.png', 
+                hp: 82, 
+                attack: 48, 
+                defense: 22, 
+                speed: 58, 
+                type: 'dark',
+                description: 'Ninja cat assassin. Glass cannon with critical hits.',
+                role: 'Assassin'
+            }
         };
 
         const MOVES = {
@@ -1620,12 +2807,6 @@
                 { name: 'CRUNCH', type: 'dark', power: 80, accuracy: 100, pp: 15, effect: 'def-down', effectChance: 20 },
                 { name: 'HIPPO CHOMP', type: 'dark', power: 60, accuracy: 100, pp: 25 },
                 { name: 'CALM MIND', type: 'psychic', power: 0, accuracy: 100, pp: 20, boost: { attack: 1 } }
-            ],
-            alon: [
-                { name: 'THUNDERBOLT', type: 'electric', power: 90, accuracy: 100, pp: 15, effect: 'paralyze', effectChance: 10 },
-                { name: 'THUNDER', type: 'electric', power: 110, accuracy: 70, pp: 10, effect: 'paralyze', effectChance: 30 },
-                { name: 'MOON BEAM', type: 'psychic', power: 75, accuracy: 100, pp: 15 },
-                { name: 'AGILITY', type: 'normal', power: 0, accuracy: 100, pp: 30, boost: { speed: 2 } }
             ],
             catana: [
                 { name: 'NIGHT SLASH', type: 'dark', power: 70, accuracy: 100, pp: 15, highCrit: true },
@@ -1657,8 +2838,33 @@
             turnCount: 0
         };
 
+        // Check if battle arena background image loads
+        function checkBattleBackground() {
+            const arena = document.getElementById('battle-arena');
+            const bgImage = new Image();
+            bgImage.src = 'assets/images/battle-bg.png';
+            
+            bgImage.onload = function() {
+                // Background loaded successfully
+                arena.classList.remove('no-bg');
+            };
+            
+            bgImage.onerror = function() {
+                // Background failed to load, show fallback
+                arena.classList.add('no-bg');
+            };
+            
+            // Also check after a timeout in case the image check doesn't trigger
+            setTimeout(() => {
+                if (!bgImage.complete || bgImage.naturalWidth === 0) {
+                    arena.classList.add('no-bg');
+                }
+            }, 1000);
+        }
+
         // Initialize
         function init() {
+            checkBattleBackground();
             renderCharacterGrid();
             initBattle();
         }
@@ -1671,9 +2877,45 @@
                 const card = document.createElement('div');
                 card.className = `char-card ${key === gameState.selectedChar ? 'selected' : ''}`;
                 card.onclick = () => selectChar(key);
+                
+                // Determine stat levels for coloring
+                const getStatClass = (value, stat) => {
+                    if (stat === 'hp') {
+                        return value >= 110 ? 'high' : value >= 95 ? 'medium' : 'low';
+                    } else if (stat === 'attack') {
+                        return value >= 42 ? 'high' : value >= 32 ? 'medium' : 'low';
+                    } else if (stat === 'defense') {
+                        return value >= 40 ? 'high' : value >= 28 ? 'medium' : 'low';
+                    } else if (stat === 'speed') {
+                        return value >= 45 ? 'high' : value >= 30 ? 'medium' : 'low';
+                    }
+                    return '';
+                };
+                
                 card.innerHTML = `
                     <img src="assets/images/characters/${char.image}" alt="${char.name}">
                     <div class="name">${char.name}</div>
+                    <span class="type-badge ${char.type}">${char.type}</span>
+                    <div class="role">⚔️ ${char.role}</div>
+                    <div class="description">${char.description}</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-label">HP</span>
+                            <span class="stat-value ${getStatClass(char.hp, 'hp')}">${char.hp}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">ATK</span>
+                            <span class="stat-value ${getStatClass(char.attack, 'attack')}">${char.attack}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">DEF</span>
+                            <span class="stat-value ${getStatClass(char.defense, 'defense')}">${char.defense}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">SPD</span>
+                            <span class="stat-value ${getStatClass(char.speed, 'speed')}">${char.speed}</span>
+                        </div>
+                    </div>
                 `;
                 grid.appendChild(card);
             });
@@ -1842,13 +3084,14 @@
                 btn.disabled = !gameState.isPlayerTurn || move.currentPP <= 0;
                 btn.onclick = () => useMove(i);
                 btn.style.cssText = `
-                    background: #0a0a0f;
-                    border: 2px solid #2a2a3a;
+                    background: rgba(10, 10, 15, 0.8);
+                    border: 2px solid rgba(42, 42, 58, 0.8);
                     border-radius: 10px;
                     padding: 12px;
                     cursor: ${btn.disabled ? 'not-allowed' : 'pointer'};
                     text-align: left;
                     opacity: ${btn.disabled ? '0.5' : '1'};
+                    backdrop-filter: blur(5px);
                 `;
                 
                 const typeColor = typeColors[move.type] || '#a3a3a3';
