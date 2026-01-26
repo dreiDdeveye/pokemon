@@ -3389,7 +3389,7 @@ footer {
             </button>
             <a href="#" class="btn btn-primary">Buy $PUMP</a>
             <div id="token-balance-display" class="token-balance-display" style="display: none;">
-    💎 $PUMPMON: <span id="pumpmon-balance">0</span>
+    💎 $PENGUIN: <span id="pumpmon-balance">0</span>
 </div>
         </div>
     </nav>
@@ -3544,7 +3544,7 @@ footer {
         <div class="safari-card">
             <div class="safari-icon">🎟️</div>
             <div class="safari-info">
-                <div class="safari-tokens">1000 <span class="highlight">$PUMPMON</span></div>
+                <div class="safari-tokens">1000 <span class="highlight">$P</span></div>
                 <div class="safari-equals">=</div>
                 <div class="safari-reward">1 Entry Ticket</div>
             </div>
@@ -3895,7 +3895,7 @@ const SafariGame = {
     // Open Safari Modal
     open() {
         if (this.state.tickets <= 0) {
-            alert('You need a Safari Ticket! Get 1000 $PUMPMON to enter.');
+            alert('You need a Safari Ticket! Get 1000 $PENGUIN to enter.');
             return;
         }
 
@@ -4272,7 +4272,7 @@ const SafariGame = {
     // Play Again
     playAgain() {
         if (this.state.tickets <= 0) {
-            alert('You need more tickets! Get 1000 $PUMPMON for each ticket.');
+            alert('You need more tickets! Get 1000 $PENGUIN for each ticket.');
             return;
         }
         this.showScreen('biome-select-screen');
@@ -4382,7 +4382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tokenBalance: 0,
     provider: null,
     
-    // Replace with your actual $PUMPMON token mint address
+    // Replace with your actual $PENGUIN token mint address
     tokenMint: '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump',
     
     wallets: [
@@ -4589,7 +4589,7 @@ const endpoints = [
                     this.tokenBalance = 0;
                 }
                 
-                console.log('💎 $PUMPMON Balance:', this.tokenBalance);
+                console.log('💎 $PENGUIN Balance:', this.tokenBalance);
                 this.updateUI();
                 
                 // Update Safari Zone tickets (1000 tokens = 1 ticket)
