@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PumpMon</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add these CDN scripts to your HTML head -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
     <style>
        /* ================================
    CSS VARIABLES & RESET
@@ -3241,6 +3244,23 @@ footer {
         width: 80px;
         height: 80px;
     }
+    .token-balance-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 217, 61, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: var(--primary);
+}
+
+#pumpmon-balance {
+    color: #fff;
+    font-weight: bold;
+}
 }
     </style>
 </head>
@@ -3354,6 +3374,8 @@ footer {
         </button>
         
         <div class="nav-links" id="nav-links">
+            <!-- Add this where you want to show the token balance -->
+
             <a href="#game">Play</a>
             <a href="#how">How It Works</a>
             <button class="music-btn" id="music-btn" onclick="toggleMusic()">🎵</button>
@@ -3366,6 +3388,9 @@ footer {
                 <span id="wallet-text">Connect Wallet</span>
             </button>
             <a href="#" class="btn btn-primary">Buy $PUMP</a>
+            <div id="token-balance-display" class="token-balance-display" style="display: none;">
+    💎 $PUMPMON: <span id="pumpmon-balance">0</span>
+</div>
         </div>
     </nav>
 
@@ -4351,264 +4376,410 @@ document.addEventListener('DOMContentLoaded', () => {
            WALLET SYSTEM
            ================================ */
         const WalletSystem = {
-            connected: false,
-            address: null,
-            balance: 0,
-            provider: null,
-            
-            wallets: [
-                {
-                    name: 'Phantom',
-                    icon: 'assets/images/phantom-logo.png',
-                    getProvider: () => {
-                        if ('phantom' in window) {
-                            const provider = window.phantom?.solana;
-                            if (provider?.isPhantom) {
-                                return provider;
-                            }
-                        }
-                        return null;
-                    },
-                    downloadUrl: 'https://phantom.app/'
-                },
-            ],
-            
-            init() {
-                // Check for existing connection after page loads
-                const savedAddress = localStorage.getItem('walletAddress');
-                if (savedAddress) {
-                    // Wait for Phantom to inject
-                    setTimeout(() => this.checkExistingConnection(), 500);
-                }
-            },
-            
-            async checkExistingConnection() {
-                try {
-                    const provider = this.wallets[0].getProvider();
-                    if (provider) {
-                        // Try to reconnect silently (only works if user previously approved)
-                        const resp = await provider.connect({ onlyIfTrusted: true });
-                        if (resp.publicKey) {
-                            this.handleConnection(resp.publicKey.toString(), provider, 'Phantom');
-                        }
-                    }
-                } catch (err) {
-                    // User hasn't trusted or rejected - clear storage
-                    console.log('Auto-reconnect failed:', err.message);
-                    localStorage.removeItem('walletAddress');
-                    localStorage.removeItem('walletName');
-                }
-            },
-            
-            openModal() {
-                const modal = document.getElementById('wallet-modal');
-                const list = document.getElementById('wallet-list');
-                
-                list.innerHTML = this.wallets.map(wallet => {
-                    const provider = wallet.getProvider();
-                    const isInstalled = !!provider;
-                    
-                    return `
-                        <div class="wallet-option" onclick="WalletSystem.connectTo('${wallet.name}')">
-                            <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23AB9FF2%22 width=%2240%22 height=%2240%22 rx=%228%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2218%22>👻</text></svg>'">
-                            <div class="wallet-option-info">
-                                <div class="wallet-option-name">${wallet.name}</div>
-                                <div class="wallet-option-desc">${isInstalled ? 'Click to connect' : 'Click to install'}</div>
-                            </div>
-                            <span class="wallet-option-status ${isInstalled ? '' : 'not-installed'}">
-                                ${isInstalled ? 'Detected' : 'Install'}
-                            </span>
-                        </div>
-                    `;
-                }).join('');
-                
-                modal.classList.add('show');
-            },
-            
-            closeModal() {
-                document.getElementById('wallet-modal').classList.remove('show');
-            },
-            
-            async connectTo(walletName) {
-                const wallet = this.wallets.find(w => w.name === walletName);
-                if (!wallet) return;
-                
-                const provider = wallet.getProvider();
-                
-                if (!provider) {
-                    // Wallet not installed - open download page
-                    window.open(wallet.downloadUrl, '_blank');
-                    return;
-                }
-                
-                try {
-                    // Request connection - this prompts the user in Phantom
-                    const resp = await provider.connect();
-                    
-                    if (resp.publicKey) {
-                        this.handleConnection(resp.publicKey.toString(), provider, walletName);
-                        this.closeModal();
-                    }
-                } catch (err) {
-                    console.error('Connection error:', err);
-                    
-                    if (err.code === 4001) {
-                        alert('Connection cancelled. Please approve the connection request in Phantom.');
-                    } else if (err.code === -32603) {
-                        alert('Connection error. Please make sure Phantom is unlocked.');
-                    } else {
-                        alert('Failed to connect: ' + (err.message || 'Unknown error'));
+    connected: false,
+    address: null,
+    balance: 0,
+    tokenBalance: 0,
+    provider: null,
+    
+    // Replace with your actual $PUMPMON token mint address
+    tokenMint: 'YourPumpMonTokenMintAddressHere111111111111',
+    
+    wallets: [
+        {
+            name: 'Phantom',
+            icon: 'assets/images/phantom-logo.png',
+            getProvider: () => {
+                if ('phantom' in window) {
+                    const provider = window.phantom?.solana;
+                    if (provider?.isPhantom) {
+                        return provider;
                     }
                 }
+                return null;
             },
+            downloadUrl: 'https://phantom.app/'
+        },
+    ],
+    
+    init() {
+        const savedAddress = localStorage.getItem('walletAddress');
+        if (savedAddress) {
+            setTimeout(() => this.checkExistingConnection(), 500);
+        }
+    },
+    
+    async checkExistingConnection() {
+        try {
+            const provider = this.wallets[0].getProvider();
+            if (provider) {
+                const resp = await provider.connect({ onlyIfTrusted: true });
+                if (resp.publicKey) {
+                    this.handleConnection(resp.publicKey.toString(), provider, 'Phantom');
+                }
+            }
+        } catch (err) {
+            console.log('Auto-reconnect failed:', err.message);
+            localStorage.removeItem('walletAddress');
+            localStorage.removeItem('walletName');
+        }
+    },
+    
+    openModal() {
+        const modal = document.getElementById('wallet-modal');
+        const list = document.getElementById('wallet-list');
+        
+        list.innerHTML = this.wallets.map(wallet => {
+            const provider = wallet.getProvider();
+            const isInstalled = !!provider;
             
-            handleConnection(address, provider, walletName) {
-                this.connected = true;
-                this.address = address;
-                this.provider = provider;
-                
-                // Persist connection
-                localStorage.setItem('walletAddress', address);
-                localStorage.setItem('walletName', walletName);
-                
-                console.log('✅ Wallet connected:', address);
-                
-                // Update UI immediately
+            return `
+                <div class="wallet-option" onclick="WalletSystem.connectTo('${wallet.name}')">
+                    <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23AB9FF2%22 width=%2240%22 height=%2240%22 rx=%228%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2218%22>👻</text></svg>'">
+                    <div class="wallet-option-info">
+                        <div class="wallet-option-name">${wallet.name}</div>
+                        <div class="wallet-option-desc">${isInstalled ? 'Click to connect' : 'Click to install'}</div>
+                    </div>
+                    <span class="wallet-option-status ${isInstalled ? '' : 'not-installed'}">
+                        ${isInstalled ? 'Detected' : 'Install'}
+                    </span>
+                </div>
+            `;
+        }).join('');
+        
+        modal.classList.add('show');
+    },
+    
+    closeModal() {
+        document.getElementById('wallet-modal').classList.remove('show');
+    },
+    
+    async connectTo(walletName) {
+        const wallet = this.wallets.find(w => w.name === walletName);
+        if (!wallet) return;
+        
+        const provider = wallet.getProvider();
+        
+        if (!provider) {
+            window.open(wallet.downloadUrl, '_blank');
+            return;
+        }
+        
+        try {
+            const resp = await provider.connect();
+            
+            if (resp.publicKey) {
+                this.handleConnection(resp.publicKey.toString(), provider, walletName);
+                this.closeModal();
+            }
+        } catch (err) {
+            console.error('Connection error:', err);
+            
+            if (err.code === 4001) {
+                alert('Connection cancelled. Please approve the connection request in Phantom.');
+            } else if (err.code === -32603) {
+                alert('Connection error. Please make sure Phantom is unlocked.');
+            } else {
+                alert('Failed to connect: ' + (err.message || 'Unknown error'));
+            }
+        }
+    },
+    
+    handleConnection(address, provider, walletName) {
+        this.connected = true;
+        this.address = address;
+        this.provider = provider;
+        
+        localStorage.setItem('walletAddress', address);
+        localStorage.setItem('walletName', walletName);
+        
+        console.log('✅ Wallet connected:', address);
+        
+        this.updateUI();
+        this.getBalance();
+        this.getTokenBalance();
+        
+        provider.on('disconnect', () => {
+            console.log('Wallet disconnected event');
+            this.handleDisconnect();
+        });
+        
+        provider.on('accountChanged', (publicKey) => {
+            if (publicKey) {
+                console.log('Account changed to:', publicKey.toString());
+                this.address = publicKey.toString();
+                localStorage.setItem('walletAddress', this.address);
                 this.updateUI();
-                
-                // Fetch balance
                 this.getBalance();
-                
-                // Listen for disconnect
-                provider.on('disconnect', () => {
-                    console.log('Wallet disconnected event');
-                    this.handleDisconnect();
-                });
-                
-                // Listen for account changes
-                provider.on('accountChanged', (publicKey) => {
-                    if (publicKey) {
-                        console.log('Account changed to:', publicKey.toString());
-                        this.address = publicKey.toString();
-                        localStorage.setItem('walletAddress', this.address);
-                        this.updateUI();
-                        this.getBalance();
-                    } else {
-                        // Switched to account not connected to this site
-                        this.handleDisconnect();
-                    }
-                });
-            },
-            
-            async getBalance() {
-                if (!this.address) return;
-                
-                // Try multiple RPC endpoints for reliability
-                const endpoints = [
-                    'https://api.mainnet-beta.solana.com',
-                    'https://solana-api.projectserum.com'
-                ];
-                
-                for (const endpoint of endpoints) {
-                    try {
-                        const response = await fetch(endpoint, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                jsonrpc: '2.0',
-                                id: 1,
-                                method: 'getBalance',
-                                params: [this.address]
-                            })
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.result?.value !== undefined) {
-                            // Convert lamports to SOL
-                            this.balance = (data.result.value / 1e9).toFixed(4);
-                            this.updateUI();
-                            console.log('💰 Balance:', this.balance, 'SOL');
-                            return;
-                        }
-                    } catch (e) {
-                        console.log('RPC failed:', endpoint, e.message);
-                        continue;
-                    }
-                }
-                
-                console.log('Could not fetch balance from any endpoint');
-            },
-            
-            updateUI() {
-                const btn = document.getElementById('wallet-btn');
-                const text = document.getElementById('wallet-text');
-                
-                if (this.connected && this.address) {
-                    const shortAddress = this.address.slice(0, 4) + '...' + this.address.slice(-4);
-                    text.innerHTML = `
-                        <span class="wallet-address">${shortAddress}</span>
-                        ${this.balance ? `<span class="wallet-balance">${this.balance} SOL</span>` : ''}
-                    `;
-                    btn.classList.add('connected');
-                } else {
-                    text.textContent = 'Connect Wallet';
-                    btn.classList.remove('connected');
-                }
-            },
-            
-            async showDisconnectOption() {
-                if (confirm('Disconnect wallet?')) {
-                    await this.disconnect();
-                }
-            },
-            
-            handleDisconnect() {
-                this.connected = false;
-                this.address = null;
-                this.balance = 0;
-                this.provider = null;
-                
-                localStorage.removeItem('walletAddress');
-                localStorage.removeItem('walletName');
-                
-                this.updateUI();
-                console.log('Wallet disconnected');
-            },
-            
-            async disconnect() {
-                try {
-                    if (this.provider?.disconnect) {
-                        await this.provider.disconnect();
-                    }
-                } catch (e) {
-                    console.log('Disconnect error:', e);
-                }
-                
+                this.getTokenBalance();
+            } else {
                 this.handleDisconnect();
             }
-        };
-
-        function connectWallet() {
-            if (WalletSystem.connected) {
-                WalletSystem.showDisconnectOption();
-            } else {
-                WalletSystem.openModal();
+        });
+    },
+    
+    async getBalance() {
+        if (!this.address) return;
+        
+        const endpoints = [
+            'https://api.mainnet-beta.solana.com',
+            'https://solana-api.projectserum.com'
+        ];
+        
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'getBalance',
+                        params: [this.address]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.result?.value !== undefined) {
+                    this.balance = (data.result.value / 1e9).toFixed(4);
+                    this.updateUI();
+                    console.log('💰 SOL Balance:', this.balance, 'SOL');
+                    return;
+                }
+            } catch (e) {
+                console.log('RPC failed:', endpoint, e.message);
+                continue;
             }
         }
         
-        function copyCA() {
-            const ca = document.getElementById('ca-address').textContent;
-            navigator.clipboard.writeText(ca);
+        console.log('Could not fetch SOL balance from any endpoint');
+    },
+    
+    async getTokenBalance() {
+        if (!this.address || !this.tokenMint) return;
+        
+        const endpoints = [
+            'https://api.mainnet-beta.solana.com',
+            'https://solana-api.projectserum.com'
+        ];
+        
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'getTokenAccountsByOwner',
+                        params: [
+                            this.address,
+                            { mint: this.tokenMint },
+                            { encoding: 'jsonParsed' }
+                        ]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.result?.value?.length > 0) {
+                    this.tokenBalance = data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+                } else {
+                    this.tokenBalance = 0;
+                }
+                
+                console.log('💎 $PUMPMON Balance:', this.tokenBalance);
+                this.updateUI();
+                
+                // Update Safari Zone tickets (1000 tokens = 1 ticket)
+                if (typeof SafariGame !== 'undefined') {
+                    SafariGame.state.tickets = Math.floor(this.tokenBalance / 1000);
+                    SafariGame.state.pumpmonBalance = this.tokenBalance;
+                    SafariGame.updateTicketDisplay();
+                }
+                
+                return this.tokenBalance;
+            } catch (e) {
+                console.log('Token RPC failed:', endpoint, e.message);
+                continue;
+            }
+        }
+        
+        console.log('Could not fetch token balance from any endpoint');
+        return 0;
+    },
+    
+    // Fetch balance for any SPL token by mint address
+    async getAnyTokenBalance(mintAddress) {
+        if (!this.address || !mintAddress) return 0;
+        
+        try {
+            const response = await fetch('https://api.mainnet-beta.solana.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 1,
+                    method: 'getTokenAccountsByOwner',
+                    params: [
+                        this.address,
+                        { mint: mintAddress },
+                        { encoding: 'jsonParsed' }
+                    ]
+                })
+            });
             
-            const btn = document.querySelector('.ca-copy');
-            btn.textContent = '✅';
-            setTimeout(() => btn.textContent = '📋', 1500);
+            const data = await response.json();
+            
+            if (data.result?.value?.length > 0) {
+                return data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+            }
+            return 0;
+        } catch (error) {
+            console.error('Error fetching token balance:', error);
+            return 0;
         }
+    },
+    
+    // Fetch all SPL tokens owned by the wallet
+    async getAllTokenBalances() {
+        if (!this.address) return [];
+        
+        try {
+            const response = await fetch('https://api.mainnet-beta.solana.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 1,
+                    method: 'getTokenAccountsByOwner',
+                    params: [
+                        this.address,
+                        { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+                        { encoding: 'jsonParsed' }
+                    ]
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.result?.value?.length > 0) {
+                return data.result.value.map(account => ({
+                    mint: account.account.data.parsed.info.mint,
+                    balance: account.account.data.parsed.info.tokenAmount.uiAmount || 0,
+                    decimals: account.account.data.parsed.info.tokenAmount.decimals,
+                    raw: account.account.data.parsed.info.tokenAmount.amount
+                })).filter(token => token.balance > 0);
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching all tokens:', error);
+            return [];
+        }
+    },
+    
+    updateUI() {
+        const btn = document.getElementById('wallet-btn');
+        const text = document.getElementById('wallet-text');
+        
+        if (this.connected && this.address) {
+            const shortAddress = this.address.slice(0, 4) + '...' + this.address.slice(-4);
+            text.innerHTML = `
+                <span class="wallet-address">${shortAddress}</span>
+                ${this.balance ? `<span class="wallet-balance">${this.balance} SOL</span>` : ''}
+            `;
+            btn.classList.add('connected');
+            
+            // Update token balance display elements if they exist
+            const tokenBalanceEl = document.getElementById('pumpmon-balance');
+            if (tokenBalanceEl) {
+                tokenBalanceEl.textContent = this.tokenBalance.toLocaleString();
+            }
+            
+            const tokenDisplayEl = document.getElementById('token-balance-display');
+            if (tokenDisplayEl) {
+                tokenDisplayEl.style.display = 'block';
+            }
+        } else {
+            text.textContent = 'Connect Wallet';
+            btn.classList.remove('connected');
+            
+            const tokenDisplayEl = document.getElementById('token-balance-display');
+            if (tokenDisplayEl) {
+                tokenDisplayEl.style.display = 'none';
+            }
+        }
+    },
+    
+    async showDisconnectOption() {
+        if (confirm('Disconnect wallet?')) {
+            await this.disconnect();
+        }
+    },
+    
+    handleDisconnect() {
+        this.connected = false;
+        this.address = null;
+        this.balance = 0;
+        this.tokenBalance = 0;
+        this.provider = null;
+        
+        localStorage.removeItem('walletAddress');
+        localStorage.removeItem('walletName');
+        
+        this.updateUI();
+        console.log('Wallet disconnected');
+    },
+    
+    async disconnect() {
+        try {
+            if (this.provider?.disconnect) {
+                await this.provider.disconnect();
+            }
+        } catch (e) {
+            console.log('Disconnect error:', e);
+        }
+        
+        this.handleDisconnect();
+    },
+    
+    // Refresh all balances
+    async refreshBalances() {
+        if (!this.connected) return;
+        await this.getBalance();
+        await this.getTokenBalance();
+    }
+};
 
-        function closeWalletModal() {
-            WalletSystem.closeModal();
-        }
+// Global helper functions
+function connectWallet() {
+    if (WalletSystem.connected) {
+        WalletSystem.showDisconnectOption();
+    } else {
+        WalletSystem.openModal();
+    }
+}
+
+function copyCA() {
+    const ca = document.getElementById('ca-address').textContent;
+    navigator.clipboard.writeText(ca);
+    
+    const btn = document.querySelector('.ca-copy');
+    btn.textContent = '✅';
+    setTimeout(() => btn.textContent = '📋', 1500);
+}
+
+function closeWalletModal() {
+    WalletSystem.closeModal();
+}
+
+// Auto-refresh balances every 30 seconds when connected
+setInterval(() => {
+    if (WalletSystem.connected) {
+        WalletSystem.refreshBalances();
+    }
+}, 30000);
 
         /* ================================
            AUDIO SYSTEM
