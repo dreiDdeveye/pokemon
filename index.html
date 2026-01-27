@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpMon</title>
+    <title>$PALS</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Add these CDN scripts to your HTML head -->
 <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
@@ -50,17 +50,15 @@ body {
     height: 100%;
     z-index: -1;
     overflow: hidden;
-    background: 
-        radial-gradient(ellipse at 20% 20%, rgba(255, 95, 95, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(255, 217, 61, 0.12) 0%, transparent 50%),
-        linear-gradient(180deg, 
-            #0a0a1a 0%,
-            #1a1a3a 25%,
-            #0d1f3c 50%,
-            #1a0a2e 75%,
-            #0a0a1a 100%
-        );
+    
+    /* YOUR BACKGROUND IMAGE - Replace path with your image */
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        url('assets/images/site-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 /* Retro Scanlines */
@@ -3909,7 +3907,7 @@ footer {
     <nav>
         <div class="logo">
             <img src="assets/images/logo.png" alt="PumpFighters Logo" class="logo-img" onerror="this.style.display='none'">
-            <span class="logo-text">PUMPMON</span>
+            <span class="logo-text">$PUMPPALS</span>
         </div>
         
         <!-- Hamburger Menu Button -->
@@ -3933,9 +3931,9 @@ footer {
                 </svg>
                 <span id="wallet-text">Connect Wallet</span>
             </button>
-            <a href="#" class="btn btn-primary">Buy $PUMP</a>
+            <a href="#" class="btn btn-primary">Buy $PALS</a>
             <div id="token-balance-display" class="token-balance-display" style="display: none;">
-    💎 $PUMPMON: <span id="pumpmon-balance">0</span>
+    💎 $PALS: <span id="pumpmon-balance">0</span>
 </div>
         </div>
     </nav>
@@ -3944,12 +3942,12 @@ footer {
     <section class="hero">
         <h1 class="hero-title">
             Battle Memecoins.<br>
-            <span class="highlight">Win $PUMP.</span>
+            <span class="highlight">Win $PALS.</span>
         </h1>
         
         <p class="hero-subtitle">
             Choose your favorite memecoin character and battle in Pokemon-style combat. 
-            Every victory earns you $PUMP tokens.
+            Every victory earns you $PALS tokens.
         </p>
 
   <div class="character-preview">
@@ -4024,9 +4022,9 @@ footer {
             <!-- Rewards -->
             <div class="mechanic-card">
                 <div class="mechanic-icon">💰</div>
-                <h3>Earn $PENG</h3>
+                <h3>Earn $PALS</h3>
                 <ul>
-                    <li><span class="highlight">+100 $PENG</span> per win</li>
+                    <li><span class="highlight">+100 $PALS</span> per win</li>
                     <li><span class="highlight">x2 bonus</span> for beating shiny enemies ✨</li>
                     <li><span class="highlight">x1.5 bonus</span> for 5+ win streak 🔥</li>
                     <li>Connect wallet to track rewards</li>
@@ -4061,7 +4059,7 @@ footer {
         
         <!-- Start Button -->
         <div class="start-battle-cta">
-            <p>Ready to earn $PENG?</p>
+            <p>Ready to earn $PALS?</p>
             <a href="#game" class="btn btn-primary btn-large">⚔️ Start Battle</a>
         </div>
     </div>
@@ -4123,7 +4121,7 @@ footer {
 
                     <div class="battle-result" id="battle-result">
                         <div class="result-title" id="result-title">VICTORY!</div>
-                        <div class="result-subtitle" id="result-subtitle">You earned 500 $PUMP!</div>
+                        <div class="result-subtitle" id="result-subtitle">You earned 500 $PALS!</div>
                         <button class="btn btn-primary" onclick="resetBattle()">Battle Again</button>
                     </div>
                 </div>
@@ -4182,13 +4180,13 @@ footer {
                     <div class="claimable-box">
                         <span class="claimable-label">Claimable</span>
                         <span class="claimable-amount" id="claimable-tokens">0</span>
-                        <span class="claimable-currency">$PENG</span>
+                        <span class="claimable-currency">$PALS</span>
                     </div>
                     <button class="btn btn-primary claim-btn" id="claim-btn" onclick="RewardSystem.claim()">
-                        💰 Claim $PENG
+                        💰 Claim $PALS
                     </button>
                     <div class="total-earned">
-                        Total earned: <span id="total-earned">0</span> $PENG
+                        Total earned: <span id="total-earned">0</span> $PALS
                     </div>
                 </div>
                 
@@ -4216,8 +4214,8 @@ footer {
                 </div>
                 <div class="step">
                     <span class="step-icon">💰</span>
-                    <h3 class="step-title">3. Earn $PUMP</h3>
-                    <p class="step-desc">Win battles to earn $PUMP tokens. The more you win, the more you earn.</p>
+                    <h3 class="step-title">3. Earn $PALS</h3>
+                    <p class="step-desc">Win battles to earn $PALS tokens. The more you win, the more you earn.</p>
                 </div>
             </div>
         </div>
@@ -4575,7 +4573,7 @@ footer {
         onWin(isShiny = false) {
             // Check wallet connection
             if (!WalletSystem.connected) {
-                this.showPopup('🔗 Connect wallet to earn $PUMPMON!', 'warning');
+                this.showPopup('🔗 Connect wallet to earn $PALS!', 'warning');
                 return 0;
             }
             
@@ -4617,13 +4615,13 @@ footer {
             this.updateUI();
             
             // Show popup
-            let message = `+${tokens} $PUMPMON!`;
+            let message = `+${tokens} $PALS!`;
             if (bonusText.length > 0) {
                 message += '<br><small>' + bonusText.join(' ') + '</small>';
             }
             this.showPopup(message, 'success');
             
-            console.log(`🏆 WIN! +${tokens} $PUMPMON | Streak: ${this.state.winStreak} | Total: ${this.state.claimableTokens}`);
+            console.log(`🏆 WIN! +${tokens} $PALS | Streak: ${this.state.winStreak} | Total: ${this.state.claimableTokens}`);
             
             return tokens;
         },
@@ -4639,8 +4637,8 @@ onLose() {
     
     if (this.state.claimableTokens > 0) {
         this.state.claimableTokens -= actualPenalty;
-        this.showPopup(`-${actualPenalty} $PENG 💀`, 'danger');
-        console.log(`💀 LOSS | -${actualPenalty} $PENG | Remaining: ${this.state.claimableTokens}`);
+        this.showPopup(`-${actualPenalty} $PALS 💀`, 'danger');
+        console.log(`💀 LOSS | -${actualPenalty} $PALS | Remaining: ${this.state.claimableTokens}`);
     }
     
     this.save();
@@ -4751,7 +4749,7 @@ onLose() {
                 `✅ CLAIM REQUEST SUBMITTED!\n\n` +
                 `━━━━━━━━━━━━━━━━━━━━━\n` +
                 `Wallet: ${shortWallet}\n` +
-                `Amount: ${amount.toLocaleString()} $PUMPMON\n` +
+                `Amount: ${amount.toLocaleString()} $PALS\n` +
                 `Total Wins: ${this.state.totalWins}\n` +
                 `━━━━━━━━━━━━━━━━━━━━━\n\n` +
                 `Your tokens will be sent within 24-48 hours!\n` +
@@ -4926,7 +4924,7 @@ onLose() {
             const amount = player.claimable || 0;
             const shortWallet = wallet.slice(0, 8) + '...' + wallet.slice(-4);
             
-            if (confirm(`Mark as PAID?\n\nWallet: ${shortWallet}\nAmount: ${amount} $PUMPMON\n\nMake sure you've sent the tokens!`)) {
+            if (confirm(`Mark as PAID?\n\nWallet: ${shortWallet}\nAmount: ${amount} $PALS\n\nMake sure you've sent the tokens!`)) {
                 this.showToast('✓ Marked as paid - Update Google Sheet manually');
             }
         },
@@ -5125,7 +5123,7 @@ onLose() {
 
         open() {
             if (this.state.tickets <= 0) {
-                alert('You need a Safari Ticket! Get 1000 $PUMPMON to enter.');
+                alert('You need a Safari Ticket! Get 1000 $PALS to enter.');
                 return;
             }
 
@@ -5477,7 +5475,7 @@ onLose() {
 
         playAgain() {
             if (this.state.tickets <= 0) {
-                alert('You need more tickets! Get 1000 $PUMPMON for each ticket.');
+                alert('You need more tickets! Get 1000 $PALS for each ticket.');
                 return;
             }
             this.showScreen('biome-select-screen');
@@ -5777,7 +5775,7 @@ onLose() {
                         this.tokenBalance = 0;
                     }
                     
-                    console.log('💎 $PUMPMON Balance:', this.tokenBalance);
+                    console.log('💎 $PALS Balance:', this.tokenBalance);
                     this.updateUI();
                     
                     if (typeof SafariGame !== 'undefined') {
@@ -6902,7 +6900,7 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
             document.getElementById('result-title').textContent = 'VICTORY!';
             document.getElementById('result-subtitle').innerHTML = `
                 ${player.name} gained ${expGain} EXP!<br>
-                <span style="color: var(--primary)">+${tokensEarned} $PUMPMON</span>
+                <span style="color: var(--primary)">+${tokensEarned} $PALS</span>
                 ${gameState.enemyShiny ? '<br><span style="color: #ec4899">✨ Shiny bonus!</span>' : ''}
                 ${RewardSystem.state.winStreak >= 3 ? '<br><span style="color: #22c55e">🔥 ' + RewardSystem.state.winStreak + ' Win Streak!</span>' : ''}
             `;
