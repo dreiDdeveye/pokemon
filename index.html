@@ -3655,7 +3655,54 @@ footer {
         </div>
     </section>
 
-
+<!-- Admin Panel -->
+<section id="admin-panel" style="display: none; padding: 40px 20px; background: rgba(0,0,0,0.95); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999; overflow-y: auto;">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="color: #ffd93d; font-family: 'Press Start 2P', cursive; text-align: center; margin-bottom: 20px;">🔐 ADMIN PANEL</h2>
+        
+        <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="color: #888; font-size: 12px;">PLAYERS</div>
+                <div id="admin-total-players" style="color: #fff; font-size: 24px; font-weight: bold;">0</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="color: #888; font-size: 12px;">TOTAL CLAIMABLE</div>
+                <div id="admin-total-claimable" style="color: #ffd93d; font-size: 24px; font-weight: bold;">0</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="color: #888; font-size: 12px;">UNPAID</div>
+                <div id="admin-unpaid-count" style="color: #ef4444; font-size: 24px; font-weight: bold;">0</div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <button onclick="AdminPanel.refresh()" style="padding: 10px 20px; background: #333; color: #fff; border: none; border-radius: 8px; cursor: pointer;">🔄 Refresh</button>
+            <button onclick="AdminPanel.copyAllUnpaid()" style="padding: 10px 20px; background: #333; color: #fff; border: none; border-radius: 8px; cursor: pointer;">📋 Copy Unpaid</button>
+            <button onclick="AdminPanel.exportCSV()" style="padding: 10px 20px; background: #ffd93d; color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">📥 Export CSV</button>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; background: rgba(26,26,46,0.9); border-radius: 8px; overflow: hidden;">
+                <thead>
+                    <tr style="background: rgba(0,0,0,0.5);">
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">#</th>
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">WALLET</th>
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">WINS</th>
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">CLAIMABLE</th>
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">TOTAL</th>
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">LAST PLAYED</th>
+                        <th style="padding: 12px; text-align: left; color: #ffd93d; font-size: 12px;">STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-tbody">
+                    <tr><td colspan="7" style="padding: 20px; text-align: center; color: #888;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <button onclick="AdminPanel.toggle()" style="margin-top: 20px; padding: 12px 24px; background: #ef4444; color: #fff; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">✕ CLOSE ADMIN PANEL</button>
+    </div>
+</section>
         <!-- Safari Zone Section -->
 <!-- Safari Zone Section -->
 <section class="safari-zone" id="safari">
@@ -3842,2165 +3889,1440 @@ footer {
     </div>
 
     <script>
-        /* ================================
-           MOBILE MENU
-           ================================ */
-        function toggleMobileMenu() {
-            const hamburger = document.getElementById('hamburger');
-            const navLinks = document.getElementById('nav-links');
+    /* ================================
+       MOBILE MENU
+       ================================ */
+    function toggleMobileMenu() {
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    }
+
+    // Close menu when clicking links
+    document.querySelectorAll('.nav-links a, .nav-links .btn').forEach(el => {
+        el.addEventListener('click', () => {
+            document.getElementById('hamburger').classList.remove('active');
+            document.getElementById('nav-links').classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Auto-close on resize to desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            document.getElementById('hamburger').classList.remove('active');
+            document.getElementById('nav-links').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    /* ================================
+       REWARD SYSTEM - Google Sheets
+       ================================ */
+    const RewardSystem = {
+        // ⬇️ PASTE YOUR GOOGLE SCRIPT URL HERE ⬇️
+        SHEET_API: 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyTiaQ3jXDnrofGqg_DgjeCZ9mWRNi8C-oqlZy6HVK07xDewzJQYsL8cG2zB5ghLbwbyw/exec/exec',
+        // ⬆️ PASTE YOUR GOOGLE SCRIPT URL HERE ⬆️
+        
+        // Config
+        tokensPerWin: 100,
+        shinyBonus: 2,
+        streakBonus: 1.5,
+        streakThreshold: 3,
+        
+        // State
+        state: {
+            wallet: null,
+            totalWins: 0,
+            totalLosses: 0,
+            winStreak: 0,
+            bestStreak: 0,
+            claimableTokens: 0,
+            totalEarned: 0,
+            lastPlayed: null
+        },
+        
+        // Initialize
+        init() {
+            this.load();
+            this.updateUI();
+            console.log('🎮 RewardSystem initialized');
+        },
+        
+        // Load from localStorage
+        load() {
+            const saved = localStorage.getItem('peng_rewards');
+            if (saved) {
+                try {
+                    this.state = { ...this.state, ...JSON.parse(saved) };
+                } catch (e) {
+                    console.log('Failed to load rewards:', e);
+                }
+            }
+        },
+        
+        // Save to localStorage
+        save() {
+            if (WalletSystem.connected && WalletSystem.address) {
+                this.state.wallet = WalletSystem.address;
+            }
+            this.state.lastPlayed = new Date().toISOString();
+            localStorage.setItem('peng_rewards', JSON.stringify(this.state));
+        },
+        
+        // Send data to Google Sheets
+        async saveToSheet() {
+            if (!WalletSystem.connected || !WalletSystem.address) {
+                console.log('No wallet connected, skipping sheet save');
+                return;
+            }
             
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-        }
-
-        // Close menu when clicking links
-        document.querySelectorAll('.nav-links a, .nav-links .btn').forEach(el => {
-            el.addEventListener('click', () => {
-                document.getElementById('hamburger').classList.remove('active');
-                document.getElementById('nav-links').classList.remove('active');
-                document.body.style.overflow = '';
+            const data = {
+                wallet: WalletSystem.address,
+                wins: this.state.totalWins,
+                claimable: this.state.claimableTokens,
+                totalEarned: this.state.totalEarned,
+                date: new Date().toLocaleString()
+            };
+            
+            try {
+                await fetch(this.SHEET_API, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                console.log('📊 Data saved to Google Sheets:', data);
+            } catch (error) {
+                console.log('Sheet save error:', error);
+            }
+        },
+        
+        // Player WON a battle
+        onWin(isShiny = false) {
+            // Check wallet connection
+            if (!WalletSystem.connected) {
+                this.showPopup('🔗 Connect wallet to earn $PUMPMON!', 'warning');
+                return 0;
+            }
+            
+            // Calculate tokens
+            let tokens = this.tokensPerWin;
+            let bonusText = [];
+            
+            // Shiny bonus (2x)
+            if (isShiny) {
+                tokens *= this.shinyBonus;
+                bonusText.push('✨ Shiny 2x!');
+            }
+            
+            // Update streak
+            this.state.winStreak++;
+            
+            // Streak bonus (1.5x after 3 wins)
+            if (this.state.winStreak >= this.streakThreshold) {
+                tokens *= this.streakBonus;
+                bonusText.push(`🔥 ${this.state.winStreak} Streak!`);
+            }
+            
+            // Update best streak
+            if (this.state.winStreak > this.state.bestStreak) {
+                this.state.bestStreak = this.state.winStreak;
+            }
+            
+            // Round tokens
+            tokens = Math.floor(tokens);
+            
+            // Update state
+            this.state.totalWins++;
+            this.state.claimableTokens += tokens;
+            this.state.totalEarned += tokens;
+            
+            // Save locally and to sheet
+            this.save();
+            this.saveToSheet();
+            this.updateUI();
+            
+            // Show popup
+            let message = `+${tokens} $PUMPMON!`;
+            if (bonusText.length > 0) {
+                message += '<br><small>' + bonusText.join(' ') + '</small>';
+            }
+            this.showPopup(message, 'success');
+            
+            console.log(`🏆 WIN! +${tokens} $PUMPMON | Streak: ${this.state.winStreak} | Total: ${this.state.claimableTokens}`);
+            
+            return tokens;
+        },
+        
+        // Player LOST a battle
+        onLose() {
+            this.state.totalLosses++;
+            this.state.winStreak = 0; // Reset streak
+            
+            this.save();
+            this.updateUI();
+            
+            console.log(`💀 LOSS | Streak reset | Record: ${this.state.totalWins}W/${this.state.totalLosses}L`);
+        },
+        
+        // Update UI elements
+        updateUI() {
+            const updates = {
+                'total-wins': this.state.totalWins,
+                'total-losses': this.state.totalLosses,
+                'win-streak': this.state.winStreak,
+                'best-streak': this.state.bestStreak,
+                'claimable-tokens': this.state.claimableTokens.toLocaleString(),
+                'total-earned': this.state.totalEarned.toLocaleString()
+            };
+            
+            Object.entries(updates).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
             });
-        });
-
-        // Auto-close on resize to desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) {
-                document.getElementById('hamburger').classList.remove('active');
-                document.getElementById('nav-links').classList.remove('active');
-                document.body.style.overflow = '';
+            
+            // Update win rate
+            const winRateEl = document.getElementById('win-rate');
+            if (winRateEl) {
+                const total = this.state.totalWins + this.state.totalLosses;
+                const rate = total > 0 ? Math.round((this.state.totalWins / total) * 100) : 0;
+                winRateEl.textContent = rate + '%';
             }
-        });
-
-
-            /* ================================
-   SAFARI ZONE GAME SYSTEM
-   ================================ */
-const SafariGame = {
-    // Game State
-    state: {
-        tickets: 1, // Demo: start with 1 ticket
-        pumpmonBalance: 5000,
-        currentBiome: null,
-        actionsLeft: 0,
-        maxActions: 10,
-        inventory: {
-            capsules: 5,
-            bait: 3,
-            rocks: 3
+            
+            // Update claim button state
+            const claimBtn = document.getElementById('claim-btn');
+            if (claimBtn) {
+                claimBtn.disabled = this.state.claimableTokens <= 0;
+            }
         },
-        currentCreature: null,
-        creatureModifiers: {
-            baitActive: false,
-            baitTurns: 0,
-            angryActive: false,
-            angryTurns: 0
+        
+        // Show popup notification
+        showPopup(message, type = 'success') {
+            // Remove existing
+            const existing = document.querySelector('.reward-popup');
+            if (existing) existing.remove();
+            
+            // Create popup
+            const popup = document.createElement('div');
+            popup.className = `reward-popup ${type}`;
+            popup.innerHTML = message;
+            document.body.appendChild(popup);
+            
+            // Auto remove
+            setTimeout(() => {
+                popup.classList.add('fade-out');
+                setTimeout(() => popup.remove(), 500);
+            }, 2500);
         },
-        caughtCreatures: [],
-        fledCreatures: 0,
-        raresFound: 0,
-        isEncounterActive: false
-    },
+        
+        // Submit claim request
+        claim() {
+            if (!WalletSystem.connected) {
+                alert('❌ Please connect your wallet first!');
+                return;
+            }
+            
+            if (this.state.claimableTokens <= 0) {
+                alert('❌ No tokens to claim! Win more battles!');
+                return;
+            }
+            
+            const wallet = WalletSystem.address;
+            const amount = this.state.claimableTokens;
+            
+            // Save final state to sheet
+            this.saveToSheet();
+            
+            // Show confirmation
+            const shortWallet = wallet.slice(0, 6) + '...' + wallet.slice(-6);
+            
+            alert(
+                `✅ CLAIM REQUEST SUBMITTED!\n\n` +
+                `━━━━━━━━━━━━━━━━━━━━━\n` +
+                `Wallet: ${shortWallet}\n` +
+                `Amount: ${amount.toLocaleString()} $PUMPMON\n` +
+                `Total Wins: ${this.state.totalWins}\n` +
+                `━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                `Your tokens will be sent within 24-48 hours!\n` +
+                `Check your wallet for the airdrop. 🎉`
+            );
+            
+            console.log('📤 Claim submitted:', { wallet, amount, wins: this.state.totalWins });
+        },
+        
+        // Reset all progress (for testing)
+        reset() {
+            if (!confirm('⚠️ Reset all progress? This cannot be undone!')) return;
+            
+            this.state = {
+                wallet: null,
+                totalWins: 0,
+                totalLosses: 0,
+                winStreak: 0,
+                bestStreak: 0,
+                claimableTokens: 0,
+                totalEarned: 0,
+                lastPlayed: null
+            };
+            
+            localStorage.removeItem('peng_rewards');
+            this.updateUI();
+            console.log('🗑️ Rewards reset');
+            alert('Progress reset!');
+        }
+    };
 
-    // Biome Definitions
-    biomes: {
-        jungle: {
-            id: 'jungle',
-            name: 'Jungle',
-            emoji: '🌿',
-            difficulty: 'easy',
-            fleeRateModifier: 1.0,
-            rareSpawnChance: 0.15,
+    /* ================================
+       ADMIN PANEL - View All Players
+       ================================ */
+    const AdminPanel = {
+        // Same API URL
+        get SHEET_API() { return RewardSystem.SHEET_API; },
+        
+        // Data
+        players: [],
+        
+        // Secret code to show panel (type "admin" on keyboard)
+        secretCode: 'admin',
+        inputBuffer: '',
+        isVisible: false,
+        
+        init() {
+            // Listen for secret code
+            document.addEventListener('keypress', (e) => {
+                this.inputBuffer += e.key.toLowerCase();
+                
+                // Keep only last 10 characters
+                if (this.inputBuffer.length > 10) {
+                    this.inputBuffer = this.inputBuffer.slice(-10);
+                }
+                
+                // Check for secret code
+                if (this.inputBuffer.includes(this.secretCode)) {
+                    this.toggle();
+                    this.inputBuffer = '';
+                }
+            });
+            
+            console.log('🔐 AdminPanel ready (type "admin" to access)');
+        },
+        
+        toggle() {
+            const section = document.getElementById('admin-panel');
+            if (!section) return;
+            
+            this.isVisible = !this.isVisible;
+            section.style.display = this.isVisible ? 'block' : 'none';
+            
+            if (this.isVisible) {
+                section.scrollIntoView({ behavior: 'smooth' });
+                this.refresh();
+            }
+        },
+        
+        async refresh() {
+            const tbody = document.getElementById('admin-tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Loading...</td></tr>';
+            
+            try {
+                const response = await fetch(this.SHEET_API);
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    this.players = data;
+                    this.render();
+                } else {
+                    throw new Error('Invalid data');
+                }
+            } catch (error) {
+                console.error('Admin fetch error:', error);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: #ef4444;">❌ Failed to load. Check your API URL.</td></tr>';
+            }
+        },
+        
+        render() {
+            const tbody = document.getElementById('admin-tbody');
+            if (!tbody) return;
+            
+            // Calculate totals
+            let totalPlayers = this.players.length;
+            let totalClaimable = 0;
+            let unpaidCount = 0;
+            
+            this.players.forEach(p => {
+                totalClaimable += Number(p.claimable) || 0;
+                if (p.paid !== 'Yes' && p.claimable > 0) unpaidCount++;
+            });
+            
+            // Update summary
+            const totalPlayersEl = document.getElementById('admin-total-players');
+            const totalClaimableEl = document.getElementById('admin-total-claimable');
+            const unpaidCountEl = document.getElementById('admin-unpaid-count');
+            
+            if (totalPlayersEl) totalPlayersEl.textContent = totalPlayers;
+            if (totalClaimableEl) totalClaimableEl.textContent = totalClaimable.toLocaleString();
+            if (unpaidCountEl) unpaidCountEl.textContent = unpaidCount;
+            
+            // Empty state
+            if (this.players.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No players yet</td></tr>';
+                return;
+            }
+            
+            // Sort by claimable (highest first)
+            const sorted = [...this.players].sort((a, b) => (b.claimable || 0) - (a.claimable || 0));
+            
+            // Render rows
+            tbody.innerHTML = sorted.map((player, i) => {
+                const wallet = player.wallet || '';
+                const shortWallet = wallet ? `${wallet.slice(0, 6)}...${wallet.slice(-4)}` : 'N/A';
+                const isPaid = player.paid === 'Yes';
+                const claimable = Number(player.claimable) || 0;
+                
+                return `
+                    <tr class="${isPaid ? 'paid-row' : ''} ${claimable > 0 ? 'has-claimable' : ''}">
+                        <td>${i + 1}</td>
+                        <td class="wallet-cell">
+                            <span title="${wallet}">${shortWallet}</span>
+                            <button class="copy-btn" onclick="AdminPanel.copy('${wallet}')" title="Copy full address">📋</button>
+                        </td>
+                        <td>${player.wins || 0}</td>
+                        <td class="claimable-cell">${claimable.toLocaleString()}</td>
+                        <td>${(Number(player.totalEarned) || 0).toLocaleString()}</td>
+                        <td>${player.lastPlayed || 'N/A'}</td>
+                        <td>
+                            ${isPaid 
+                                ? '<span class="paid-badge">✓ Paid</span>' 
+                                : `<button class="mark-paid-btn" onclick="AdminPanel.markPaid('${wallet}')">Mark Paid</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        },
+        
+        copy(text) {
+            navigator.clipboard.writeText(text);
+            this.showToast('Copied: ' + text);
+        },
+        
+        markPaid(wallet) {
+            const player = this.players.find(p => p.wallet === wallet);
+            if (!player) return;
+            
+            const amount = player.claimable || 0;
+            const shortWallet = wallet.slice(0, 8) + '...' + wallet.slice(-4);
+            
+            if (confirm(`Mark as PAID?\n\nWallet: ${shortWallet}\nAmount: ${amount} $PUMPMON\n\nMake sure you've sent the tokens!`)) {
+                this.showToast('✓ Marked as paid - Update Google Sheet manually');
+            }
+        },
+        
+        showToast(msg) {
+            const existing = document.querySelector('.admin-toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'admin-toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 2000);
+        },
+        
+        exportCSV() {
+            if (this.players.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            const headers = ['Wallet', 'Wins', 'Claimable', 'Total Earned', 'Last Played', 'Paid'];
+            const rows = this.players.map(p => [
+                p.wallet,
+                p.wins,
+                p.claimable,
+                p.totalEarned,
+                p.lastPlayed,
+                p.paid
+            ]);
+            
+            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `PENG_rewards_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            this.showToast('CSV Downloaded!');
+        },
+        
+        copyAllUnpaid() {
+            const unpaid = this.players
+                .filter(p => p.paid !== 'Yes' && p.claimable > 0)
+                .map(p => `${p.wallet},${p.claimable}`)
+                .join('\n');
+            
+            if (!unpaid) {
+                alert('No unpaid claims!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(unpaid);
+            this.showToast('Copied all unpaid wallets + amounts!');
+        }
+    };
+
+    /* ================================
+       SAFARI ZONE GAME SYSTEM
+       ================================ */
+    const SafariGame = {
+        // Game State
+        state: {
+            tickets: 1,
+            pumpmonBalance: 5000,
+            currentBiome: null,
+            actionsLeft: 0,
             maxActions: 10,
-            encounterTable: [
-                { id: 'pepe', weight: 30, rarity: 'common' },
-                { id: 'froggie', weight: 25, rarity: 'common' },
-                { id: 'monke', weight: 20, rarity: 'uncommon' },
-                { id: 'snek', weight: 15, rarity: 'uncommon' },
-                { id: 'jungleking', weight: 8, rarity: 'rare' },
-                { id: 'goldenfrog', weight: 2, rarity: 'epic' }
-            ]
+            inventory: {
+                capsules: 5,
+                bait: 3,
+                rocks: 3
+            },
+            currentCreature: null,
+            creatureModifiers: {
+                baitActive: false,
+                baitTurns: 0,
+                angryActive: false,
+                angryTurns: 0
+            },
+            caughtCreatures: [],
+            fledCreatures: 0,
+            raresFound: 0,
+            isEncounterActive: false
         },
-        swamp: {
-            id: 'swamp',
-            name: 'Swamp',
-            emoji: '🌊',
-            difficulty: 'medium',
-            fleeRateModifier: 0.9,
-            rareSpawnChance: 0.2,
-            maxActions: 10,
-            encounterTable: [
-                { id: 'whale', weight: 25, rarity: 'common' },
-                { id: 'mudfish', weight: 25, rarity: 'common' },
-                { id: 'gator', weight: 20, rarity: 'uncommon' },
-                { id: 'swampthing', weight: 15, rarity: 'uncommon' },
-                { id: 'hydra', weight: 10, rarity: 'rare' },
-                { id: 'swampgod', weight: 5, rarity: 'epic' }
-            ]
+
+        // Biome Definitions
+        biomes: {
+            jungle: {
+                id: 'jungle',
+                name: 'Jungle',
+                emoji: '🌿',
+                difficulty: 'easy',
+                fleeRateModifier: 1.0,
+                rareSpawnChance: 0.15,
+                maxActions: 10,
+                encounterTable: [
+                    { id: 'pepe', weight: 30, rarity: 'common' },
+                    { id: 'froggie', weight: 25, rarity: 'common' },
+                    { id: 'monke', weight: 20, rarity: 'uncommon' },
+                    { id: 'snek', weight: 15, rarity: 'uncommon' },
+                    { id: 'jungleking', weight: 8, rarity: 'rare' },
+                    { id: 'goldenfrog', weight: 2, rarity: 'epic' }
+                ]
+            },
+            swamp: {
+                id: 'swamp',
+                name: 'Swamp',
+                emoji: '🌊',
+                difficulty: 'medium',
+                fleeRateModifier: 0.9,
+                rareSpawnChance: 0.2,
+                maxActions: 10,
+                encounterTable: [
+                    { id: 'whale', weight: 25, rarity: 'common' },
+                    { id: 'mudfish', weight: 25, rarity: 'common' },
+                    { id: 'gator', weight: 20, rarity: 'uncommon' },
+                    { id: 'swampthing', weight: 15, rarity: 'uncommon' },
+                    { id: 'hydra', weight: 10, rarity: 'rare' },
+                    { id: 'swampgod', weight: 5, rarity: 'epic' }
+                ]
+            },
+            volcanic: {
+                id: 'volcanic',
+                name: 'Volcanic',
+                emoji: '🌋',
+                difficulty: 'hard',
+                fleeRateModifier: 1.2,
+                rareSpawnChance: 0.25,
+                maxActions: 8,
+                encounterTable: [
+                    { id: 'flameling', weight: 30, rarity: 'common' },
+                    { id: 'magmite', weight: 25, rarity: 'uncommon' },
+                    { id: 'lavabeast', weight: 20, rarity: 'uncommon' },
+                    { id: 'phoenix', weight: 15, rarity: 'rare' },
+                    { id: 'dragonlord', weight: 8, rarity: 'epic' },
+                    { id: 'inferno', weight: 2, rarity: 'legendary' }
+                ],
+                locked: false
+            },
+            cosmic: {
+                id: 'cosmic',
+                name: 'Cosmic',
+                emoji: '🌌',
+                difficulty: 'extreme',
+                fleeRateModifier: 1.5,
+                rareSpawnChance: 0.35,
+                maxActions: 6,
+                encounterTable: [
+                    { id: 'stardust', weight: 25, rarity: 'uncommon' },
+                    { id: 'nebula', weight: 25, rarity: 'uncommon' },
+                    { id: 'voidwalker', weight: 20, rarity: 'rare' },
+                    { id: 'cosmicwhale', weight: 15, rarity: 'rare' },
+                    { id: 'galaxian', weight: 10, rarity: 'epic' },
+                    { id: 'celestial', weight: 5, rarity: 'legendary' }
+                ],
+                locked: true
+            }
         },
-        volcanic: {
-            id: 'volcanic',
-            name: 'Volcanic',
-            emoji: '🌋',
-            difficulty: 'hard',
-            fleeRateModifier: 1.2,
-            rareSpawnChance: 0.25,
-            maxActions: 8,
-            encounterTable: [
-                { id: 'flameling', weight: 30, rarity: 'common' },
-                { id: 'magmite', weight: 25, rarity: 'uncommon' },
-                { id: 'lavabeast', weight: 20, rarity: 'uncommon' },
-                { id: 'phoenix', weight: 15, rarity: 'rare' },
-                { id: 'dragonlord', weight: 8, rarity: 'epic' },
-                { id: 'inferno', weight: 2, rarity: 'legendary' }
-            ],
-            locked: false
+
+        // Creature Definitions
+        creatures: {
+            pepe: { name: 'PEPE', image: 'pepe.png', baseCatchRate: 0.4, baseFleeRate: 0.2 },
+            froggie: { name: 'FROGGIE', image: 'pepe.png', baseCatchRate: 0.45, baseFleeRate: 0.15 },
+            monke: { name: 'MONKE', image: 'moodeng.png', baseCatchRate: 0.3, baseFleeRate: 0.25 },
+            snek: { name: 'SNEK', image: 'catana.png', baseCatchRate: 0.35, baseFleeRate: 0.3 },
+            jungleking: { name: 'JUNGLE KING', image: 'cow.png', baseCatchRate: 0.2, baseFleeRate: 0.35 },
+            goldenfrog: { name: 'GOLDEN FROG', image: 'pepe.png', baseCatchRate: 0.1, baseFleeRate: 0.45 },
+            whale: { name: 'WHALE', image: 'whale.png', baseCatchRate: 0.35, baseFleeRate: 0.2 },
+            mudfish: { name: 'MUDFISH', image: 'whale.png', baseCatchRate: 0.45, baseFleeRate: 0.15 },
+            gator: { name: 'GATOR', image: 'catana.png', baseCatchRate: 0.3, baseFleeRate: 0.3 },
+            swampthing: { name: 'SWAMP THING', image: 'moodeng.png', baseCatchRate: 0.25, baseFleeRate: 0.35 },
+            hydra: { name: 'HYDRA', image: 'whale.png', baseCatchRate: 0.15, baseFleeRate: 0.4 },
+            swampgod: { name: 'SWAMP GOD', image: 'whale.png', baseCatchRate: 0.08, baseFleeRate: 0.5 },
+            flameling: { name: 'FLAMELING', image: 'pepe.png', baseCatchRate: 0.35, baseFleeRate: 0.25 },
+            magmite: { name: 'MAGMITE', image: 'moodeng.png', baseCatchRate: 0.3, baseFleeRate: 0.3 },
+            lavabeast: { name: 'LAVA BEAST', image: 'cow.png', baseCatchRate: 0.25, baseFleeRate: 0.35 },
+            phoenix: { name: 'PHOENIX', image: 'pepe.png', baseCatchRate: 0.15, baseFleeRate: 0.45 },
+            dragonlord: { name: 'DRAGON LORD', image: 'catana.png', baseCatchRate: 0.08, baseFleeRate: 0.5 },
+            inferno: { name: 'INFERNO', image: 'pepe.png', baseCatchRate: 0.05, baseFleeRate: 0.6 },
+            stardust: { name: 'STARDUST', image: 'whale.png', baseCatchRate: 0.3, baseFleeRate: 0.3 },
+            nebula: { name: 'NEBULA', image: 'moodeng.png', baseCatchRate: 0.25, baseFleeRate: 0.35 },
+            voidwalker: { name: 'VOIDWALKER', image: 'catana.png', baseCatchRate: 0.2, baseFleeRate: 0.4 },
+            cosmicwhale: { name: 'COSMIC WHALE', image: 'whale.png', baseCatchRate: 0.15, baseFleeRate: 0.45 },
+            galaxian: { name: 'GALAXIAN', image: 'pepe.png', baseCatchRate: 0.08, baseFleeRate: 0.55 },
+            celestial: { name: 'CELESTIAL', image: 'cow.png', baseCatchRate: 0.03, baseFleeRate: 0.65 }
         },
-        cosmic: {
-            id: 'cosmic',
-            name: 'Cosmic',
-            emoji: '🌌',
-            difficulty: 'extreme',
-            fleeRateModifier: 1.5,
-            rareSpawnChance: 0.35,
-            maxActions: 6,
-            encounterTable: [
-                { id: 'stardust', weight: 25, rarity: 'uncommon' },
-                { id: 'nebula', weight: 25, rarity: 'uncommon' },
-                { id: 'voidwalker', weight: 20, rarity: 'rare' },
-                { id: 'cosmicwhale', weight: 15, rarity: 'rare' },
-                { id: 'galaxian', weight: 10, rarity: 'epic' },
-                { id: 'celestial', weight: 5, rarity: 'legendary' }
-            ],
-            locked: true
-        }
-    },
 
-    // Creature Definitions
-    creatures: {
-        // Jungle
-        pepe: { name: 'PEPE', image: 'pepe.png', baseCatchRate: 0.4, baseFleeRate: 0.2 },
-        froggie: { name: 'FROGGIE', image: 'pepe.png', baseCatchRate: 0.45, baseFleeRate: 0.15 },
-        monke: { name: 'MONKE', image: 'moodeng.png', baseCatchRate: 0.3, baseFleeRate: 0.25 },
-        snek: { name: 'SNEK', image: 'catana.png', baseCatchRate: 0.35, baseFleeRate: 0.3 },
-        jungleking: { name: 'JUNGLE KING', image: 'cow.png', baseCatchRate: 0.2, baseFleeRate: 0.35 },
-        goldenfrog: { name: 'GOLDEN FROG', image: 'pepe.png', baseCatchRate: 0.1, baseFleeRate: 0.45 },
-        // Swamp
-        whale: { name: 'WHALE', image: 'whale.png', baseCatchRate: 0.35, baseFleeRate: 0.2 },
-        mudfish: { name: 'MUDFISH', image: 'whale.png', baseCatchRate: 0.45, baseFleeRate: 0.15 },
-        gator: { name: 'GATOR', image: 'catana.png', baseCatchRate: 0.3, baseFleeRate: 0.3 },
-        swampthing: { name: 'SWAMP THING', image: 'moodeng.png', baseCatchRate: 0.25, baseFleeRate: 0.35 },
-        hydra: { name: 'HYDRA', image: 'whale.png', baseCatchRate: 0.15, baseFleeRate: 0.4 },
-        swampgod: { name: 'SWAMP GOD', image: 'whale.png', baseCatchRate: 0.08, baseFleeRate: 0.5 },
-        // Volcanic
-        flameling: { name: 'FLAMELING', image: 'pepe.png', baseCatchRate: 0.35, baseFleeRate: 0.25 },
-        magmite: { name: 'MAGMITE', image: 'moodeng.png', baseCatchRate: 0.3, baseFleeRate: 0.3 },
-        lavabeast: { name: 'LAVA BEAST', image: 'cow.png', baseCatchRate: 0.25, baseFleeRate: 0.35 },
-        phoenix: { name: 'PHOENIX', image: 'pepe.png', baseCatchRate: 0.15, baseFleeRate: 0.45 },
-        dragonlord: { name: 'DRAGON LORD', image: 'catana.png', baseCatchRate: 0.08, baseFleeRate: 0.5 },
-        inferno: { name: 'INFERNO', image: 'pepe.png', baseCatchRate: 0.05, baseFleeRate: 0.6 },
-        // Cosmic
-        stardust: { name: 'STARDUST', image: 'whale.png', baseCatchRate: 0.3, baseFleeRate: 0.3 },
-        nebula: { name: 'NEBULA', image: 'moodeng.png', baseCatchRate: 0.25, baseFleeRate: 0.35 },
-        voidwalker: { name: 'VOIDWALKER', image: 'catana.png', baseCatchRate: 0.2, baseFleeRate: 0.4 },
-        cosmicwhale: { name: 'COSMIC WHALE', image: 'whale.png', baseCatchRate: 0.15, baseFleeRate: 0.45 },
-        galaxian: { name: 'GALAXIAN', image: 'pepe.png', baseCatchRate: 0.08, baseFleeRate: 0.55 },
-        celestial: { name: 'CELESTIAL', image: 'cow.png', baseCatchRate: 0.03, baseFleeRate: 0.65 }
-    },
+        init() {
+            this.updateTicketDisplay();
+        },
 
-    // Initialize
-    init() {
-        this.updateTicketDisplay();
-    },
+        open() {
+            if (this.state.tickets <= 0) {
+                alert('You need a Safari Ticket! Get 1000 $PUMPMON to enter.');
+                return;
+            }
 
-    // Open Safari Modal
-    open() {
-        if (this.state.tickets <= 0) {
-            alert('You need a Safari Ticket! Get 1000 $PUMPMON to enter.');
-            return;
-        }
-
-        const modal = document.getElementById('safari-modal');
-        modal.classList.add('show');
-        this.showScreen('biome-select-screen');
-        this.renderBiomeSelection();
-        AudioSystem.playSound('select');
-    },
-
-    // Close Safari Modal
-    close() {
-        document.getElementById('safari-modal').classList.remove('show');
-        this.resetState();
-    },
-
-    // Show specific screen
-    showScreen(screenId) {
-        document.querySelectorAll('.safari-screen').forEach(s => s.classList.add('hidden'));
-        document.getElementById(screenId).classList.remove('hidden');
-    },
-
-    // Render Biome Selection
-    renderBiomeSelection() {
-        const grid = document.getElementById('biome-grid');
-        grid.innerHTML = Object.values(this.biomes).map(biome => `
-            <div class="biome-card ${biome.locked ? 'locked' : ''}" onclick="SafariGame.selectBiome('${biome.id}')">
-                <span class="biome-emoji">${biome.emoji}</span>
-                <div class="biome-name">${biome.name}</div>
-                <div class="biome-difficulty ${biome.difficulty}">${biome.locked ? '🔒 Locked' : biome.difficulty.toUpperCase()}</div>
-            </div>
-        `).join('');
-    },
-
-    // Select Biome and Start Run
-    selectBiome(biomeId) {
-        const biome = this.biomes[biomeId];
-        if (biome.locked) {
-            alert('This biome is locked! Complete more runs to unlock.');
-            return;
-        }
-
-        // Consume ticket
-        this.state.tickets--;
-        this.updateTicketDisplay();
-
-        // Setup run
-        this.state.currentBiome = biome;
-        this.state.actionsLeft = biome.maxActions;
-        this.state.maxActions = biome.maxActions;
-        this.state.inventory = { capsules: 5, bait: 3, rocks: 3 };
-        this.state.caughtCreatures = [];
-        this.state.fledCreatures = 0;
-        this.state.raresFound = 0;
-
-        // Update UI
-        document.getElementById('safari-biome-name').textContent = `${biome.emoji} ${biome.name} Zone`;
-        this.updateActionsDisplay();
-        this.updateInventoryDisplay();
-
-        // Show exploration screen
-        this.showScreen('explore-screen');
-        this.setMessage(`You entered the ${biome.name}! Look for creatures in the tall grass.`);
-
-        AudioSystem.playSound('select');
-    },
-
-    // Explore action
-    explore() {
-        if (this.state.actionsLeft <= 0) {
-            this.endRun();
-            return;
-        }
-
-        this.state.actionsLeft--;
-        this.updateActionsDisplay();
-
-        // Random encounter chance (70%)
-        if (Math.random() < 0.7) {
-            this.triggerEncounter();
-        } else {
-            const messages = [
-                'The grass rustles... but nothing appears.',
-                'You hear something in the distance...',
-                'A shadow moves, but disappears.',
-                'The area seems quiet...'
-            ];
-            this.setMessage(messages[Math.floor(Math.random() * messages.length)]);
+            const modal = document.getElementById('safari-modal');
+            modal.classList.add('show');
+            this.showScreen('biome-select-screen');
+            this.renderBiomeSelection();
             AudioSystem.playSound('select');
+        },
 
-            if (this.state.actionsLeft <= 0) {
-                setTimeout(() => this.endRun(), 1500);
-            }
-        }
-    },
+        close() {
+            document.getElementById('safari-modal').classList.remove('show');
+            this.resetState();
+        },
 
-    // Trigger an encounter
-    triggerEncounter() {
-        const biome = this.state.currentBiome;
-        
-        // Weighted random selection
-        const totalWeight = biome.encounterTable.reduce((sum, c) => sum + c.weight, 0);
-        let roll = Math.random() * totalWeight;
-        let selectedEntry = biome.encounterTable[0];
+        showScreen(screenId) {
+            document.querySelectorAll('.safari-screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+        },
 
-        for (const entry of biome.encounterTable) {
-            roll -= entry.weight;
-            if (roll <= 0) {
-                selectedEntry = entry;
-                break;
-            }
-        }
-
-        const creature = this.creatures[selectedEntry.id];
-        this.state.currentCreature = {
-            ...creature,
-            id: selectedEntry.id,
-            rarity: selectedEntry.rarity,
-            catchRate: creature.baseCatchRate,
-            fleeRate: creature.baseFleeRate * biome.fleeRateModifier
-        };
-
-        this.state.creatureModifiers = {
-            baitActive: false,
-            baitTurns: 0,
-            angryActive: false,
-            angryTurns: 0
-        };
-        this.state.isEncounterActive = true;
-
-        if (['rare', 'epic', 'legendary'].includes(selectedEntry.rarity)) {
-            this.state.raresFound++;
-        }
-
-        // Update encounter UI
-        document.getElementById('encounter-creature-img').src = `assets/images/characters/${creature.image}`;
-        document.getElementById('encounter-creature-name').textContent = creature.name;
-        
-        const rarityEl = document.getElementById('encounter-creature-rarity');
-        rarityEl.textContent = selectedEntry.rarity.toUpperCase();
-        rarityEl.className = 'creature-rarity ' + selectedEntry.rarity;
-
-        this.updateEncounterButtons();
-        this.clearEncounterLog();
-        this.addEncounterLog(`A wild ${creature.name} appeared!`, 'success');
-
-        this.showScreen('encounter-screen');
-        AudioSystem.playSound('select');
-    },
-
-    // Throw Capsule
-    throwCapsule() {
-        if (!this.state.isEncounterActive || this.state.inventory.capsules <= 0) return;
-
-        this.state.inventory.capsules--;
-        this.state.actionsLeft--;
-        this.updateActionsDisplay();
-        this.updateInventoryDisplay();
-        this.updateEncounterButtons();
-
-        const creature = this.state.currentCreature;
-        let catchRate = creature.catchRate;
-
-        // Apply modifiers
-        if (this.state.creatureModifiers.baitActive) {
-            catchRate *= 0.7; // Bait decreases catch rate
-        }
-        if (this.state.creatureModifiers.angryActive) {
-            catchRate *= 1.5; // Angry increases catch rate
-        }
-
-        this.addEncounterLog('You threw a Capture Capsule!');
-        
-        const creatureImg = document.getElementById('encounter-creature-img');
-        creatureImg.classList.add('shake');
-
-        setTimeout(() => {
-            creatureImg.classList.remove('shake');
-
-            if (Math.random() < catchRate) {
-                // Caught!
-                this.catchCreature();
-            } else {
-                this.addEncounterLog('Oh no! It broke free!', 'warning');
-                AudioSystem.playSound('hit');
-                this.checkFlee();
-            }
-        }, 800);
-    },
-
-    // Throw Bait
-    throwBait() {
-        if (!this.state.isEncounterActive || this.state.inventory.bait <= 0) return;
-
-        this.state.inventory.bait--;
-        this.state.actionsLeft--;
-        this.updateActionsDisplay();
-        this.updateInventoryDisplay();
-        this.updateEncounterButtons();
-
-        this.state.creatureModifiers.baitActive = true;
-        this.state.creatureModifiers.baitTurns = 3;
-        this.state.creatureModifiers.angryActive = false;
-        this.state.creatureModifiers.angryTurns = 0;
-
-        this.addEncounterLog('You threw some bait!');
-        this.addEncounterLog(`${this.state.currentCreature.name} is eating...`, 'success');
-        this.updateCreatureStatus();
-
-        AudioSystem.playSound('select');
-        this.decrementModifiers();
-    },
-
-    // Throw Rock
-    throwRock() {
-        if (!this.state.isEncounterActive || this.state.inventory.rocks <= 0) return;
-
-        this.state.inventory.rocks--;
-        this.state.actionsLeft--;
-        this.updateActionsDisplay();
-        this.updateInventoryDisplay();
-        this.updateEncounterButtons();
-
-        this.state.creatureModifiers.angryActive = true;
-        this.state.creatureModifiers.angryTurns = 3;
-        this.state.creatureModifiers.baitActive = false;
-        this.state.creatureModifiers.baitTurns = 0;
-
-        this.addEncounterLog('You threw a rock!');
-        this.addEncounterLog(`${this.state.currentCreature.name} is angry!`, 'danger');
-        this.updateCreatureStatus();
-
-        const creatureImg = document.getElementById('encounter-creature-img');
-        creatureImg.classList.add('shake');
-        setTimeout(() => creatureImg.classList.remove('shake'), 500);
-
-        AudioSystem.playSound('hit');
-        this.checkFlee(true); // Higher flee chance when angry
-    },
-
-    // Run Away
-    runAway() {
-        if (!this.state.isEncounterActive) return;
-
-        this.addEncounterLog('Got away safely!');
-        this.state.isEncounterActive = false;
-
-        setTimeout(() => {
-            if (this.state.actionsLeft <= 0 || this.state.inventory.capsules <= 0) {
-                this.endRun();
-            } else {
-                this.showScreen('explore-screen');
-                this.setMessage('You ran away. Keep exploring!');
-            }
-        }, 800);
-    },
-
-    // Catch creature
-    catchCreature() {
-        const creature = this.state.currentCreature;
-        this.state.caughtCreatures.push({
-            id: creature.id,
-            name: creature.name,
-            image: creature.image,
-            rarity: creature.rarity
-        });
-
-        this.addEncounterLog(`Gotcha! ${creature.name} was caught!`, 'success');
-        AudioSystem.playSound('victory');
-
-        const creatureImg = document.getElementById('encounter-creature-img');
-        creatureImg.classList.add('caught');
-
-        this.state.isEncounterActive = false;
-        this.updateInventoryDisplay();
-
-        setTimeout(() => {
-            creatureImg.classList.remove('caught');
-            if (this.state.actionsLeft <= 0 || this.state.inventory.capsules <= 0) {
-                this.endRun();
-            } else {
-                this.showScreen('explore-screen');
-                this.setMessage(`${creature.name} was caught! Keep exploring!`);
-            }
-        }, 1200);
-    },
-
-    // Check if creature flees
-    checkFlee(angry = false) {
-        const creature = this.state.currentCreature;
-        let fleeRate = creature.fleeRate;
-
-        if (this.state.creatureModifiers.baitActive) {
-            fleeRate *= 0.5; // Bait decreases flee rate
-        }
-        if (angry || this.state.creatureModifiers.angryActive) {
-            fleeRate *= 1.5; // Angry increases flee rate
-        }
-
-        if (Math.random() < fleeRate) {
-            this.creatureFled();
-        } else {
-            this.decrementModifiers();
-        }
-    },
-
-    // Creature fled
-    creatureFled() {
-        const creature = this.state.currentCreature;
-        this.state.fledCreatures++;
-        this.state.isEncounterActive = false;
-
-        this.addEncounterLog(`${creature.name} fled!`, 'danger');
-        AudioSystem.playSound('defeat');
-
-        const creatureImg = document.getElementById('encounter-creature-img');
-        creatureImg.classList.add('fled');
-
-        setTimeout(() => {
-            creatureImg.classList.remove('fled');
-            if (this.state.actionsLeft <= 0 || this.state.inventory.capsules <= 0) {
-                this.endRun();
-            } else {
-                this.showScreen('explore-screen');
-                this.setMessage(`${creature.name} ran away... Keep looking!`);
-            }
-        }, 800);
-    },
-
-    // Decrement modifier turns
-    decrementModifiers() {
-        if (this.state.creatureModifiers.baitTurns > 0) {
-            this.state.creatureModifiers.baitTurns--;
-            if (this.state.creatureModifiers.baitTurns <= 0) {
-                this.state.creatureModifiers.baitActive = false;
-            }
-        }
-        if (this.state.creatureModifiers.angryTurns > 0) {
-            this.state.creatureModifiers.angryTurns--;
-            if (this.state.creatureModifiers.angryTurns <= 0) {
-                this.state.creatureModifiers.angryActive = false;
-            }
-        }
-        this.updateCreatureStatus();
-    },
-
-    // End the run
-    endRun() {
-        this.showScreen('results-screen');
-
-        document.getElementById('result-caught').textContent = this.state.caughtCreatures.length;
-        document.getElementById('result-fled').textContent = this.state.fledCreatures;
-        document.getElementById('result-rares').textContent = this.state.raresFound;
-
-        const creaturesContainer = document.getElementById('results-creatures');
-        if (this.state.caughtCreatures.length > 0) {
-            creaturesContainer.innerHTML = this.state.caughtCreatures.map(c => `
-                <div class="result-creature ${c.rarity}">
-                    <img src="assets/images/characters/${c.image}" alt="${c.name}">
-                    <div class="name">${c.name}</div>
+        renderBiomeSelection() {
+            const grid = document.getElementById('biome-grid');
+            grid.innerHTML = Object.values(this.biomes).map(biome => `
+                <div class="biome-card ${biome.locked ? 'locked' : ''}" onclick="SafariGame.selectBiome('${biome.id}')">
+                    <span class="biome-emoji">${biome.emoji}</span>
+                    <div class="biome-name">${biome.name}</div>
+                    <div class="biome-difficulty ${biome.difficulty}">${biome.locked ? '🔒 Locked' : biome.difficulty.toUpperCase()}</div>
                 </div>
             `).join('');
-        } else {
-            creaturesContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.8rem;">No creatures caught this run.</p>';
-        }
-
-        if (this.state.caughtCreatures.length > 0) {
-            AudioSystem.playSound('victory');
-        } else {
-            AudioSystem.playSound('defeat');
-        }
-    },
-
-    // Play Again
-    playAgain() {
-        if (this.state.tickets <= 0) {
-            alert('You need more tickets! Get 1000 $PUMPMON for each ticket.');
-            return;
-        }
-        this.showScreen('biome-select-screen');
-        this.renderBiomeSelection();
-    },
-
-    // Reset state
-    resetState() {
-        this.state.currentBiome = null;
-        this.state.currentCreature = null;
-        this.state.isEncounterActive = false;
-        this.state.caughtCreatures = [];
-        this.state.fledCreatures = 0;
-        this.state.raresFound = 0;
-    },
-
-    // UI Updates
-    setMessage(msg) {
-        document.getElementById('safari-message').textContent = msg;
-    },
-
-    updateActionsDisplay() {
-        document.getElementById('actions-left').textContent = this.state.actionsLeft;
-    },
-
-    updateInventoryDisplay() {
-        document.getElementById('inv-capsules').textContent = this.state.inventory.capsules;
-        document.getElementById('inv-bait').textContent = this.state.inventory.bait;
-        document.getElementById('inv-rocks').textContent = this.state.inventory.rocks;
-        document.getElementById('inv-caught').textContent = this.state.caughtCreatures.length;
-
-        document.getElementById('capsule-count').textContent = this.state.inventory.capsules;
-        document.getElementById('bait-count').textContent = this.state.inventory.bait;
-        document.getElementById('rock-count').textContent = this.state.inventory.rocks;
-    },
-
-    updateEncounterButtons() {
-        document.querySelector('.encounter-btn.capsule').disabled = this.state.inventory.capsules <= 0;
-        document.querySelector('.encounter-btn.bait').disabled = this.state.inventory.bait <= 0;
-        document.querySelector('.encounter-btn.rock').disabled = this.state.inventory.rocks <= 0;
-    },
-
-    updateCreatureStatus() {
-        const statusEl = document.getElementById('creature-status');
-        let html = '';
-        if (this.state.creatureModifiers.baitActive) {
-            html += '<span class="status-effect bait">🍖 Eating</span>';
-        }
-        if (this.state.creatureModifiers.angryActive) {
-            html += '<span class="status-effect angry">😠 Angry</span>';
-        }
-        statusEl.innerHTML = html;
-    },
-
-    updateTicketDisplay() {
-        const ticketEl = document.getElementById('ticket-count');
-        if (ticketEl) ticketEl.textContent = this.state.tickets;
-    },
-
-    addEncounterLog(msg, type = '') {
-        const log = document.getElementById('encounter-log');
-        const entry = document.createElement('div');
-        entry.className = 'encounter-log-entry ' + type;
-        entry.textContent = '> ' + msg;
-        log.appendChild(entry);
-        log.scrollTop = log.scrollHeight;
-    },
-
-    clearEncounterLog() {
-        document.getElementById('encounter-log').innerHTML = '';
-    }
-};
-
-// Global functions
-function openSafari() {
-    SafariGame.open();
-}
-
-function closeSafari() {
-    SafariGame.close();
-}
-
-function exitSafari() {
-    if (SafariGame.state.isEncounterActive || SafariGame.state.actionsLeft > 0) {
-        if (confirm('Are you sure? Your progress will be lost!')) {
-            SafariGame.endRun();
-        }
-    } else {
-        closeSafari();
-    }
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    SafariGame.init();
-});
-
-
-
-        /* ================================
-           WALLET SYSTEM
-           ================================ */
-        const WalletSystem = {
-    connected: false,
-    address: null,
-    balance: 0,
-    tokenBalance: 0,
-    provider: null,
-    
-    // Replace with your actual $PUMPMON token mint address
-    tokenMint: '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump',
-    
-    wallets: [
-        {
-            name: 'Phantom',
-            icon: 'assets/images/phantom-logo.png',
-            getProvider: () => {
-                if ('phantom' in window) {
-                    const provider = window.phantom?.solana;
-                    if (provider?.isPhantom) {
-                        return provider;
-                    }
-                }
-                return null;
-            },
-            downloadUrl: 'https://phantom.app/'
         },
-    ],
-    
-    init() {
-        const savedAddress = localStorage.getItem('walletAddress');
-        if (savedAddress) {
-            setTimeout(() => this.checkExistingConnection(), 500);
-        }
-    },
-    
-    async checkExistingConnection() {
-        try {
-            const provider = this.wallets[0].getProvider();
-            if (provider) {
-                const resp = await provider.connect({ onlyIfTrusted: true });
-                if (resp.publicKey) {
-                    this.handleConnection(resp.publicKey.toString(), provider, 'Phantom');
-                }
-            }
-        } catch (err) {
-            console.log('Auto-reconnect failed:', err.message);
-            localStorage.removeItem('walletAddress');
-            localStorage.removeItem('walletName');
-        }
-    },
-    
-    openModal() {
-        const modal = document.getElementById('wallet-modal');
-        const list = document.getElementById('wallet-list');
-        
-        list.innerHTML = this.wallets.map(wallet => {
-            const provider = wallet.getProvider();
-            const isInstalled = !!provider;
-            
-            return `
-                <div class="wallet-option" onclick="WalletSystem.connectTo('${wallet.name}')">
-                    <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23AB9FF2%22 width=%2240%22 height=%2240%22 rx=%228%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2218%22>👻</text></svg>'">
-                    <div class="wallet-option-info">
-                        <div class="wallet-option-name">${wallet.name}</div>
-                        <div class="wallet-option-desc">${isInstalled ? 'Click to connect' : 'Click to install'}</div>
-                    </div>
-                    <span class="wallet-option-status ${isInstalled ? '' : 'not-installed'}">
-                        ${isInstalled ? 'Detected' : 'Install'}
-                    </span>
-                </div>
-            `;
-        }).join('');
-        
-        modal.classList.add('show');
-    },
-    
-    closeModal() {
-        document.getElementById('wallet-modal').classList.remove('show');
-    },
-    
-    async connectTo(walletName) {
-        const wallet = this.wallets.find(w => w.name === walletName);
-        if (!wallet) return;
-        
-        const provider = wallet.getProvider();
-        
-        if (!provider) {
-            window.open(wallet.downloadUrl, '_blank');
-            return;
-        }
-        
-        try {
-            const resp = await provider.connect();
-            
-            if (resp.publicKey) {
-                this.handleConnection(resp.publicKey.toString(), provider, walletName);
-                this.closeModal();
-            }
-        } catch (err) {
-            console.error('Connection error:', err);
-            
-            if (err.code === 4001) {
-                alert('Connection cancelled. Please approve the connection request in Phantom.');
-            } else if (err.code === -32603) {
-                alert('Connection error. Please make sure Phantom is unlocked.');
-            } else {
-                alert('Failed to connect: ' + (err.message || 'Unknown error'));
-            }
-        }
-    },
-    
-    handleConnection(address, provider, walletName) {
-        this.connected = true;
-        this.address = address;
-        this.provider = provider;
-        
-        localStorage.setItem('walletAddress', address);
-        localStorage.setItem('walletName', walletName);
-        
-        console.log('✅ Wallet connected:', address);
-        
-        this.updateUI();
-        this.getBalance();
-        this.getTokenBalance();
-        
-        provider.on('disconnect', () => {
-            console.log('Wallet disconnected event');
-            this.handleDisconnect();
-        });
-        
-        provider.on('accountChanged', (publicKey) => {
-            if (publicKey) {
-                console.log('Account changed to:', publicKey.toString());
-                this.address = publicKey.toString();
-                localStorage.setItem('walletAddress', this.address);
-                this.updateUI();
-                this.getBalance();
-                this.getTokenBalance();
-            } else {
-                this.handleDisconnect();
-            }
-        });
-    },
-    
-    async getBalance() {
-        if (!this.address) return;
-        
-     const endpoints = [
-    'https://rpc.ankr.com/solana',
-    'https://solana-mainnet.g.alchemy.com/v2/demo'
-];
-        
-        for (const endpoint of endpoints) {
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'getBalance',
-                        params: [this.address]
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.result?.value !== undefined) {
-                    this.balance = (data.result.value / 1e9).toFixed(4);
-                    this.updateUI();
-                    console.log('💰 SOL Balance:', this.balance, 'SOL');
-                    return;
-                }
-            } catch (e) {
-                console.log('RPC failed:', endpoint, e.message);
-                continue;
-            }
-        }
-        
-        console.log('Could not fetch SOL balance from any endpoint');
-    },
-    
-    async getTokenBalance() {
-        if (!this.address || !this.tokenMint) return;
-        
-const endpoints = [
-    'https://rpc.ankr.com/solana',
-    'https://solana-mainnet.g.alchemy.com/v2/demo'
-];
-        
-        for (const endpoint of endpoints) {
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'getTokenAccountsByOwner',
-                        params: [
-                            this.address,
-                            { mint: this.tokenMint },
-                            { encoding: 'jsonParsed' }
-                        ]
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.result?.value?.length > 0) {
-                    this.tokenBalance = data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
-                } else {
-                    this.tokenBalance = 0;
-                }
-                
-                console.log('💎 $PUMPMON Balance:', this.tokenBalance);
-                this.updateUI();
-                
-                // Update Safari Zone tickets (1000 tokens = 1 ticket)
-                if (typeof SafariGame !== 'undefined') {
-                    SafariGame.state.tickets = Math.floor(this.tokenBalance / 1000);
-                    SafariGame.state.pumpmonBalance = this.tokenBalance;
-                    SafariGame.updateTicketDisplay();
-                }
-                
-                return this.tokenBalance;
-            } catch (e) {
-                console.log('Token RPC failed:', endpoint, e.message);
-                continue;
-            }
-        }
-        
-        console.log('Could not fetch token balance from any endpoint');
-        return 0;
-    },
-    
-    // Fetch balance for any SPL token by mint address
-    async getAnyTokenBalance(mintAddress) {
-        if (!this.address || !mintAddress) return 0;
-        
-        try {
-            const response = await fetch('https://api.mainnet-beta.solana.com', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    id: 1,
-                    method: 'getTokenAccountsByOwner',
-                    params: [
-                        this.address,
-                        { mint: mintAddress },
-                        { encoding: 'jsonParsed' }
-                    ]
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.result?.value?.length > 0) {
-                return data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
-            }
-            return 0;
-        } catch (error) {
-            console.error('Error fetching token balance:', error);
-            return 0;
-        }
-    },
-    
-    // Fetch all SPL tokens owned by the wallet
-    async getAllTokenBalances() {
-        if (!this.address) return [];
-        
-        try {
-            const response = await fetch('https://api.mainnet-beta.solana.com', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    id: 1,
-                    method: 'getTokenAccountsByOwner',
-                    params: [
-                        this.address,
-                        { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
-                        { encoding: 'jsonParsed' }
-                    ]
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.result?.value?.length > 0) {
-                return data.result.value.map(account => ({
-                    mint: account.account.data.parsed.info.mint,
-                    balance: account.account.data.parsed.info.tokenAmount.uiAmount || 0,
-                    decimals: account.account.data.parsed.info.tokenAmount.decimals,
-                    raw: account.account.data.parsed.info.tokenAmount.amount
-                })).filter(token => token.balance > 0);
-            }
-            return [];
-        } catch (error) {
-            console.error('Error fetching all tokens:', error);
-            return [];
-        }
-    },
-    
-    updateUI() {
-        const btn = document.getElementById('wallet-btn');
-        const text = document.getElementById('wallet-text');
-        
-        if (this.connected && this.address) {
-            const shortAddress = this.address.slice(0, 4) + '...' + this.address.slice(-4);
-            text.innerHTML = `
-                <span class="wallet-address">${shortAddress}</span>
-                ${this.balance ? `<span class="wallet-balance">${this.balance} SOL</span>` : ''}
-            `;
-            btn.classList.add('connected');
-            
-            // Update token balance display elements if they exist
-            const tokenBalanceEl = document.getElementById('pumpmon-balance');
-            if (tokenBalanceEl) {
-                tokenBalanceEl.textContent = this.tokenBalance.toLocaleString();
-            }
-            
-            const tokenDisplayEl = document.getElementById('token-balance-display');
-            if (tokenDisplayEl) {
-                tokenDisplayEl.style.display = 'block';
-            }
-        } else {
-            text.textContent = 'Connect Wallet';
-            btn.classList.remove('connected');
-            
-            const tokenDisplayEl = document.getElementById('token-balance-display');
-            if (tokenDisplayEl) {
-                tokenDisplayEl.style.display = 'none';
-            }
-        }
-    },
-    
-    async showDisconnectOption() {
-        if (confirm('Disconnect wallet?')) {
-            await this.disconnect();
-        }
-    },
-    
-    handleDisconnect() {
-        this.connected = false;
-        this.address = null;
-        this.balance = 0;
-        this.tokenBalance = 0;
-        this.provider = null;
-        
-        localStorage.removeItem('walletAddress');
-        localStorage.removeItem('walletName');
-        
-        this.updateUI();
-        console.log('Wallet disconnected');
-    },
-    
-    async disconnect() {
-        try {
-            if (this.provider?.disconnect) {
-                await this.provider.disconnect();
-            }
-        } catch (e) {
-            console.log('Disconnect error:', e);
-        }
-        
-        this.handleDisconnect();
-    },
-    
-    // Refresh all balances
-    async refreshBalances() {
-        if (!this.connected) return;
-        await this.getBalance();
-        await this.getTokenBalance();
-    }
-};
 
-// Global helper functions
-function connectWallet() {
-    if (WalletSystem.connected) {
-        WalletSystem.showDisconnectOption();
-    } else {
-        WalletSystem.openModal();
-    }
-}
-
-function copyCA() {
-    const ca = document.getElementById('ca-address').textContent;
-    navigator.clipboard.writeText(ca);
-    
-    const btn = document.querySelector('.ca-copy');
-    btn.textContent = '✅';
-    setTimeout(() => btn.textContent = '📋', 1500);
-}
-
-function closeWalletModal() {
-    WalletSystem.closeModal();
-}
-
-// Auto-refresh balances every 30 seconds when connected
-setInterval(() => {
-    if (WalletSystem.connected) {
-        WalletSystem.refreshBalances();
-    }
-}, 30000);
-
-        /* ================================
-           AUDIO SYSTEM
-           ================================ */
-        const AudioSystem = {
-    music: null,
-    battleMusic: null,
-    isMusicPlaying: false,
-    currentTrack: 'main',
-    
-    init() {
-        this.music = new Audio('assets/audio/main-theme.mp3');
-        this.battleMusic = new Audio('assets/audio/battle-theme.mp3');
-        this.music.loop = true;
-        this.battleMusic.loop = true;
-        this.music.volume = 0.4;
-        this.battleMusic.volume = 0.5;
-        
-        // Try autoplay
-        this.tryAutoplay();
-    },
-    
-    tryAutoplay() {
-        const playAttempt = this.music.play();
-        
-        if (playAttempt !== undefined) {
-            playAttempt.then(() => {
-                // Autoplay worked
-                this.isMusicPlaying = true;
-                this.updateButton(true);
-                console.log('Music autoplay started');
-            }).catch(() => {
-                // Autoplay blocked - play on first interaction
-                console.log('Autoplay blocked, waiting for interaction');
-                
-                const startMusic = () => {
-                    this.playMusic();
-                    document.removeEventListener('click', startMusic);
-                    document.removeEventListener('scroll', startMusic);
-                };
-                
-                document.addEventListener('click', startMusic, { once: true });
-                document.addEventListener('scroll', startMusic, { once: true });
-            });
-        }
-    },
-    
-    updateButton(isPlaying) {
-        const btn = document.getElementById('music-btn');
-        if (btn) {
-            if (isPlaying) {
-                btn.classList.add('playing');
-                btn.textContent = '🔊';
-            } else {
-                btn.classList.remove('playing');
-                btn.textContent = '🎵';
-            }
-        }
-    },
-    
-    toggleMusic() {
-        if (this.isMusicPlaying) {
-            this.stopMusic();
-        } else {
-            this.playMusic();
-        }
-    },
-    
-    playMusic() {
-        const track = this.currentTrack === 'battle' ? this.battleMusic : this.music;
-        track.play().then(() => {
-            this.isMusicPlaying = true;
-            this.updateButton(true);
-        }).catch(e => console.log('Audio play failed:', e));
-    },
-    
-    stopMusic() {
-        this.music.pause();
-        this.battleMusic.pause();
-        this.isMusicPlaying = false;
-        this.updateButton(false);
-    },
-    
-    switchTrack(track) {
-        if (this.currentTrack === track) return;
-        
-        const wasPlaying = this.isMusicPlaying;
-        this.music.pause();
-        this.battleMusic.pause();
-        this.music.currentTime = 0;
-        this.battleMusic.currentTime = 0;
-        this.currentTrack = track;
-        
-        if (wasPlaying) {
-            this.playMusic();
-        }
-    },
-    
-    playSound(type) {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        
-        switch(type) {
-            case 'hit':
-                oscillator.frequency.setValueAtTime(200, ctx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.1);
-                break;
-                
-            case 'critical':
-                oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
-                oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
-                gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.2);
-                break;
-                
-            case 'victory':
-                const notes = [523, 659, 784, 1047];
-                notes.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.15);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
-                    osc.start(ctx.currentTime + i * 0.15);
-                    osc.stop(ctx.currentTime + i * 0.15 + 0.3);
-                });
-                break;
-                
-            case 'defeat':
-                oscillator.frequency.setValueAtTime(300, ctx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.5);
-                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.5);
-                break;
-                
-            case 'select':
-                oscillator.frequency.setValueAtTime(600, ctx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
-                gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.05);
-                break;
-                
-            case 'heal':
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
-                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.3);
-                break;
-        }
-    }
-};
-
-function toggleMusic() {
-    AudioSystem.toggleMusic();
-}
-
-        /* ================================
-           GAME DATA
-           ================================ */
-const TYPE_CHART = {
-    water: { fire: 2, water: 0.5, grass: 0.5, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 1, rock: 2 },
-    fire: { water: 0.5, fire: 0.5, grass: 2, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 2, rock: 0.5 },
-    grass: { water: 2, fire: 0.5, grass: 0.5, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 0.5, rock: 2 },
-    electric: { water: 2, fire: 1, grass: 0.5, electric: 0.5, normal: 1, psychic: 1, dark: 1, ice: 1, rock: 1 },
-    normal: { water: 1, fire: 1, grass: 1, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 1, rock: 0.5 },
-    psychic: { water: 1, fire: 1, grass: 1, electric: 1, normal: 1, psychic: 0.5, dark: 0, ice: 1, rock: 1 },
-    dark: { water: 1, fire: 1, grass: 1, electric: 1, normal: 1, psychic: 2, dark: 0.5, ice: 1, rock: 1 },
-    ice: { water: 0.5, fire: 0.5, grass: 2, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 0.5, rock: 1 },
-    rock: { water: 0.5, fire: 2, grass: 0.5, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 2, rock: 1 }
-};
-
-       const CHARACTERS = {
-    pepe: { 
-        name: 'PEPE', 
-        image: 'pepe.png', 
-        hp: 100, 
-        attack: 35, 
-        defense: 30, 
-        speed: 40, 
-        type: 'water',
-        description: 'The OG memecoin legend. Balanced stats with healing powers.',
-        role: 'Balanced'
-    },
-    whale: { 
-        name: 'WHALE', 
-        image: 'whale.png', 
-        hp: 130, 
-        attack: 28, 
-        defense: 50, 
-        speed: 20, 
-        type: 'water',
-        description: 'Massive HP pool and crushing defense. Slow but unstoppable.',
-        role: 'Tank'
-    },
-    cow: { 
-        name: 'COW', 
-        image: 'cow.png', 
-        hp: 115, 
-        attack: 32, 
-        defense: 40, 
-        speed: 30, 
-        type: 'normal',
-        description: 'Sacred bovine with earthquake powers. Well-rounded bruiser.',
-        role: 'Bruiser'
-    },
-    moodeng: { 
-        name: 'MOODENG', 
-        image: 'moodeng.png', 
-        hp: 95, 
-        attack: 42, 
-        defense: 28, 
-        speed: 45, 
-        type: 'psychic',
-        description: 'Viral hippo with psychic chomps. High attack potential.',
-        role: 'Attacker'
-    },
-    catana: { 
-        name: 'CATANA', 
-        image: 'catana.png', 
-        hp: 82, 
-        attack: 48, 
-        defense: 22, 
-        speed: 58, 
-        type: 'dark',
-        description: 'Ninja cat assassin. Glass cannon with critical hits.',
-        role: 'Assassin'
-    },
-dicklet: { 
-    name: 'DICKLET', 
-    image: 'dicklet.png', 
-    hp: 120, 
-    attack: 38, 
-    defense: 55, 
-    speed: 15, 
-    type: 'rock',
-    description: 'Ancient rock warrior. Extremely tanky with devastating quakes.',
-    role: 'Tank'
-},
-
-// PENGUIN - change to ice type
-penguin: { 
-    name: 'PENGUIN', 
-    image: 'penguin.png', 
-    hp: 88, 
-    attack: 45, 
-    defense: 32, 
-    speed: 50, 
-    type: 'ice',
-    description: 'Icy evolved form of PEPE. Fast attacker with freezing powers.',
-    role: 'Speedster'
-}
-};
-
-       const MOVES = {
-    pepe: [
-        { name: 'WATER GUN', type: 'water', power: 40, accuracy: 100, pp: 25 },
-        { name: 'BUBBLE BEAM', type: 'water', power: 65, accuracy: 100, pp: 15, effect: 'speed-down', effectChance: 10 },
-        { name: 'MEME MAGIC', type: 'psychic', power: 50, accuracy: 100, pp: 15, effect: 'confuse', effectChance: 10 },
-        { name: 'RECOVER', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 50 }
-    ],
-    whale: [
-        { name: 'SURF', type: 'water', power: 90, accuracy: 100, pp: 15 },
-        { name: 'BODY SLAM', type: 'normal', power: 85, accuracy: 100, pp: 15, effect: 'paralyze', effectChance: 30 },
-        { name: 'MARKET CRASH', type: 'dark', power: 120, accuracy: 85, pp: 5 },
-        { name: 'REST', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 100, selfSleep: true }
-    ],
-    cow: [
-        { name: 'STOMP', type: 'normal', power: 65, accuracy: 100, pp: 20, effect: 'flinch', effectChance: 30 },
-        { name: 'EARTHQUAKE', type: 'normal', power: 100, accuracy: 100, pp: 10 },
-        { name: 'MILK DRINK', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 50 },
-        { name: 'ZEN HEADBUTT', type: 'psychic', power: 80, accuracy: 90, pp: 15, effect: 'flinch', effectChance: 20 }
-    ],
-    moodeng: [
-        { name: 'PSYCHIC', type: 'psychic', power: 90, accuracy: 100, pp: 10, effect: 'spdef-down', effectChance: 10 },
-        { name: 'CRUNCH', type: 'dark', power: 80, accuracy: 100, pp: 15, effect: 'def-down', effectChance: 20 },
-        { name: 'HIPPO CHOMP', type: 'dark', power: 60, accuracy: 100, pp: 25 },
-        { name: 'CALM MIND', type: 'psychic', power: 0, accuracy: 100, pp: 20, boost: { attack: 1 } }
-    ],
-    catana: [
-        { name: 'NIGHT SLASH', type: 'dark', power: 70, accuracy: 100, pp: 15, highCrit: true },
-        { name: 'SUCKER PUNCH', type: 'dark', power: 70, accuracy: 100, pp: 5, priority: true },
-        { name: 'SLASH', type: 'normal', power: 70, accuracy: 100, pp: 20, highCrit: true },
-        { name: 'SWORDS DANCE', type: 'normal', power: 0, accuracy: 100, pp: 20, boost: { attack: 2 } }
-    ],
-// Updated moves with proper types
-dicklet: [
-    { name: 'ROCK THROW', type: 'rock', power: 50, accuracy: 90, pp: 25 },
-    { name: 'EARTHQUAKE', type: 'rock', power: 100, accuracy: 100, pp: 10 },
-    { name: 'STONE EDGE', type: 'rock', power: 100, accuracy: 80, pp: 5, highCrit: true },
-    { name: 'HARDEN', type: 'rock', power: 0, accuracy: 100, pp: 30, boost: { defense: 1 } }
-],
-penguin: [
-    { name: 'ICE BEAM', type: 'ice', power: 90, accuracy: 100, pp: 10, effect: 'freeze', effectChance: 10 },
-    { name: 'SURF', type: 'water', power: 90, accuracy: 100, pp: 15 },
-    { name: 'BLIZZARD', type: 'ice', power: 110, accuracy: 70, pp: 5, effect: 'freeze', effectChance: 10 },
-    { name: 'AQUA RING', type: 'water', power: 0, accuracy: 100, pp: 20, heal: 25 }
-]
-};
-
-        /* ================================
-           GAME STATE
-           ================================ */
-        let gameState = {
-            playerKey: 'pepe',
-            enemyKey: 'whale',
-            playerHP: 100,
-            playerMaxHP: 100,
-            enemyHP: 130,
-            enemyMaxHP: 130,
-            playerLevel: 50,
-            enemyLevel: 48,
-            isPlayerTurn: true,
-            selectedChar: 'pepe',
-            moves: [],
-            playerStatus: null,
-            enemyStatus: null,
-            playerShiny: false,
-            enemyShiny: false,
-            playerBoosts: { attack: 0, defense: 0, speed: 0 },
-            enemyBoosts: { attack: 0, defense: 0, speed: 0 },
-            turnCount: 0
-        };
-
-        /* ================================
-           GAME FUNCTIONS
-           ================================ */
-        function checkBattleBackground() {
-            const arena = document.getElementById('battle-arena');
-            const bgImage = new Image();
-            bgImage.src = 'assets/images/battle-bg.png';
-            
-            bgImage.onload = () => arena.classList.remove('no-bg');
-            bgImage.onerror = () => arena.classList.add('no-bg');
-            
-            setTimeout(() => {
-                if (!bgImage.complete || bgImage.naturalWidth === 0) {
-                    arena.classList.add('no-bg');
-                }
-            }, 1000);
-        }
-
-        function init() {
-            checkBattleBackground();
-            renderCharacterGrid();
-            initBattle();
-        }
-
-        function renderCharacterGrid() {
-            const grid = document.getElementById('char-grid');
-            grid.innerHTML = '';
-            
-            Object.entries(CHARACTERS).forEach(([key, char]) => {
-                const card = document.createElement('div');
-                card.className = `char-card ${key === gameState.selectedChar ? 'selected' : ''}`;
-                card.onclick = () => selectChar(key);
-                
-                const getStatClass = (value, stat) => {
-                    if (stat === 'hp') return value >= 110 ? 'high' : value >= 95 ? 'medium' : 'low';
-                    if (stat === 'attack') return value >= 42 ? 'high' : value >= 32 ? 'medium' : 'low';
-                    if (stat === 'defense') return value >= 40 ? 'high' : value >= 28 ? 'medium' : 'low';
-                    if (stat === 'speed') return value >= 45 ? 'high' : value >= 30 ? 'medium' : 'low';
-                    return '';
-                };
-                
-                card.innerHTML = `
-                    <img src="assets/images/characters/${char.image}" alt="${char.name}">
-                    <div class="name">${char.name}</div>
-                    <span class="type-badge ${char.type}">${char.type}</span>
-                    <div class="role">⚔️ ${char.role}</div>
-                    <div class="description">${char.description}</div>
-                    <div class="stats">
-                        <div class="stat">
-                            <span class="stat-label">HP</span>
-                            <span class="stat-value ${getStatClass(char.hp, 'hp')}">${char.hp}</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">ATK</span>
-                            <span class="stat-value ${getStatClass(char.attack, 'attack')}">${char.attack}</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <span class="stat-value ${getStatClass(char.defense, 'defense')}">${char.defense}</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">SPD</span>
-                            <span class="stat-value ${getStatClass(char.speed, 'speed')}">${char.speed}</span>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function selectChar(key) {
-            gameState.selectedChar = key;
-            AudioSystem.playSound('select');
-            document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-            document.querySelector(`.char-card:nth-child(${Object.keys(CHARACTERS).indexOf(key) + 1})`).classList.add('selected');
-        }
-
-        function selectAndPlay(key) {
-            gameState.selectedChar = key;
-            gameState.playerKey = key;
-            AudioSystem.playSound('select');
-            initBattle();
-            scrollToGame();
-        }
-
-        function initBattle() {
-            const playerKey = gameState.playerKey;
-            const player = CHARACTERS[playerKey];
-            
-            const enemyKeys = Object.keys(CHARACTERS).filter(k => k !== playerKey);
-            const enemyKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
-            const enemy = CHARACTERS[enemyKey];
-            
-            gameState.enemyKey = enemyKey;
-            gameState.playerHP = player.hp;
-            gameState.playerMaxHP = player.hp;
-            gameState.enemyHP = enemy.hp;
-            gameState.enemyMaxHP = enemy.hp;
-            gameState.playerLevel = 50;
-            gameState.enemyLevel = 45 + Math.floor(Math.random() * 10);
-            gameState.moves = MOVES[playerKey].map(m => ({...m, currentPP: m.pp}));
-            
-            gameState.playerStatus = null;
-            gameState.enemyStatus = null;
-            gameState.playerBoosts = { attack: 0, defense: 0, speed: 0 };
-            gameState.enemyBoosts = { attack: 0, defense: 0, speed: 0 };
-            gameState.turnCount = 0;
-            
-            gameState.playerShiny = Math.random() < 0.05;
-            gameState.enemyShiny = Math.random() < 0.05;
-            
-            gameState.isPlayerTurn = player.speed >= enemy.speed;
-            
-            document.getElementById('player-name').textContent = player.name + (gameState.playerShiny ? ' ✨' : '');
-            document.getElementById('enemy-name').textContent = enemy.name + (gameState.enemyShiny ? ' ✨' : '');
-            document.getElementById('player-hp').textContent = player.hp;
-            document.getElementById('player-max-hp').textContent = player.hp;
-            document.getElementById('player-level').textContent = gameState.playerLevel;
-            document.getElementById('enemy-level').textContent = gameState.enemyLevel;
-            
-            document.getElementById('player-img').src = `assets/images/characters/${player.image}`;
-            document.getElementById('enemy-img').src = `assets/images/characters/${enemy.image}`;
-            
-            const backImageName = player.image.replace('.png', '-back.png');
-            document.getElementById('player-img-back').src = `assets/images/characters/${backImageName}`;
-            document.getElementById('player-img-back').onerror = function() {
-                this.src = `assets/images/characters/${player.image}`;
-            };
-            
-            const playerSprite = document.getElementById('player-sprite');
-            const playerSpriteBack = document.getElementById('player-sprite-back');
-            const enemySprite = document.getElementById('enemy-sprite');
-            playerSprite.classList.toggle('shiny', gameState.playerShiny);
-            playerSpriteBack.classList.toggle('shiny', gameState.playerShiny);
-            enemySprite.classList.toggle('shiny', gameState.enemyShiny);
-            
-            playerSprite.style.opacity = '1';
-            playerSprite.style.transform = '';
-            playerSpriteBack.style.opacity = '1';
-            playerSpriteBack.style.transform = '';
-            enemySprite.style.opacity = '1';
-            enemySprite.style.transform = '';
-            
-            updateHPBars();
-            updateStatusDisplay();
-            updateTurnIndicator();
-            renderMoves();
-            clearLog();
-            
-            showBattleIntro(enemy);
-            
-            const battleResult = document.getElementById('battle-result');
-            battleResult.style.display = 'none';
-            battleResult.classList.remove('show');
-        }
-        
-        function showBattleIntro(enemy) {
-            const intro = document.getElementById('battle-intro');
-            const text = document.getElementById('intro-text');
-            
-            intro.classList.remove('hide');
-            intro.style.animation = 'none';
-            intro.offsetHeight;
-            intro.style.animation = 'introFade 2.5s ease-out forwards';
-            
-            const shinyText = gameState.enemyShiny ? '<span class="shiny-name">✨ SHINY ' + enemy.name + ' ✨</span>' : enemy.name;
-            text.innerHTML = `A wild ${shinyText} appeared!`;
-            
-            setTimeout(() => {
-                intro.classList.add('hide');
-                addLog(`A wild ${enemy.name} appeared!`, 'system');
-                if (gameState.enemyShiny) addLog(`It's shiny! ✨`, 'info');
-                addLog(`Go! ${CHARACTERS[gameState.playerKey].name}!`, 'system');
-                if (gameState.playerShiny) addLog(`Your ${CHARACTERS[gameState.playerKey].name} is shiny! ✨`, 'info');
-                
-                if (!gameState.isPlayerTurn) {
-                    addLog(`${enemy.name} is faster!`, 'enemy');
-                    setTimeout(() => enemyTurn(), 1000);
-                }
-            }, 2500);
-        }
-        
-        function updateTurnIndicator() {
-            const indicator = document.getElementById('turn-indicator');
-            indicator.textContent = gameState.isPlayerTurn ? 'YOUR TURN' : 'ENEMY TURN';
-            indicator.className = 'turn-indicator' + (gameState.isPlayerTurn ? '' : ' enemy');
-        }
-        
-        function updateStatusDisplay() {
-            const playerStatus = document.getElementById('player-status');
-            const enemyStatus = document.getElementById('enemy-status');
-            
-            const statusNames = { par: 'PAR', brn: 'BRN', psn: 'PSN', slp: 'SLP', frz: 'FRZ' };
-            
-            playerStatus.innerHTML = gameState.playerStatus 
-                ? `<span class="status-badge status-${gameState.playerStatus}">${statusNames[gameState.playerStatus]}</span>` 
-                : '';
-            enemyStatus.innerHTML = gameState.enemyStatus 
-                ? `<span class="status-badge status-${gameState.enemyStatus}">${statusNames[gameState.enemyStatus]}</span>` 
-                : '';
-        }
-
-        function renderMoves() {
-            const grid = document.getElementById('move-grid');
-            grid.innerHTML = '';
-            
-            const typeColors = {
-                water: '#3b82f6',
-                electric: '#fbbf24',
-                fire: '#ef4444',
-                normal: '#a3a3a3',
-                dark: '#374151',
-                psychic: '#ec4899',
-                grass: '#22c55e'
-            };
-            
-            gameState.moves.forEach((move, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'move-btn';
-                btn.disabled = !gameState.isPlayerTurn || move.currentPP <= 0;
-                btn.onclick = () => useMove(i);
-                
-                const typeColor = typeColors[move.type] || '#a3a3a3';
-                const textColor = move.type === 'electric' ? '#000' : '#fff';
-                
-                btn.innerHTML = `
-                    <div style="font-weight: 600; font-size: 0.8rem; margin-bottom: 6px; color: #fff;">${move.name}</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: 600; background: ${typeColor}; color: ${textColor};">${move.type.toUpperCase()}</span>
-                        <span style="font-size: 0.7rem; color: #888;">PP ${move.currentPP}/${move.pp}</span>
-                    </div>
-                `;
-                grid.appendChild(btn);
-            });
-        }
-
-        function useMove(index) {
-            if (!gameState.isPlayerTurn) return;
-            
-            const move = gameState.moves[index];
-            if (move.currentPP <= 0) return;
-            
-            move.currentPP--;
-            gameState.isPlayerTurn = false;
-            updateTurnIndicator();
-            AudioSystem.playSound('select');
-            
-            const player = CHARACTERS[gameState.playerKey];
-            const enemy = CHARACTERS[gameState.enemyKey];
-            
-            if (gameState.playerStatus === 'par' && Math.random() < 0.25) {
-                addLog(`${player.name} is paralyzed! It can't move!`, 'info');
-                setTimeout(() => enemyTurn(), 1000);
+        selectBiome(biomeId) {
+            const biome = this.biomes[biomeId];
+            if (biome.locked) {
+                alert('This biome is locked! Complete more runs to unlock.');
                 return;
             }
-            
-            if (gameState.playerStatus === 'slp') {
-                if (Math.random() < 0.33) {
-                    gameState.playerStatus = null;
-                    updateStatusDisplay();
-                    addLog(`${player.name} woke up!`, 'info');
-                } else {
-                    addLog(`${player.name} is fast asleep!`, 'info');
-                    setTimeout(() => enemyTurn(), 1000);
-                    return;
-                }
-            }
-            
-            addLog(`${player.name} used ${move.name}!`);
-            
-            const playerSpriteBack = document.getElementById('player-sprite-back');
-            playerSpriteBack.classList.add('attacking');
-            setTimeout(() => playerSpriteBack.classList.remove('attacking'), 400);
-            
-            setTimeout(() => {
-                if (move.accuracy && Math.random() * 100 > move.accuracy) {
-                    addLog(`${player.name}'s attack missed!`, 'info');
-                    AudioSystem.playSound('select');
-                    showDamageNumber('MISS', 'enemy', true);
-                    setTimeout(() => enemyTurn(), 1000);
-                    return;
-                }
-                
-                if (move.heal) {
-                    const healAmount = Math.floor(gameState.playerMaxHP * (move.heal / 100));
-                    gameState.playerHP = Math.min(gameState.playerMaxHP, gameState.playerHP + healAmount);
-                    addLog(`${player.name} recovered ${healAmount} HP!`, 'info');
-                    AudioSystem.playSound('heal');
-                    showDamageNumber(`+${healAmount}`, 'player', false, true);
-                    
-                    if (move.selfSleep) {
-                        gameState.playerStatus = 'slp';
-                        updateStatusDisplay();
-                        addLog(`${player.name} fell asleep!`, 'info');
-                    }
-                    
-                    updateHPBars();
-                    setTimeout(() => enemyTurn(), 1000);
-                    return;
-                }
-                
-                if (move.boost) {
-                    Object.entries(move.boost).forEach(([stat, amount]) => {
-                        gameState.playerBoosts[stat] = Math.min(6, gameState.playerBoosts[stat] + amount);
-                        const sharpText = amount >= 2 ? ' sharply' : '';
-                        addLog(`${player.name}'s ${stat} rose${sharpText}!`, 'info');
-                    });
-                    AudioSystem.playSound('heal');
-                    setTimeout(() => enemyTurn(), 1000);
-                    return;
-                }
-                
-                const result = calculateDamage(move, player, enemy, true);
-                gameState.enemyHP = Math.max(0, gameState.enemyHP - result.damage);
-                
-                showDamageNumber(result.damage, 'enemy', result.isCritical);
-                
-                if (result.effectiveness > 1) {
-                    addLog("It's super effective!", 'info');
-                    showEffectivenessPopup('super');
-                    AudioSystem.playSound('critical');
-                } else if (result.effectiveness < 1 && result.effectiveness > 0) {
-                    addLog("It's not very effective...", 'info');
-                    showEffectivenessPopup('not-very');
-                } else if (result.effectiveness === 0) {
-                    addLog(`It doesn't affect ${enemy.name}...`, 'info');
-                    showEffectivenessPopup('immune');
-                }
-                
-                if (result.isCritical) {
-                    addLog(`Critical hit! Dealt ${result.damage} damage!`);
-                    AudioSystem.playSound('critical');
-                    screenShake();
-                } else {
-                    addLog(`Dealt ${result.damage} damage!`);
-                    AudioSystem.playSound('hit');
-                }
-                
-                if (move.effect && move.effectChance && Math.random() * 100 < move.effectChance) {
-                    applyStatus('enemy', move.effect);
-                }
-                
-                const enemySprite = document.getElementById('enemy-sprite');
-                enemySprite.classList.add('damaged');
-                setTimeout(() => enemySprite.classList.remove('damaged'), 400);
-                
-                updateHPBars();
-                renderMoves();
-                
-                if (gameState.enemyHP <= 0) {
-                    endBattle(true);
-                } else {
-                    setTimeout(enemyTurn, 1000);
-                }
-            }, 300);
-        }
 
-        function enemyTurn() {
-            const enemy = CHARACTERS[gameState.enemyKey];
-            const player = CHARACTERS[gameState.playerKey];
-            const enemyMoves = MOVES[gameState.enemyKey];
-            
-            gameState.turnCount++;
-            
-            if (gameState.enemyStatus === 'brn' || gameState.enemyStatus === 'psn') {
-                const statusDamage = Math.floor(gameState.enemyMaxHP / 16);
-                gameState.enemyHP = Math.max(0, gameState.enemyHP - statusDamage);
-                const statusName = gameState.enemyStatus === 'brn' ? 'burn' : 'poison';
-                addLog(`${enemy.name} was hurt by ${statusName}!`, 'info');
-                updateHPBars();
-                
-                if (gameState.enemyHP <= 0) {
-                    endBattle(true);
-                    return;
-                }
-            }
-            
-            if (gameState.enemyStatus === 'par' && Math.random() < 0.25) {
-                addLog(`${enemy.name} is paralyzed! It can't move!`, 'enemy');
-                endEnemyTurn();
+            this.state.tickets--;
+            this.updateTicketDisplay();
+
+            this.state.currentBiome = biome;
+            this.state.actionsLeft = biome.maxActions;
+            this.state.maxActions = biome.maxActions;
+            this.state.inventory = { capsules: 5, bait: 3, rocks: 3 };
+            this.state.caughtCreatures = [];
+            this.state.fledCreatures = 0;
+            this.state.raresFound = 0;
+
+            document.getElementById('safari-biome-name').textContent = `${biome.emoji} ${biome.name} Zone`;
+            this.updateActionsDisplay();
+            this.updateInventoryDisplay();
+
+            this.showScreen('explore-screen');
+            this.setMessage(`You entered the ${biome.name}! Look for creatures in the tall grass.`);
+
+            AudioSystem.playSound('select');
+        },
+
+        explore() {
+            if (this.state.actionsLeft <= 0) {
+                this.endRun();
                 return;
             }
-            
-            if (gameState.enemyStatus === 'slp') {
-                if (Math.random() < 0.33) {
-                    gameState.enemyStatus = null;
-                    updateStatusDisplay();
-                    addLog(`${enemy.name} woke up!`, 'enemy');
-                } else {
-                    addLog(`${enemy.name} is fast asleep!`, 'enemy');
-                    endEnemyTurn();
-                    return;
-                }
-            }
-            
-            let move;
-            if (gameState.playerHP < gameState.playerMaxHP * 0.3) {
-                move = enemyMoves.reduce((best, m) => (m.power || 0) > (best.power || 0) ? m : best);
+
+            this.state.actionsLeft--;
+            this.updateActionsDisplay();
+
+            if (Math.random() < 0.7) {
+                this.triggerEncounter();
             } else {
-                const superMoves = enemyMoves.filter(m => m.power && getTypeEffectiveness(m.type, player.type) > 1);
-                if (superMoves.length > 0 && Math.random() < 0.7) {
-                    move = superMoves[Math.floor(Math.random() * superMoves.length)];
-                } else {
-                    move = enemyMoves[Math.floor(Math.random() * enemyMoves.length)];
+                const messages = [
+                    'The grass rustles... but nothing appears.',
+                    'You hear something in the distance...',
+                    'A shadow moves, but disappears.',
+                    'The area seems quiet...'
+                ];
+                this.setMessage(messages[Math.floor(Math.random() * messages.length)]);
+                AudioSystem.playSound('select');
+
+                if (this.state.actionsLeft <= 0) {
+                    setTimeout(() => this.endRun(), 1500);
                 }
             }
+        },
+
+        triggerEncounter() {
+            const biome = this.state.currentBiome;
             
-            addLog(`${enemy.name} used ${move.name}!`, 'enemy');
+            const totalWeight = biome.encounterTable.reduce((sum, c) => sum + c.weight, 0);
+            let roll = Math.random() * totalWeight;
+            let selectedEntry = biome.encounterTable[0];
+
+            for (const entry of biome.encounterTable) {
+                roll -= entry.weight;
+                if (roll <= 0) {
+                    selectedEntry = entry;
+                    break;
+                }
+            }
+
+            const creature = this.creatures[selectedEntry.id];
+            this.state.currentCreature = {
+                ...creature,
+                id: selectedEntry.id,
+                rarity: selectedEntry.rarity,
+                catchRate: creature.baseCatchRate,
+                fleeRate: creature.baseFleeRate * biome.fleeRateModifier
+            };
+
+            this.state.creatureModifiers = {
+                baitActive: false,
+                baitTurns: 0,
+                angryActive: false,
+                angryTurns: 0
+            };
+            this.state.isEncounterActive = true;
+
+            if (['rare', 'epic', 'legendary'].includes(selectedEntry.rarity)) {
+                this.state.raresFound++;
+            }
+
+            document.getElementById('encounter-creature-img').src = `assets/images/characters/${creature.image}`;
+            document.getElementById('encounter-creature-name').textContent = creature.name;
             
-            const enemySprite = document.getElementById('enemy-sprite');
-            enemySprite.classList.add('attacking');
-            setTimeout(() => enemySprite.classList.remove('attacking'), 400);
+            const rarityEl = document.getElementById('encounter-creature-rarity');
+            rarityEl.textContent = selectedEntry.rarity.toUpperCase();
+            rarityEl.className = 'creature-rarity ' + selectedEntry.rarity;
+
+            this.updateEncounterButtons();
+            this.clearEncounterLog();
+            this.addEncounterLog(`A wild ${creature.name} appeared!`, 'success');
+
+            this.showScreen('encounter-screen');
+            AudioSystem.playSound('select');
+        },
+
+        throwCapsule() {
+            if (!this.state.isEncounterActive || this.state.inventory.capsules <= 0) return;
+
+            this.state.inventory.capsules--;
+            this.state.actionsLeft--;
+            this.updateActionsDisplay();
+            this.updateInventoryDisplay();
+            this.updateEncounterButtons();
+
+            const creature = this.state.currentCreature;
+            let catchRate = creature.catchRate;
+
+            if (this.state.creatureModifiers.baitActive) {
+                catchRate *= 0.7;
+            }
+            if (this.state.creatureModifiers.angryActive) {
+                catchRate *= 1.5;
+            }
+
+            this.addEncounterLog('You threw a Capture Capsule!');
             
+            const creatureImg = document.getElementById('encounter-creature-img');
+            creatureImg.classList.add('shake');
+
             setTimeout(() => {
-                if (move.accuracy && Math.random() * 100 > move.accuracy) {
-                    addLog(`${enemy.name}'s attack missed!`, 'enemy');
-                    showDamageNumber('MISS', 'player', true);
-                    endEnemyTurn();
-                    return;
-                }
-                
-                if (move.heal) {
-                    const healAmount = Math.floor(gameState.enemyMaxHP * (move.heal / 100));
-                    gameState.enemyHP = Math.min(gameState.enemyMaxHP, gameState.enemyHP + healAmount);
-                    addLog(`${enemy.name} recovered health!`, 'enemy');
-                    AudioSystem.playSound('heal');
-                    updateHPBars();
-                    endEnemyTurn();
-                    return;
-                }
-                
-                if (move.boost) {
-                    Object.entries(move.boost).forEach(([stat, amount]) => {
-                        gameState.enemyBoosts[stat] = Math.min(6, gameState.enemyBoosts[stat] + amount);
-                    });
-                    addLog(`${enemy.name}'s stats rose!`, 'enemy');
-                    endEnemyTurn();
-                    return;
-                }
-                
-                const result = calculateDamage(move, enemy, player, false);
-                gameState.playerHP = Math.max(0, gameState.playerHP - result.damage);
-                
-                showDamageNumber(result.damage, 'player', result.isCritical);
-                
-                if (result.effectiveness > 1) {
-                    addLog("It's super effective!", 'enemy');
-                } else if (result.effectiveness < 1 && result.effectiveness > 0) {
-                    addLog("It's not very effective...", 'enemy');
-                }
-                
-                if (result.isCritical) {
-                    addLog(`Critical hit! Took ${result.damage} damage!`, 'enemy');
-                    AudioSystem.playSound('critical');
-                    screenShake();
+                creatureImg.classList.remove('shake');
+
+                if (Math.random() < catchRate) {
+                    this.catchCreature();
                 } else {
-                    addLog(`Took ${result.damage} damage!`, 'enemy');
+                    this.addEncounterLog('Oh no! It broke free!', 'warning');
                     AudioSystem.playSound('hit');
+                    this.checkFlee();
                 }
-                
-                if (move.effect && move.effectChance && Math.random() * 100 < move.effectChance) {
-                    applyStatus('player', move.effect);
-                }
-                
-                const playerSpriteBack = document.getElementById('player-sprite-back');
-                playerSpriteBack.classList.add('damaged');
-                setTimeout(() => playerSpriteBack.classList.remove('damaged'), 400);
-                
-                updateHPBars();
-                
-                if (gameState.playerHP <= 0) {
-                    endBattle(false);
+            }, 800);
+        },
+
+        throwBait() {
+            if (!this.state.isEncounterActive || this.state.inventory.bait <= 0) return;
+
+            this.state.inventory.bait--;
+            this.state.actionsLeft--;
+            this.updateActionsDisplay();
+            this.updateInventoryDisplay();
+            this.updateEncounterButtons();
+
+            this.state.creatureModifiers.baitActive = true;
+            this.state.creatureModifiers.baitTurns = 3;
+            this.state.creatureModifiers.angryActive = false;
+            this.state.creatureModifiers.angryTurns = 0;
+
+            this.addEncounterLog('You threw some bait!');
+            this.addEncounterLog(`${this.state.currentCreature.name} is eating...`, 'success');
+            this.updateCreatureStatus();
+
+            AudioSystem.playSound('select');
+            this.decrementModifiers();
+        },
+
+        throwRock() {
+            if (!this.state.isEncounterActive || this.state.inventory.rocks <= 0) return;
+
+            this.state.inventory.rocks--;
+            this.state.actionsLeft--;
+            this.updateActionsDisplay();
+            this.updateInventoryDisplay();
+            this.updateEncounterButtons();
+
+            this.state.creatureModifiers.angryActive = true;
+            this.state.creatureModifiers.angryTurns = 3;
+            this.state.creatureModifiers.baitActive = false;
+            this.state.creatureModifiers.baitTurns = 0;
+
+            this.addEncounterLog('You threw a rock!');
+            this.addEncounterLog(`${this.state.currentCreature.name} is angry!`, 'danger');
+            this.updateCreatureStatus();
+
+            const creatureImg = document.getElementById('encounter-creature-img');
+            creatureImg.classList.add('shake');
+            setTimeout(() => creatureImg.classList.remove('shake'), 500);
+
+            AudioSystem.playSound('hit');
+            this.checkFlee(true);
+        },
+
+        runAway() {
+            if (!this.state.isEncounterActive) return;
+
+            this.addEncounterLog('Got away safely!');
+            this.state.isEncounterActive = false;
+
+            setTimeout(() => {
+                if (this.state.actionsLeft <= 0 || this.state.inventory.capsules <= 0) {
+                    this.endRun();
                 } else {
-                    endEnemyTurn();
+                    this.showScreen('explore-screen');
+                    this.setMessage('You ran away. Keep exploring!');
                 }
-            }, 300);
-        }
-        
-        function endEnemyTurn() {
-            if (gameState.playerStatus === 'brn' || gameState.playerStatus === 'psn') {
-                const statusDamage = Math.floor(gameState.playerMaxHP / 16);
-                gameState.playerHP = Math.max(0, gameState.playerHP - statusDamage);
-                const statusName = gameState.playerStatus === 'brn' ? 'burn' : 'poison';
-                addLog(`${CHARACTERS[gameState.playerKey].name} was hurt by ${statusName}!`, 'info');
-                updateHPBars();
-                
-                if (gameState.playerHP <= 0) {
-                    endBattle(false);
-                    return;
-                }
-            }
-            
-            gameState.isPlayerTurn = true;
-            updateTurnIndicator();
-            renderMoves();
-        }
-        
-        function getTypeEffectiveness(moveType, defenderType) {
-            if (TYPE_CHART[moveType] && TYPE_CHART[moveType][defenderType] !== undefined) {
-                return TYPE_CHART[moveType][defenderType];
-            }
-            return 1;
-        }
-        
-        function applyStatus(target, status) {
-            if (status === 'paralyze') status = 'par';
-            
-            if (target === 'player' && !gameState.playerStatus) {
-                gameState.playerStatus = status;
-                const statusNames = { par: 'paralyzed', brn: 'burned', psn: 'poisoned', slp: 'fell asleep' };
-                addLog(`${CHARACTERS[gameState.playerKey].name} was ${statusNames[status]}!`, 'info');
-                AudioSystem.playSound('select');
-            } else if (target === 'enemy' && !gameState.enemyStatus) {
-                gameState.enemyStatus = status;
-                const statusNames = { par: 'paralyzed', brn: 'burned', psn: 'poisoned', slp: 'fell asleep' };
-                addLog(`${CHARACTERS[gameState.enemyKey].name} was ${statusNames[status]}!`, 'info');
-                AudioSystem.playSound('select');
-            }
-            updateStatusDisplay();
-        }
+            }, 800);
+        },
 
-        function calculateDamage(move, attacker, defender, isPlayer) {
-            const level = isPlayer ? gameState.playerLevel : gameState.enemyLevel;
-            const attackBoost = isPlayer ? gameState.playerBoosts.attack : gameState.enemyBoosts.attack;
-            const defenseBoost = isPlayer ? gameState.enemyBoosts.defense : gameState.playerBoosts.defense;
-            
-            const atkMultiplier = [0.25, 0.28, 0.33, 0.4, 0.5, 0.67, 1, 1.5, 2, 2.5, 3, 3.5, 4][attackBoost + 6];
-            const defMultiplier = [0.25, 0.28, 0.33, 0.4, 0.5, 0.67, 1, 1.5, 2, 2.5, 3, 3.5, 4][defenseBoost + 6];
-            
-            const attack = attacker.attack * atkMultiplier;
-            const defense = defender.defense * defMultiplier;
-            
-            let damage = Math.floor(((2 * level / 5 + 2) * move.power * attack / defense) / 50 + 2);
-            
-            if (move.type === attacker.type) {
-                damage = Math.floor(damage * 1.5);
+        catchCreature() {
+            const creature = this.state.currentCreature;
+            this.state.caughtCreatures.push({
+                id: creature.id,
+                name: creature.name,
+                image: creature.image,
+                rarity: creature.rarity
+            });
+
+            this.addEncounterLog(`Gotcha! ${creature.name} was caught!`, 'success');
+            AudioSystem.playSound('victory');
+
+            const creatureImg = document.getElementById('encounter-creature-img');
+            creatureImg.classList.add('caught');
+
+            this.state.isEncounterActive = false;
+            this.updateInventoryDisplay();
+
+            setTimeout(() => {
+                creatureImg.classList.remove('caught');
+                if (this.state.actionsLeft <= 0 || this.state.inventory.capsules <= 0) {
+                    this.endRun();
+                } else {
+                    this.showScreen('explore-screen');
+                    this.setMessage(`${creature.name} was caught! Keep exploring!`);
+                }
+            }, 1200);
+        },
+
+        checkFlee(angry = false) {
+            const creature = this.state.currentCreature;
+            let fleeRate = creature.fleeRate;
+
+            if (this.state.creatureModifiers.baitActive) {
+                fleeRate *= 0.5;
             }
-            
-            const effectiveness = getTypeEffectiveness(move.type, defender.type);
-            damage = Math.floor(damage * effectiveness);
-            
-            const critChance = move.highCrit ? 0.25 : 0.0625;
-            const isCritical = Math.random() < critChance;
-            if (isCritical) {
-                damage = Math.floor(damage * 1.5);
+            if (angry || this.state.creatureModifiers.angryActive) {
+                fleeRate *= 1.5;
             }
-            
-            damage = Math.floor(damage * (0.85 + Math.random() * 0.15));
-            
-            const attackerStatus = isPlayer ? gameState.playerStatus : gameState.enemyStatus;
-            if (attackerStatus === 'brn') {
-                damage = Math.floor(damage * 0.5);
-            }
-            
-            return { damage: Math.max(1, damage), isCritical, effectiveness };
-        }
-        
-        function showDamageNumber(value, target, isCritical = false, isHeal = false) {
-            const arena = document.getElementById('battle-arena');
-            const num = document.createElement('div');
-            num.className = 'damage-number' + (isCritical ? ' critical' : '') + (isHeal ? ' heal' : '') + (value === 'MISS' ? ' miss' : '');
-            num.textContent = isHeal ? value : (value === 'MISS' ? 'MISS' : '-' + value);
-            
-            if (target === 'enemy') {
-                num.style.right = '15%';
-                num.style.top = '180px';
+
+            if (Math.random() < fleeRate) {
+                this.creatureFled();
             } else {
-                num.style.left = '15%';
-                num.style.bottom = '200px';
+                this.decrementModifiers();
             }
-            
-            arena.appendChild(num);
-            setTimeout(() => num.remove(), 1200);
-        }
-        
-        function showEffectivenessPopup(type) {
-            const arena = document.getElementById('battle-arena');
-            const popup = document.createElement('div');
-            popup.className = 'effectiveness-popup ' + type;
-            popup.textContent = type === 'super' ? "It's super effective!" : type === 'not-very' ? "Not very effective..." : "No effect!";
-            arena.appendChild(popup);
-            setTimeout(() => popup.remove(), 1500);
-        }
+        },
 
-        function updateHPBars() {
-            const playerPercent = (gameState.playerHP / gameState.playerMaxHP) * 100;
-            const enemyPercent = (gameState.enemyHP / gameState.enemyMaxHP) * 100;
-            
-            const playerBar = document.getElementById('player-hp-bar');
-            const enemyBar = document.getElementById('enemy-hp-bar');
-            
-            playerBar.style.width = Math.max(0, playerPercent) + '%';
-            enemyBar.style.width = Math.max(0, enemyPercent) + '%';
-            
-            playerBar.className = 'hp-bar-inner' + (playerPercent <= 20 ? ' low' : playerPercent <= 50 ? ' medium' : '');
-            enemyBar.className = 'hp-bar-inner' + (enemyPercent <= 20 ? ' low' : enemyPercent <= 50 ? ' medium' : '');
-            
-            document.getElementById('player-hp').textContent = Math.max(0, gameState.playerHP);
-        }
+        creatureFled() {
+            const creature = this.state.currentCreature;
+            this.state.fledCreatures++;
+            this.state.isEncounterActive = false;
 
-        function endBattle(won) {
-            const result = document.getElementById('battle-result');
-            const player = CHARACTERS[gameState.playerKey];
-            const enemy = CHARACTERS[gameState.enemyKey];
-            
-            if (won) {
-                const baseExp = Math.floor(enemy.hp * gameState.enemyLevel / 7);
-                const expGain = Math.floor(baseExp * (gameState.enemyShiny ? 1.5 : 1));
-                const pumpGain = Math.floor((200 + Math.random() * 300) * (gameState.enemyShiny ? 2 : 1));
-                
-                document.getElementById('result-title').textContent = 'VICTORY!';
-                document.getElementById('result-subtitle').innerHTML = `
-                    ${player.name} gained ${expGain} EXP!<br>
-                    <span style="color: var(--primary)">+${pumpGain} $PUMP</span>
-                    ${gameState.enemyShiny ? '<br><span style="color: #ec4899">✨ Shiny bonus!</span>' : ''}
-                `;
-                
-                const enemySprite = document.getElementById('enemy-sprite');
-                enemySprite.style.transition = 'all 0.5s';
-                enemySprite.style.opacity = '0';
-                enemySprite.style.transform = 'translateY(30px)';
-                
+            this.addEncounterLog(`${creature.name} fled!`, 'danger');
+            AudioSystem.playSound('defeat');
+
+            const creatureImg = document.getElementById('encounter-creature-img');
+            creatureImg.classList.add('fled');
+
+            setTimeout(() => {
+                creatureImg.classList.remove('fled');
+                if (this.state.actionsLeft <= 0 || this.state.inventory.capsules <= 0) {
+                    this.endRun();
+                } else {
+                    this.showScreen('explore-screen');
+                    this.setMessage(`${creature.name} ran away... Keep looking!`);
+                }
+            }, 800);
+        },
+
+        decrementModifiers() {
+            if (this.state.creatureModifiers.baitTurns > 0) {
+                this.state.creatureModifiers.baitTurns--;
+                if (this.state.creatureModifiers.baitTurns <= 0) {
+                    this.state.creatureModifiers.baitActive = false;
+                }
+            }
+            if (this.state.creatureModifiers.angryTurns > 0) {
+                this.state.creatureModifiers.angryTurns--;
+                if (this.state.creatureModifiers.angryTurns <= 0) {
+                    this.state.creatureModifiers.angryActive = false;
+                }
+            }
+            this.updateCreatureStatus();
+        },
+
+        endRun() {
+            this.showScreen('results-screen');
+
+            document.getElementById('result-caught').textContent = this.state.caughtCreatures.length;
+            document.getElementById('result-fled').textContent = this.state.fledCreatures;
+            document.getElementById('result-rares').textContent = this.state.raresFound;
+
+            const creaturesContainer = document.getElementById('results-creatures');
+            if (this.state.caughtCreatures.length > 0) {
+                creaturesContainer.innerHTML = this.state.caughtCreatures.map(c => `
+                    <div class="result-creature ${c.rarity}">
+                        <img src="assets/images/characters/${c.image}" alt="${c.name}">
+                        <div class="name">${c.name}</div>
+                    </div>
+                `).join('');
+            } else {
+                creaturesContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.8rem;">No creatures caught this run.</p>';
+            }
+
+            if (this.state.caughtCreatures.length > 0) {
                 AudioSystem.playSound('victory');
             } else {
-                document.getElementById('result-title').textContent = 'DEFEATED';
-                document.getElementById('result-subtitle').textContent = 'Try again!';
-                
-                const playerSpriteBack = document.getElementById('player-sprite-back');
-                playerSpriteBack.style.transition = 'all 0.5s';
-                playerSpriteBack.style.opacity = '0';
-                playerSpriteBack.style.transform = 'translateY(30px) rotate(10deg)';
-                
                 AudioSystem.playSound('defeat');
             }
-            
-            setTimeout(() => {
-                result.style.display = 'block';
-                result.classList.add('show');
-            }, 600);
-        }
+        },
 
-        function resetBattle() {
-            const result = document.getElementById('battle-result');
-            result.style.display = 'none';
-            result.classList.remove('show');
-            initBattle();
-        }
+        playAgain() {
+            if (this.state.tickets <= 0) {
+                alert('You need more tickets! Get 1000 $PUMPMON for each ticket.');
+                return;
+            }
+            this.showScreen('biome-select-screen');
+            this.renderBiomeSelection();
+        },
 
-        function addLog(text, type = '') {
-            const log = document.getElementById('battle-log');
+        resetState() {
+            this.state.currentBiome = null;
+            this.state.currentCreature = null;
+            this.state.isEncounterActive = false;
+            this.state.caughtCreatures = [];
+            this.state.fledCreatures = 0;
+            this.state.raresFound = 0;
+        },
+
+        setMessage(msg) {
+            document.getElementById('safari-message').textContent = msg;
+        },
+
+        updateActionsDisplay() {
+            document.getElementById('actions-left').textContent = this.state.actionsLeft;
+        },
+
+        updateInventoryDisplay() {
+            document.getElementById('inv-capsules').textContent = this.state.inventory.capsules;
+            document.getElementById('inv-bait').textContent = this.state.inventory.bait;
+            document.getElementById('inv-rocks').textContent = this.state.inventory.rocks;
+            document.getElementById('inv-caught').textContent = this.state.caughtCreatures.length;
+
+            document.getElementById('capsule-count').textContent = this.state.inventory.capsules;
+            document.getElementById('bait-count').textContent = this.state.inventory.bait;
+            document.getElementById('rock-count').textContent = this.state.inventory.rocks;
+        },
+
+        updateEncounterButtons() {
+            document.querySelector('.encounter-btn.capsule').disabled = this.state.inventory.capsules <= 0;
+            document.querySelector('.encounter-btn.bait').disabled = this.state.inventory.bait <= 0;
+            document.querySelector('.encounter-btn.rock').disabled = this.state.inventory.rocks <= 0;
+        },
+
+        updateCreatureStatus() {
+            const statusEl = document.getElementById('creature-status');
+            let html = '';
+            if (this.state.creatureModifiers.baitActive) {
+                html += '<span class="status-effect bait">🍖 Eating</span>';
+            }
+            if (this.state.creatureModifiers.angryActive) {
+                html += '<span class="status-effect angry">😠 Angry</span>';
+            }
+            statusEl.innerHTML = html;
+        },
+
+        updateTicketDisplay() {
+            const ticketEl = document.getElementById('ticket-count');
+            if (ticketEl) ticketEl.textContent = this.state.tickets;
+        },
+
+        addEncounterLog(msg, type = '') {
+            const log = document.getElementById('encounter-log');
             const entry = document.createElement('div');
-            entry.className = 'log-entry ' + type;
-            entry.textContent = '> ' + text;
+            entry.className = 'encounter-log-entry ' + type;
+            entry.textContent = '> ' + msg;
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
-        }
+        },
 
-        function clearLog() {
-            document.getElementById('battle-log').innerHTML = '';
+        clearEncounterLog() {
+            document.getElementById('encounter-log').innerHTML = '';
         }
+    };
 
-        function screenShake() {
-            const arena = document.getElementById('battle-arena');
-            arena.classList.add('shake');
-            setTimeout(() => arena.classList.remove('shake'), 300);
+    function openSafari() { SafariGame.open(); }
+    function closeSafari() { SafariGame.close(); }
+    function exitSafari() {
+        if (SafariGame.state.isEncounterActive || SafariGame.state.actionsLeft > 0) {
+            if (confirm('Are you sure? Your progress will be lost!')) {
+                SafariGame.endRun();
+            }
+        } else {
+            closeSafari();
         }
+    }
 
-        function openModal() {
-            renderCharacterGrid();
-            const modal = document.getElementById('modal');
-            modal.style.display = 'flex';
-            modal.style.visibility = 'visible';
-            modal.classList.add('show');
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('modal');
-            modal.style.display = 'none';
-            modal.style.visibility = 'hidden';
-            modal.classList.remove('show');
-        }
-
-        function confirmSelection() {
-            gameState.playerKey = gameState.selectedChar;
-            closeModal();
-            initBattle();
-            scrollToGame();
-        }
-
-        function scrollToGame() {
-            document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
-        }
-
-
-        // Shuffle character cards
-function shuffleCards() {
-    const preview = document.querySelector('.character-preview');
-    const cards = Array.from(preview.children);
-    
-    // Add shuffling animation
-    preview.classList.add('shuffling');
-    
-    // After animation, actually shuffle the cards
-    setTimeout(() => {
-        // Fisher-Yates shuffle
-        for (let i = cards.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            preview.appendChild(cards[j]);
-            [cards[i], cards[j]] = [cards[j], cards[i]];
-        }
+    /* ================================
+       WALLET SYSTEM
+       ================================ */
+    const WalletSystem = {
+        connected: false,
+        address: null,
+        balance: 0,
+        tokenBalance: 0,
+        provider: null,
         
-        preview.classList.remove('shuffling');
-    }, 800);
-}
+        tokenMint: '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump',
+        
+        wallets: [
+            {
+                name: 'Phantom',
+                icon: 'assets/images/phantom-logo.png',
+                getProvider: () => {
+                    if ('phantom' in window) {
+                        const provider = window.phantom?.solana;
+                        if (provider?.isPhantom) {
+                            return provider;
+                        }
+                    }
+                    return null;
+                },
+                downloadUrl: 'https://phantom.app/'
+            },
+        ],
+        
+        init() {
+            const savedAddress = localStorage.getItem('walletAddress');
+            if (savedAddress) {
+                setTimeout(() => this.checkExistingConnection(), 500);
+            }
+        },
+        
+        async checkExistingConnection() {
+            try {
+                const provider = this.wallets[0].getProvider();
+                if (provider) {
+                    const resp = await provider.connect({ onlyIfTrusted: true });
+                    if (resp.publicKey) {
+                        this.handleConnection(resp.publicKey.toString(), provider, 'Phantom');
+                    }
+                }
+            } catch (err) {
+                console.log('Auto-reconnect failed:', err.message);
+                localStorage.removeItem('walletAddress');
+                localStorage.removeItem('walletName');
+            }
+        },
+        
+        openModal() {
+            const modal = document.getElementById('wallet-modal');
+            const list = document.getElementById('wallet-list');
+            
+            list.innerHTML = this.wallets.map(wallet => {
+                const provider = wallet.getProvider();
+                const isInstalled = !!provider;
+                
+                return `
+                    <div class="wallet-option" onclick="WalletSystem.connectTo('${wallet.name}')">
+                        <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23AB9FF2%22 width=%2240%22 height=%2240%22 rx=%228%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2218%22>👻</text></svg>'">
+                        <div class="wallet-option-info">
+                            <div class="wallet-option-name">${wallet.name}</div>
+                            <div class="wallet-option-desc">${isInstalled ? 'Click to connect' : 'Click to install'}</div>
+                        </div>
+                        <span class="wallet-option-status ${isInstalled ? '' : 'not-installed'}">
+                            ${isInstalled ? 'Detected' : 'Install'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.classList.add('show');
+        },
+        
+        closeModal() {
+            document.getElementById('wallet-modal').classList.remove('show');
+        },
+        
+        async connectTo(walletName) {
+            const wallet = this.wallets.find(w => w.name === walletName);
+            if (!wallet) return;
+            
+            const provider = wallet.getProvider();
+            
+            if (!provider) {
+                window.open(wallet.downloadUrl, '_blank');
+                return;
+            }
+            
+            try {
+                const resp = await provider.connect();
+                
+                if (resp.publicKey) {
+                    this.handleConnection(resp.publicKey.toString(), provider, walletName);
+                    this.closeModal();
+                }
+            } catch (err) {
+                console.error('Connection error:', err);
+                
+                if (err.code === 4001) {
+                    alert('Connection cancelled. Please approve the connection request in Phantom.');
+                } else if (err.code === -32603) {
+                    alert('Connection error. Please make sure Phantom is unlocked.');
+                } else {
+                    alert('Failed to connect: ' + (err.message || 'Unknown error'));
+                }
+            }
+        },
+        
+        handleConnection(address, provider, walletName) {
+            this.connected = true;
+            this.address = address;
+            this.provider = provider;
+            
+            localStorage.setItem('walletAddress', address);
+            localStorage.setItem('walletName', walletName);
+            
+            console.log('✅ Wallet connected:', address);
+            
+            this.updateUI();
+            this.getBalance();
+            this.getTokenBalance();
+            
+            provider.on('disconnect', () => {
+                console.log('Wallet disconnected event');
+                this.handleDisconnect();
+            });
+            
+            provider.on('accountChanged', (publicKey) => {
+                if (publicKey) {
+                    console.log('Account changed to:', publicKey.toString());
+                    this.address = publicKey.toString();
+                    localStorage.setItem('walletAddress', this.address);
+                    this.updateUI();
+                    this.getBalance();
+                    this.getTokenBalance();
+                } else {
+                    this.handleDisconnect();
+                }
+            });
+        },
+        
+        async getBalance() {
+            if (!this.address) return;
+            
+            const endpoints = [
+                'https://rpc.ankr.com/solana',
+                'https://solana-mainnet.g.alchemy.com/v2/demo'
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: 1,
+                            method: 'getBalance',
+                            params: [this.address]
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.result?.value !== undefined) {
+                        this.balance = (data.result.value / 1e9).toFixed(4);
+                        this.updateUI();
+                        console.log('💰 SOL Balance:', this.balance, 'SOL');
+                        return;
+                    }
+                } catch (e) {
+                    console.log('RPC failed:', endpoint, e.message);
+                    continue;
+                }
+            }
+            
+            console.log('Could not fetch SOL balance from any endpoint');
+        },
+        
+        async getTokenBalance() {
+            if (!this.address || !this.tokenMint) return;
+            
+            const endpoints = [
+                'https://rpc.ankr.com/solana',
+                'https://solana-mainnet.g.alchemy.com/v2/demo'
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: 1,
+                            method: 'getTokenAccountsByOwner',
+                            params: [
+                                this.address,
+                                { mint: this.tokenMint },
+                                { encoding: 'jsonParsed' }
+                            ]
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.result?.value?.length > 0) {
+                        this.tokenBalance = data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+                    } else {
+                        this.tokenBalance = 0;
+                    }
+                    
+                    console.log('💎 $PUMPMON Balance:', this.tokenBalance);
+                    this.updateUI();
+                    
+                    if (typeof SafariGame !== 'undefined') {
+                        SafariGame.state.tickets = Math.floor(this.tokenBalance / 1000);
+                        SafariGame.state.pumpmonBalance = this.tokenBalance;
+                        SafariGame.updateTicketDisplay();
+                    }
+                    
+                    return this.tokenBalance;
+                } catch (e) {
+                    console.log('Token RPC failed:', endpoint, e.message);
+                    continue;
+                }
+            }
+            
+            console.log('Could not fetch token balance from any endpoint');
+            return 0;
+        },
+        
+        updateUI() {
+            const btn = document.getElementById('wallet-btn');
+            const text = document.getElementById('wallet-text');
+            
+            if (this.connected && this.address) {
+                const shortAddress = this.address.slice(0, 4) + '...' + this.address.slice(-4);
+                text.innerHTML = `
+                    <span class="wallet-address">${shortAddress}</span>
+                    ${this.balance ? `<span class="wallet-balance">${this.balance} SOL</span>` : ''}
+                `;
+                btn.classList.add('connected');
+                
+                const tokenBalanceEl = document.getElementById('pumpmon-balance');
+                if (tokenBalanceEl) {
+                    tokenBalanceEl.textContent = this.tokenBalance.toLocaleString();
+                }
+                
+                const tokenDisplayEl = document.getElementById('token-balance-display');
+                if (tokenDisplayEl) {
+                    tokenDisplayEl.style.display = 'flex';
+                }
+            } else {
+                text.textContent = 'Connect Wallet';
+                btn.classList.remove('connected');
+                
+                const tokenDisplayEl = document.getElementById('token-balance-display');
+                if (tokenDisplayEl) {
+                    tokenDisplayEl.style.display = 'none';
+                }
+            }
+        },
+        
+        async showDisconnectOption() {
+            if (confirm('Disconnect wallet?')) {
+                await this.disconnect();
+            }
+        },
+        
+        handleDisconnect() {
+            this.connected = false;
+            this.address = null;
+            this.balance = 0;
+            this.tokenBalance = 0;
+            this.provider = null;
+            
+            localStorage.removeItem('walletAddress');
+            localStorage.removeItem('walletName');
+            
+            this.updateUI();
+            console.log('Wallet disconnected');
+        },
+        
+        async disconnect() {
+            try {
+                if (this.provider?.disconnect) {
+                    await this.provider.disconnect();
+                }
+            } catch (e) {
+                console.log('Disconnect error:', e);
+            }
+            
+            this.handleDisconnect();
+        },
+        
+        async refreshBalances() {
+            if (!this.connected) return;
+            await this.getBalance();
+            await this.getTokenBalance();
+        }
+    };
 
-// Auto shuffle every 5 seconds
-setInterval(shuffleCards, 5000);
+    function connectWallet() {
+        if (WalletSystem.connected) {
+            WalletSystem.showDisconnectOption();
+        } else {
+            WalletSystem.openModal();
+        }
+    }
 
-// Initial shuffle on page load
-setTimeout(shuffleCards, 1500);
+    function copyCA() {
+        const ca = document.getElementById('ca-address').textContent;
+        navigator.clipboard.writeText(ca);
+        
+        const btn = document.querySelector('.ca-copy');
+        btn.textContent = '✅';
+        setTimeout(() => btn.textContent = '📋', 1500);
+    }
 
-        /* ================================
-           INITIALIZATION
-           ================================ */
-document.addEventListener('DOMContentLoaded', () => {
-    WalletSystem.init();
-    AudioSystem.init();
-    init();
-    
-    // Try autoplay music
-    const tryAutoplay = () => {
-        if (AudioSystem.tracks && AudioSystem.tracks.main) {
-            AudioSystem.tracks.main.volume = 0.3;
-            const playAttempt = AudioSystem.tracks.main.play();
+    function closeWalletModal() {
+        WalletSystem.closeModal();
+    }
+
+    setInterval(() => {
+        if (WalletSystem.connected) {
+            WalletSystem.refreshBalances();
+        }
+    }, 30000);
+
+    /* ================================
+       AUDIO SYSTEM
+       ================================ */
+    const AudioSystem = {
+        music: null,
+        battleMusic: null,
+        isMusicPlaying: false,
+        currentTrack: 'main',
+        
+        init() {
+            this.music = new Audio('assets/audio/main-theme.mp3');
+            this.battleMusic = new Audio('assets/audio/battle-theme.mp3');
+            this.music.loop = true;
+            this.battleMusic.loop = true;
+            this.music.volume = 0.4;
+            this.battleMusic.volume = 0.5;
+            
+            this.tryAutoplay();
+        },
+        
+        tryAutoplay() {
+            const playAttempt = this.music.play();
             
             if (playAttempt !== undefined) {
                 playAttempt.then(() => {
-                    // Autoplay worked
-                    AudioSystem.isPlaying = true;
-                    const musicBtn = document.querySelector('.music-btn');
-                    if (musicBtn) {
-                        musicBtn.classList.add('playing');
-                        musicBtn.textContent = '🔊';
-                    }
+                    this.isMusicPlaying = true;
+                    this.updateButton(true);
                     console.log('Music autoplay started');
                 }).catch(() => {
-                    // Autoplay blocked - play on first interaction
                     console.log('Autoplay blocked, waiting for interaction');
                     
                     const startMusic = () => {
-                        AudioSystem.tracks.main.play();
-                        AudioSystem.isPlaying = true;
-                        const musicBtn = document.querySelector('.music-btn');
-                        if (musicBtn) {
-                            musicBtn.classList.add('playing');
-                            musicBtn.textContent = '🔊';
-                        }
+                        this.playMusic();
                         document.removeEventListener('click', startMusic);
                         document.removeEventListener('scroll', startMusic);
                     };
@@ -6009,170 +5331,1051 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.addEventListener('scroll', startMusic, { once: true });
                 });
             }
+        },
+        
+        updateButton(isPlaying) {
+            const btn = document.getElementById('music-btn');
+            if (btn) {
+                if (isPlaying) {
+                    btn.classList.add('playing');
+                    btn.textContent = '🔊';
+                } else {
+                    btn.classList.remove('playing');
+                    btn.textContent = '🎵';
+                }
+            }
+        },
+        
+        toggleMusic() {
+            if (this.isMusicPlaying) {
+                this.stopMusic();
+            } else {
+                this.playMusic();
+            }
+        },
+        
+        playMusic() {
+            const track = this.currentTrack === 'battle' ? this.battleMusic : this.music;
+            track.play().then(() => {
+                this.isMusicPlaying = true;
+                this.updateButton(true);
+            }).catch(e => console.log('Audio play failed:', e));
+        },
+        
+        stopMusic() {
+            this.music.pause();
+            this.battleMusic.pause();
+            this.isMusicPlaying = false;
+            this.updateButton(false);
+        },
+        
+        switchTrack(track) {
+            if (this.currentTrack === track) return;
+            
+            const wasPlaying = this.isMusicPlaying;
+            this.music.pause();
+            this.battleMusic.pause();
+            this.music.currentTime = 0;
+            this.battleMusic.currentTime = 0;
+            this.currentTrack = track;
+            
+            if (wasPlaying) {
+                this.playMusic();
+            }
+        },
+        
+        playSound(type) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            switch(type) {
+                case 'hit':
+                    oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.1);
+                    break;
+                    
+                case 'critical':
+                    oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+                    oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.2);
+                    break;
+                    
+                case 'victory':
+                    const notes = [523, 659, 784, 1047];
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.15);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
+                        osc.start(ctx.currentTime + i * 0.15);
+                        osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+                    });
+                    break;
+                    
+                case 'defeat':
+                    oscillator.frequency.setValueAtTime(300, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.5);
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.5);
+                    break;
+                    
+                case 'select':
+                    oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
+                    gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.05);
+                    break;
+                    
+                case 'heal':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.3);
+                    break;
+            }
         }
     };
-    
-    tryAutoplay();
-    
-    // Switch music on scroll
-    let lastSection = 'main';
-    window.addEventListener('scroll', () => {
-        const gameSection = document.getElementById('game');
-        const rect = gameSection.getBoundingClientRect();
-        const inGame = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
-        
-        if (inGame && lastSection !== 'battle') {
-            lastSection = 'battle';
-            AudioSystem.switchTrack('battle');
-        } else if (!inGame && lastSection !== 'main') {
-            lastSection = 'main';
-            AudioSystem.switchTrack('main');
-        }
-    });
-});
 
-const RewardSystem = {
-    // Reward rate: 1 win = 100 $PENG
-    tokensPerWin: 100,
-    
-    // Track earnings
-    state: {
-        totalWins: 0,
-        totalPointsEarned: 0,
-        claimableTokens: 0,
-        claimedTokens: 0
-    },
-    
-    init() {
-        // Load saved progress from localStorage
-        const saved = localStorage.getItem('peng_rewards');
-        if (saved) {
-            this.state = JSON.parse(saved);
-        }
-        this.updateUI();
-    },
-    
-    // Call this when player wins a battle
-    onBattleWin(basePoints = 100) {
-        if (!WalletSystem.connected) {
-            console.log('Connect wallet to earn $PENG!');
-            return;
-        }
-        
-        this.state.totalWins++;
-        this.state.totalPointsEarned += basePoints;
-        this.state.claimableTokens += this.tokensPerWin;
-        
-        this.save();
-        this.updateUI();
-        this.showEarnedPopup(this.tokensPerWin);
-        
-        console.log(`🎮 Battle won! Earned ${this.tokensPerWin} $PENG`);
-    },
-    
-    // Save to localStorage
-    save() {
-        localStorage.setItem('peng_rewards', JSON.stringify(this.state));
-        localStorage.setItem('peng_wallet', WalletSystem.address);
-    },
-    
-    // Update UI elements
-    updateUI() {
-        const claimableEl = document.getElementById('claimable-tokens');
-        const totalWinsEl = document.getElementById('total-wins');
-        const totalEarnedEl = document.getElementById('total-earned');
-        
-        if (claimableEl) claimableEl.textContent = this.state.claimableTokens.toLocaleString();
-        if (totalWinsEl) totalWinsEl.textContent = this.state.totalWins;
-        if (totalEarnedEl) totalEarnedEl.textContent = this.state.totalPointsEarned.toLocaleString();
-    },
-    
-    // Show popup when tokens earned
-    showEarnedPopup(amount) {
-        const popup = document.createElement('div');
-        popup.className = 'token-earned-popup';
-        popup.innerHTML = `+${amount} $PENG! 🎉`;
-        document.body.appendChild(popup);
-        
-        setTimeout(() => popup.remove(), 3000);
-    },
-    
-    // Claim tokens (connects to backend)
-    async claimTokens() {
-        if (!WalletSystem.connected) {
-            alert('Please connect your wallet first!');
-            return;
-        }
-        
-        if (this.state.claimableTokens <= 0) {
-            alert('No tokens to claim!');
-            return;
-        }
-        
-        const amount = this.state.claimableTokens;
-        const wallet = WalletSystem.address;
-        
-        // Show loading
-        const claimBtn = document.getElementById('claim-btn');
-        if (claimBtn) {
-            claimBtn.disabled = true;
-            claimBtn.textContent = 'Claiming...';
-        }
-        
-        try {
-            // TODO: Replace with your backend API
-            const response = await fetch('https://your-backend.com/api/claim', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    wallet: wallet,
-                    amount: amount,
-                    wins: this.state.totalWins
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                this.state.claimedTokens += amount;
-                this.state.claimableTokens = 0;
-                this.save();
-                this.updateUI();
-                alert(`Successfully claimed ${amount} $PENG! 🎉`);
-            } else {
-                alert('Claim failed: ' + result.error);
-            }
-        } catch (error) {
-            // For now, simulate success (remove this in production)
-            console.log('Backend not connected. Simulating claim...');
-            alert(`Demo mode: ${amount} $PENG would be sent to your wallet!`);
-            
-            // Uncomment below for demo/testing
-            // this.state.claimedTokens += amount;
-            // this.state.claimableTokens = 0;
-            // this.save();
-            // this.updateUI();
-        }
-        
-        if (claimBtn) {
-            claimBtn.disabled = false;
-            claimBtn.textContent = 'Claim $PENG';
-        }
-    },
-    
-    // Reset (for testing)
-    reset() {
-        this.state = {
-            totalWins: 0,
-            totalPointsEarned: 0,
-            claimableTokens: 0,
-            claimedTokens: 0
-        };
-        this.save();
-        this.updateUI();
+    function toggleMusic() {
+        AudioSystem.toggleMusic();
     }
-};
 
-    </script>
+    /* ================================
+       GAME DATA
+       ================================ */
+    const TYPE_CHART = {
+        water: { fire: 2, water: 0.5, grass: 0.5, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 1, rock: 2 },
+        fire: { water: 0.5, fire: 0.5, grass: 2, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 2, rock: 0.5 },
+        grass: { water: 2, fire: 0.5, grass: 0.5, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 0.5, rock: 2 },
+        electric: { water: 2, fire: 1, grass: 0.5, electric: 0.5, normal: 1, psychic: 1, dark: 1, ice: 1, rock: 1 },
+        normal: { water: 1, fire: 1, grass: 1, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 1, rock: 0.5 },
+        psychic: { water: 1, fire: 1, grass: 1, electric: 1, normal: 1, psychic: 0.5, dark: 0, ice: 1, rock: 1 },
+        dark: { water: 1, fire: 1, grass: 1, electric: 1, normal: 1, psychic: 2, dark: 0.5, ice: 1, rock: 1 },
+        ice: { water: 0.5, fire: 0.5, grass: 2, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 0.5, rock: 1 },
+        rock: { water: 0.5, fire: 2, grass: 0.5, electric: 1, normal: 1, psychic: 1, dark: 1, ice: 2, rock: 1 }
+    };
+
+    const CHARACTERS = {
+        pepe: { 
+            name: 'PEPE', 
+            image: 'pepe.png', 
+            hp: 100, 
+            attack: 35, 
+            defense: 30, 
+            speed: 40, 
+            type: 'water',
+            description: 'The OG memecoin legend. Balanced stats with healing powers.',
+            role: 'Balanced'
+        },
+        whale: { 
+            name: 'WHALE', 
+            image: 'whale.png', 
+            hp: 130, 
+            attack: 28, 
+            defense: 50, 
+            speed: 20, 
+            type: 'water',
+            description: 'Massive HP pool and crushing defense. Slow but unstoppable.',
+            role: 'Tank'
+        },
+        cow: { 
+            name: 'COW', 
+            image: 'cow.png', 
+            hp: 115, 
+            attack: 32, 
+            defense: 40, 
+            speed: 30, 
+            type: 'normal',
+            description: 'Sacred bovine with earthquake powers. Well-rounded bruiser.',
+            role: 'Bruiser'
+        },
+        moodeng: { 
+            name: 'MOODENG', 
+            image: 'moodeng.png', 
+            hp: 95, 
+            attack: 42, 
+            defense: 28, 
+            speed: 45, 
+            type: 'psychic',
+            description: 'Viral hippo with psychic chomps. High attack potential.',
+            role: 'Attacker'
+        },
+        catana: { 
+            name: 'CATANA', 
+            image: 'catana.png', 
+            hp: 82, 
+            attack: 48, 
+            defense: 22, 
+            speed: 58, 
+            type: 'dark',
+            description: 'Ninja cat assassin. Glass cannon with critical hits.',
+            role: 'Assassin'
+        },
+        dicklet: { 
+            name: 'DICKLET', 
+            image: 'dicklet.png', 
+            hp: 120, 
+            attack: 38, 
+            defense: 55, 
+            speed: 15, 
+            type: 'rock',
+            description: 'Ancient rock warrior. Extremely tanky with devastating quakes.',
+            role: 'Tank'
+        },
+        penguin: { 
+            name: 'PENGUIN', 
+            image: 'penguin.png', 
+            hp: 88, 
+            attack: 45, 
+            defense: 32, 
+            speed: 50, 
+            type: 'ice',
+            description: 'Icy evolved form of PEPE. Fast attacker with freezing powers.',
+            role: 'Speedster'
+        }
+    };
+
+    const MOVES = {
+        pepe: [
+            { name: 'WATER GUN', type: 'water', power: 40, accuracy: 100, pp: 25 },
+            { name: 'BUBBLE BEAM', type: 'water', power: 65, accuracy: 100, pp: 15, effect: 'speed-down', effectChance: 10 },
+            { name: 'MEME MAGIC', type: 'psychic', power: 50, accuracy: 100, pp: 15, effect: 'confuse', effectChance: 10 },
+            { name: 'RECOVER', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 50 }
+        ],
+        whale: [
+            { name: 'SURF', type: 'water', power: 90, accuracy: 100, pp: 15 },
+            { name: 'BODY SLAM', type: 'normal', power: 85, accuracy: 100, pp: 15, effect: 'paralyze', effectChance: 30 },
+            { name: 'MARKET CRASH', type: 'dark', power: 120, accuracy: 85, pp: 5 },
+            { name: 'REST', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 100, selfSleep: true }
+        ],
+        cow: [
+            { name: 'STOMP', type: 'normal', power: 65, accuracy: 100, pp: 20, effect: 'flinch', effectChance: 30 },
+            { name: 'EARTHQUAKE', type: 'normal', power: 100, accuracy: 100, pp: 10 },
+            { name: 'MILK DRINK', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 50 },
+            { name: 'ZEN HEADBUTT', type: 'psychic', power: 80, accuracy: 90, pp: 15, effect: 'flinch', effectChance: 20 }
+        ],
+        moodeng: [
+            { name: 'PSYCHIC', type: 'psychic', power: 90, accuracy: 100, pp: 10, effect: 'spdef-down', effectChance: 10 },
+            { name: 'CRUNCH', type: 'dark', power: 80, accuracy: 100, pp: 15, effect: 'def-down', effectChance: 20 },
+            { name: 'HIPPO CHOMP', type: 'dark', power: 60, accuracy: 100, pp: 25 },
+            { name: 'CALM MIND', type: 'psychic', power: 0, accuracy: 100, pp: 20, boost: { attack: 1 } }
+        ],
+        catana: [
+            { name: 'NIGHT SLASH', type: 'dark', power: 70, accuracy: 100, pp: 15, highCrit: true },
+            { name: 'SUCKER PUNCH', type: 'dark', power: 70, accuracy: 100, pp: 5, priority: true },
+            { name: 'SLASH', type: 'normal', power: 70, accuracy: 100, pp: 20, highCrit: true },
+            { name: 'SWORDS DANCE', type: 'normal', power: 0, accuracy: 100, pp: 20, boost: { attack: 2 } }
+        ],
+        dicklet: [
+            { name: 'ROCK THROW', type: 'rock', power: 50, accuracy: 90, pp: 25 },
+            { name: 'EARTHQUAKE', type: 'rock', power: 100, accuracy: 100, pp: 10 },
+            { name: 'STONE EDGE', type: 'rock', power: 100, accuracy: 80, pp: 5, highCrit: true },
+            { name: 'HARDEN', type: 'rock', power: 0, accuracy: 100, pp: 30, boost: { defense: 1 } }
+        ],
+        penguin: [
+            { name: 'ICE BEAM', type: 'ice', power: 90, accuracy: 100, pp: 10, effect: 'freeze', effectChance: 10 },
+            { name: 'SURF', type: 'water', power: 90, accuracy: 100, pp: 15 },
+            { name: 'BLIZZARD', type: 'ice', power: 110, accuracy: 70, pp: 5, effect: 'freeze', effectChance: 10 },
+            { name: 'AQUA RING', type: 'water', power: 0, accuracy: 100, pp: 20, heal: 25 }
+        ]
+    };
+
+    /* ================================
+       GAME STATE
+       ================================ */
+    let gameState = {
+        playerKey: 'pepe',
+        enemyKey: 'whale',
+        playerHP: 100,
+        playerMaxHP: 100,
+        enemyHP: 130,
+        enemyMaxHP: 130,
+        playerLevel: 50,
+        enemyLevel: 48,
+        isPlayerTurn: true,
+        selectedChar: 'pepe',
+        moves: [],
+        playerStatus: null,
+        enemyStatus: null,
+        playerShiny: false,
+        enemyShiny: false,
+        playerBoosts: { attack: 0, defense: 0, speed: 0 },
+        enemyBoosts: { attack: 0, defense: 0, speed: 0 },
+        turnCount: 0
+    };
+
+    /* ================================
+       GAME FUNCTIONS
+       ================================ */
+    function checkBattleBackground() {
+        const arena = document.getElementById('battle-arena');
+        const bgImage = new Image();
+        bgImage.src = 'assets/images/battle-bg.png';
+        
+        bgImage.onload = () => arena.classList.remove('no-bg');
+        bgImage.onerror = () => arena.classList.add('no-bg');
+        
+        setTimeout(() => {
+            if (!bgImage.complete || bgImage.naturalWidth === 0) {
+                arena.classList.add('no-bg');
+            }
+        }, 1000);
+    }
+
+    function init() {
+        checkBattleBackground();
+        renderCharacterGrid();
+        initBattle();
+    }
+
+    function renderCharacterGrid() {
+        const grid = document.getElementById('char-grid');
+        grid.innerHTML = '';
+        
+        Object.entries(CHARACTERS).forEach(([key, char]) => {
+            const card = document.createElement('div');
+            card.className = `char-card ${key === gameState.selectedChar ? 'selected' : ''}`;
+            card.onclick = () => selectChar(key);
+            
+            const getStatClass = (value, stat) => {
+                if (stat === 'hp') return value >= 110 ? 'high' : value >= 95 ? 'medium' : 'low';
+                if (stat === 'attack') return value >= 42 ? 'high' : value >= 32 ? 'medium' : 'low';
+                if (stat === 'defense') return value >= 40 ? 'high' : value >= 28 ? 'medium' : 'low';
+                if (stat === 'speed') return value >= 45 ? 'high' : value >= 30 ? 'medium' : 'low';
+                return '';
+            };
+            
+            card.innerHTML = `
+                <img src="assets/images/characters/${char.image}" alt="${char.name}">
+                <div class="name">${char.name}</div>
+                <span class="type-badge ${char.type}">${char.type}</span>
+                <div class="role">⚔️ ${char.role}</div>
+                <div class="description">${char.description}</div>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-label">HP</span>
+                        <span class="stat-value ${getStatClass(char.hp, 'hp')}">${char.hp}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">ATK</span>
+                        <span class="stat-value ${getStatClass(char.attack, 'attack')}">${char.attack}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">DEF</span>
+                        <span class="stat-value ${getStatClass(char.defense, 'defense')}">${char.defense}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">SPD</span>
+                        <span class="stat-value ${getStatClass(char.speed, 'speed')}">${char.speed}</span>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function selectChar(key) {
+        gameState.selectedChar = key;
+        AudioSystem.playSound('select');
+        document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+        document.querySelector(`.char-card:nth-child(${Object.keys(CHARACTERS).indexOf(key) + 1})`).classList.add('selected');
+    }
+
+    function selectAndPlay(key) {
+        gameState.selectedChar = key;
+        gameState.playerKey = key;
+        AudioSystem.playSound('select');
+        initBattle();
+        scrollToGame();
+    }
+
+    function initBattle() {
+        const playerKey = gameState.playerKey;
+        const player = CHARACTERS[playerKey];
+        
+        const enemyKeys = Object.keys(CHARACTERS).filter(k => k !== playerKey);
+        const enemyKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
+        const enemy = CHARACTERS[enemyKey];
+        
+        gameState.enemyKey = enemyKey;
+        gameState.playerHP = player.hp;
+        gameState.playerMaxHP = player.hp;
+        gameState.enemyHP = enemy.hp;
+        gameState.enemyMaxHP = enemy.hp;
+        gameState.playerLevel = 50;
+        gameState.enemyLevel = 45 + Math.floor(Math.random() * 10);
+        gameState.moves = MOVES[playerKey].map(m => ({...m, currentPP: m.pp}));
+        
+        gameState.playerStatus = null;
+        gameState.enemyStatus = null;
+        gameState.playerBoosts = { attack: 0, defense: 0, speed: 0 };
+        gameState.enemyBoosts = { attack: 0, defense: 0, speed: 0 };
+        gameState.turnCount = 0;
+        
+        gameState.playerShiny = Math.random() < 0.05;
+        gameState.enemyShiny = Math.random() < 0.05;
+        
+        gameState.isPlayerTurn = player.speed >= enemy.speed;
+        
+        document.getElementById('player-name').textContent = player.name + (gameState.playerShiny ? ' ✨' : '');
+        document.getElementById('enemy-name').textContent = enemy.name + (gameState.enemyShiny ? ' ✨' : '');
+        document.getElementById('player-hp').textContent = player.hp;
+        document.getElementById('player-max-hp').textContent = player.hp;
+        document.getElementById('player-level').textContent = gameState.playerLevel;
+        document.getElementById('enemy-level').textContent = gameState.enemyLevel;
+        
+        document.getElementById('player-img').src = `assets/images/characters/${player.image}`;
+        document.getElementById('enemy-img').src = `assets/images/characters/${enemy.image}`;
+        
+        const backImageName = player.image.replace('.png', '-back.png');
+        document.getElementById('player-img-back').src = `assets/images/characters/${backImageName}`;
+        document.getElementById('player-img-back').onerror = function() {
+            this.src = `assets/images/characters/${player.image}`;
+        };
+        
+        const playerSprite = document.getElementById('player-sprite');
+        const playerSpriteBack = document.getElementById('player-sprite-back');
+        const enemySprite = document.getElementById('enemy-sprite');
+        playerSprite.classList.toggle('shiny', gameState.playerShiny);
+        playerSpriteBack.classList.toggle('shiny', gameState.playerShiny);
+        enemySprite.classList.toggle('shiny', gameState.enemyShiny);
+        
+        playerSprite.style.opacity = '1';
+        playerSprite.style.transform = '';
+        playerSpriteBack.style.opacity = '1';
+        playerSpriteBack.style.transform = '';
+        enemySprite.style.opacity = '1';
+        enemySprite.style.transform = '';
+        
+        updateHPBars();
+        updateStatusDisplay();
+        updateTurnIndicator();
+        renderMoves();
+        clearLog();
+        
+        showBattleIntro(enemy);
+        
+        const battleResult = document.getElementById('battle-result');
+        battleResult.style.display = 'none';
+        battleResult.classList.remove('show');
+    }
+    
+    function showBattleIntro(enemy) {
+        const intro = document.getElementById('battle-intro');
+        const text = document.getElementById('intro-text');
+        
+        intro.classList.remove('hide');
+        intro.style.animation = 'none';
+        intro.offsetHeight;
+        intro.style.animation = 'introFade 2.5s ease-out forwards';
+        
+        const shinyText = gameState.enemyShiny ? '<span class="shiny-name">✨ SHINY ' + enemy.name + ' ✨</span>' : enemy.name;
+        text.innerHTML = `A wild ${shinyText} appeared!`;
+        
+        setTimeout(() => {
+            intro.classList.add('hide');
+            addLog(`A wild ${enemy.name} appeared!`, 'system');
+            if (gameState.enemyShiny) addLog(`It's shiny! ✨`, 'info');
+            addLog(`Go! ${CHARACTERS[gameState.playerKey].name}!`, 'system');
+            if (gameState.playerShiny) addLog(`Your ${CHARACTERS[gameState.playerKey].name} is shiny! ✨`, 'info');
+            
+            if (!gameState.isPlayerTurn) {
+                addLog(`${enemy.name} is faster!`, 'enemy');
+                setTimeout(() => enemyTurn(), 1000);
+            }
+        }, 2500);
+    }
+    
+    function updateTurnIndicator() {
+        const indicator = document.getElementById('turn-indicator');
+        indicator.textContent = gameState.isPlayerTurn ? 'YOUR TURN' : 'ENEMY TURN';
+        indicator.className = 'turn-indicator' + (gameState.isPlayerTurn ? '' : ' enemy');
+    }
+    
+    function updateStatusDisplay() {
+        const playerStatus = document.getElementById('player-status');
+        const enemyStatus = document.getElementById('enemy-status');
+        
+        const statusNames = { par: 'PAR', brn: 'BRN', psn: 'PSN', slp: 'SLP', frz: 'FRZ' };
+        
+        playerStatus.innerHTML = gameState.playerStatus 
+            ? `<span class="status-badge status-${gameState.playerStatus}">${statusNames[gameState.playerStatus]}</span>` 
+            : '';
+        enemyStatus.innerHTML = gameState.enemyStatus 
+            ? `<span class="status-badge status-${gameState.enemyStatus}">${statusNames[gameState.enemyStatus]}</span>` 
+            : '';
+    }
+
+    function renderMoves() {
+        const grid = document.getElementById('move-grid');
+        grid.innerHTML = '';
+        
+        const typeColors = {
+            water: '#3b82f6',
+            electric: '#fbbf24',
+            fire: '#ef4444',
+            normal: '#a3a3a3',
+            dark: '#374151',
+            psychic: '#ec4899',
+            grass: '#22c55e',
+            ice: '#67e8f9',
+            rock: '#a8a29e'
+        };
+        
+        gameState.moves.forEach((move, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'move-btn';
+            btn.disabled = !gameState.isPlayerTurn || move.currentPP <= 0;
+            btn.onclick = () => useMove(i);
+            
+            const typeColor = typeColors[move.type] || '#a3a3a3';
+            const textColor = move.type === 'electric' || move.type === 'ice' ? '#000' : '#fff';
+            
+            btn.innerHTML = `
+                <div style="font-weight: 600; font-size: 0.8rem; margin-bottom: 6px; color: #fff;">${move.name}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: 600; background: ${typeColor}; color: ${textColor};">${move.type.toUpperCase()}</span>
+                    <span style="font-size: 0.7rem; color: #888;">PP ${move.currentPP}/${move.pp}</span>
+                </div>
+            `;
+            grid.appendChild(btn);
+        });
+    }
+
+    function useMove(index) {
+        if (!gameState.isPlayerTurn) return;
+        
+        const move = gameState.moves[index];
+        if (move.currentPP <= 0) return;
+        
+        move.currentPP--;
+        gameState.isPlayerTurn = false;
+        updateTurnIndicator();
+        AudioSystem.playSound('select');
+        
+        const player = CHARACTERS[gameState.playerKey];
+        const enemy = CHARACTERS[gameState.enemyKey];
+        
+        if (gameState.playerStatus === 'par' && Math.random() < 0.25) {
+            addLog(`${player.name} is paralyzed! It can't move!`, 'info');
+            setTimeout(() => enemyTurn(), 1000);
+            return;
+        }
+        
+        if (gameState.playerStatus === 'slp') {
+            if (Math.random() < 0.33) {
+                gameState.playerStatus = null;
+                updateStatusDisplay();
+                addLog(`${player.name} woke up!`, 'info');
+            } else {
+                addLog(`${player.name} is fast asleep!`, 'info');
+                setTimeout(() => enemyTurn(), 1000);
+                return;
+            }
+        }
+        
+        addLog(`${player.name} used ${move.name}!`);
+        
+        const playerSpriteBack = document.getElementById('player-sprite-back');
+        playerSpriteBack.classList.add('attacking');
+        setTimeout(() => playerSpriteBack.classList.remove('attacking'), 400);
+        
+        setTimeout(() => {
+            if (move.accuracy && Math.random() * 100 > move.accuracy) {
+                addLog(`${player.name}'s attack missed!`, 'info');
+                AudioSystem.playSound('select');
+                showDamageNumber('MISS', 'enemy', true);
+                setTimeout(() => enemyTurn(), 1000);
+                return;
+            }
+            
+            if (move.heal) {
+                const healAmount = Math.floor(gameState.playerMaxHP * (move.heal / 100));
+                gameState.playerHP = Math.min(gameState.playerMaxHP, gameState.playerHP + healAmount);
+                addLog(`${player.name} recovered ${healAmount} HP!`, 'info');
+                AudioSystem.playSound('heal');
+                showDamageNumber(`+${healAmount}`, 'player', false, true);
+                
+                if (move.selfSleep) {
+                    gameState.playerStatus = 'slp';
+                    updateStatusDisplay();
+                    addLog(`${player.name} fell asleep!`, 'info');
+                }
+                
+                updateHPBars();
+                setTimeout(() => enemyTurn(), 1000);
+                return;
+            }
+            
+            if (move.boost) {
+                Object.entries(move.boost).forEach(([stat, amount]) => {
+                    gameState.playerBoosts[stat] = Math.min(6, gameState.playerBoosts[stat] + amount);
+                    const sharpText = amount >= 2 ? ' sharply' : '';
+                    addLog(`${player.name}'s ${stat} rose${sharpText}!`, 'info');
+                });
+                AudioSystem.playSound('heal');
+                setTimeout(() => enemyTurn(), 1000);
+                return;
+            }
+            
+            const result = calculateDamage(move, player, enemy, true);
+            gameState.enemyHP = Math.max(0, gameState.enemyHP - result.damage);
+            
+            showDamageNumber(result.damage, 'enemy', result.isCritical);
+            
+            if (result.effectiveness > 1) {
+                addLog("It's super effective!", 'info');
+                showEffectivenessPopup('super');
+                AudioSystem.playSound('critical');
+            } else if (result.effectiveness < 1 && result.effectiveness > 0) {
+                addLog("It's not very effective...", 'info');
+                showEffectivenessPopup('not-very');
+            } else if (result.effectiveness === 0) {
+                addLog(`It doesn't affect ${enemy.name}...`, 'info');
+                showEffectivenessPopup('immune');
+            }
+            
+            if (result.isCritical) {
+                addLog(`Critical hit! Dealt ${result.damage} damage!`);
+                AudioSystem.playSound('critical');
+                screenShake();
+            } else {
+                addLog(`Dealt ${result.damage} damage!`);
+                AudioSystem.playSound('hit');
+            }
+            
+            if (move.effect && move.effectChance && Math.random() * 100 < move.effectChance) {
+                applyStatus('enemy', move.effect);
+            }
+            
+            const enemySprite = document.getElementById('enemy-sprite');
+            enemySprite.classList.add('damaged');
+            setTimeout(() => enemySprite.classList.remove('damaged'), 400);
+            
+            updateHPBars();
+            renderMoves();
+            
+            if (gameState.enemyHP <= 0) {
+                endBattle(true);
+            } else {
+                setTimeout(enemyTurn, 1000);
+            }
+        }, 300);
+    }
+
+    function enemyTurn() {
+        const enemy = CHARACTERS[gameState.enemyKey];
+        const player = CHARACTERS[gameState.playerKey];
+        const enemyMoves = MOVES[gameState.enemyKey];
+        
+        gameState.turnCount++;
+        
+        if (gameState.enemyStatus === 'brn' || gameState.enemyStatus === 'psn') {
+            const statusDamage = Math.floor(gameState.enemyMaxHP / 16);
+            gameState.enemyHP = Math.max(0, gameState.enemyHP - statusDamage);
+            const statusName = gameState.enemyStatus === 'brn' ? 'burn' : 'poison';
+            addLog(`${enemy.name} was hurt by ${statusName}!`, 'info');
+            updateHPBars();
+            
+            if (gameState.enemyHP <= 0) {
+                endBattle(true);
+                return;
+            }
+        }
+        
+        if (gameState.enemyStatus === 'par' && Math.random() < 0.25) {
+            addLog(`${enemy.name} is paralyzed! It can't move!`, 'enemy');
+            endEnemyTurn();
+            return;
+        }
+        
+        if (gameState.enemyStatus === 'slp') {
+            if (Math.random() < 0.33) {
+                gameState.enemyStatus = null;
+                updateStatusDisplay();
+                addLog(`${enemy.name} woke up!`, 'enemy');
+            } else {
+                addLog(`${enemy.name} is fast asleep!`, 'enemy');
+                endEnemyTurn();
+                return;
+            }
+        }
+        
+        let move;
+        if (gameState.playerHP < gameState.playerMaxHP * 0.3) {
+            move = enemyMoves.reduce((best, m) => (m.power || 0) > (best.power || 0) ? m : best);
+        } else {
+            const superMoves = enemyMoves.filter(m => m.power && getTypeEffectiveness(m.type, player.type) > 1);
+            if (superMoves.length > 0 && Math.random() < 0.7) {
+                move = superMoves[Math.floor(Math.random() * superMoves.length)];
+            } else {
+                move = enemyMoves[Math.floor(Math.random() * enemyMoves.length)];
+            }
+        }
+        
+        addLog(`${enemy.name} used ${move.name}!`, 'enemy');
+        
+        const enemySprite = document.getElementById('enemy-sprite');
+        enemySprite.classList.add('attacking');
+        setTimeout(() => enemySprite.classList.remove('attacking'), 400);
+        
+        setTimeout(() => {
+            if (move.accuracy && Math.random() * 100 > move.accuracy) {
+                addLog(`${enemy.name}'s attack missed!`, 'enemy');
+                showDamageNumber('MISS', 'player', true);
+                endEnemyTurn();
+                return;
+            }
+            
+            if (move.heal) {
+                const healAmount = Math.floor(gameState.enemyMaxHP * (move.heal / 100));
+                gameState.enemyHP = Math.min(gameState.enemyMaxHP, gameState.enemyHP + healAmount);
+                addLog(`${enemy.name} recovered health!`, 'enemy');
+                AudioSystem.playSound('heal');
+                updateHPBars();
+                endEnemyTurn();
+                return;
+            }
+            
+            if (move.boost) {
+                Object.entries(move.boost).forEach(([stat, amount]) => {
+                    gameState.enemyBoosts[stat] = Math.min(6, gameState.enemyBoosts[stat] + amount);
+                });
+                addLog(`${enemy.name}'s stats rose!`, 'enemy');
+                endEnemyTurn();
+                return;
+            }
+            
+            const result = calculateDamage(move, enemy, player, false);
+            gameState.playerHP = Math.max(0, gameState.playerHP - result.damage);
+            
+            showDamageNumber(result.damage, 'player', result.isCritical);
+            
+            if (result.effectiveness > 1) {
+                addLog("It's super effective!", 'enemy');
+            } else if (result.effectiveness < 1 && result.effectiveness > 0) {
+                addLog("It's not very effective...", 'enemy');
+            }
+            
+            if (result.isCritical) {
+                addLog(`Critical hit! Took ${result.damage} damage!`, 'enemy');
+                AudioSystem.playSound('critical');
+                screenShake();
+            } else {
+                addLog(`Took ${result.damage} damage!`, 'enemy');
+                AudioSystem.playSound('hit');
+            }
+            
+            if (move.effect && move.effectChance && Math.random() * 100 < move.effectChance) {
+                applyStatus('player', move.effect);
+            }
+            
+            const playerSpriteBack = document.getElementById('player-sprite-back');
+            playerSpriteBack.classList.add('damaged');
+            setTimeout(() => playerSpriteBack.classList.remove('damaged'), 400);
+            
+            updateHPBars();
+            
+            if (gameState.playerHP <= 0) {
+                endBattle(false);
+            } else {
+                endEnemyTurn();
+            }
+        }, 300);
+    }
+    
+    function endEnemyTurn() {
+        if (gameState.playerStatus === 'brn' || gameState.playerStatus === 'psn') {
+            const statusDamage = Math.floor(gameState.playerMaxHP / 16);
+            gameState.playerHP = Math.max(0, gameState.playerHP - statusDamage);
+            const statusName = gameState.playerStatus === 'brn' ? 'burn' : 'poison';
+            addLog(`${CHARACTERS[gameState.playerKey].name} was hurt by ${statusName}!`, 'info');
+            updateHPBars();
+            
+            if (gameState.playerHP <= 0) {
+                endBattle(false);
+                return;
+            }
+        }
+        
+        gameState.isPlayerTurn = true;
+        updateTurnIndicator();
+        renderMoves();
+    }
+    
+    function getTypeEffectiveness(moveType, defenderType) {
+        if (TYPE_CHART[moveType] && TYPE_CHART[moveType][defenderType] !== undefined) {
+            return TYPE_CHART[moveType][defenderType];
+        }
+        return 1;
+    }
+    
+    function applyStatus(target, status) {
+        if (status === 'paralyze') status = 'par';
+        if (status === 'freeze') status = 'frz';
+        
+        if (target === 'player' && !gameState.playerStatus) {
+            gameState.playerStatus = status;
+            const statusNames = { par: 'paralyzed', brn: 'burned', psn: 'poisoned', slp: 'fell asleep', frz: 'frozen' };
+            addLog(`${CHARACTERS[gameState.playerKey].name} was ${statusNames[status]}!`, 'info');
+            AudioSystem.playSound('select');
+        } else if (target === 'enemy' && !gameState.enemyStatus) {
+            gameState.enemyStatus = status;
+            const statusNames = { par: 'paralyzed', brn: 'burned', psn: 'poisoned', slp: 'fell asleep', frz: 'frozen' };
+            addLog(`${CHARACTERS[gameState.enemyKey].name} was ${statusNames[status]}!`, 'info');
+            AudioSystem.playSound('select');
+        }
+        updateStatusDisplay();
+    }
+
+    function calculateDamage(move, attacker, defender, isPlayer) {
+        const level = isPlayer ? gameState.playerLevel : gameState.enemyLevel;
+        const attackBoost = isPlayer ? gameState.playerBoosts.attack : gameState.enemyBoosts.attack;
+        const defenseBoost = isPlayer ? gameState.enemyBoosts.defense : gameState.playerBoosts.defense;
+        
+        const atkMultiplier = [0.25, 0.28, 0.33, 0.4, 0.5, 0.67, 1, 1.5, 2, 2.5, 3, 3.5, 4][attackBoost + 6];
+        const defMultiplier = [0.25, 0.28, 0.33, 0.4, 0.5, 0.67, 1, 1.5, 2, 2.5, 3, 3.5, 4][defenseBoost + 6];
+        
+        const attack = attacker.attack * atkMultiplier;
+        const defense = defender.defense * defMultiplier;
+        
+        let damage = Math.floor(((2 * level / 5 + 2) * move.power * attack / defense) / 50 + 2);
+        
+        if (move.type === attacker.type) {
+            damage = Math.floor(damage * 1.5);
+        }
+        
+        const effectiveness = getTypeEffectiveness(move.type, defender.type);
+        damage = Math.floor(damage * effectiveness);
+        
+        const critChance = move.highCrit ? 0.25 : 0.0625;
+        const isCritical = Math.random() < critChance;
+        if (isCritical) {
+            damage = Math.floor(damage * 1.5);
+        }
+        
+        damage = Math.floor(damage * (0.85 + Math.random() * 0.15));
+        
+        const attackerStatus = isPlayer ? gameState.playerStatus : gameState.enemyStatus;
+        if (attackerStatus === 'brn') {
+            damage = Math.floor(damage * 0.5);
+        }
+        
+        return { damage: Math.max(1, damage), isCritical, effectiveness };
+    }
+    
+    function showDamageNumber(value, target, isCritical = false, isHeal = false) {
+        const arena = document.getElementById('battle-arena');
+        const num = document.createElement('div');
+        num.className = 'damage-number' + (isCritical ? ' critical' : '') + (isHeal ? ' heal' : '') + (value === 'MISS' ? ' miss' : '');
+        num.textContent = isHeal ? value : (value === 'MISS' ? 'MISS' : '-' + value);
+        
+        if (target === 'enemy') {
+            num.style.right = '15%';
+            num.style.top = '180px';
+        } else {
+            num.style.left = '15%';
+            num.style.bottom = '200px';
+        }
+        
+        arena.appendChild(num);
+        setTimeout(() => num.remove(), 1200);
+    }
+    
+    function showEffectivenessPopup(type) {
+        const arena = document.getElementById('battle-arena');
+        const popup = document.createElement('div');
+        popup.className = 'effectiveness-popup ' + type;
+        popup.textContent = type === 'super' ? "It's super effective!" : type === 'not-very' ? "Not very effective..." : "No effect!";
+        arena.appendChild(popup);
+        setTimeout(() => popup.remove(), 1500);
+    }
+
+    function updateHPBars() {
+        const playerPercent = (gameState.playerHP / gameState.playerMaxHP) * 100;
+        const enemyPercent = (gameState.enemyHP / gameState.enemyMaxHP) * 100;
+        
+        const playerBar = document.getElementById('player-hp-bar');
+        const enemyBar = document.getElementById('enemy-hp-bar');
+        
+        playerBar.style.width = Math.max(0, playerPercent) + '%';
+        enemyBar.style.width = Math.max(0, enemyPercent) + '%';
+        
+        playerBar.className = 'hp-bar-inner' + (playerPercent <= 20 ? ' low' : playerPercent <= 50 ? ' medium' : '');
+        enemyBar.className = 'hp-bar-inner' + (enemyPercent <= 20 ? ' low' : enemyPercent <= 50 ? ' medium' : '');
+        
+        document.getElementById('player-hp').textContent = Math.max(0, gameState.playerHP);
+    }
+
+    // ⬇️ UPDATED endBattle FUNCTION - Now integrates with RewardSystem ⬇️
+    function endBattle(won) {
+        const result = document.getElementById('battle-result');
+        const player = CHARACTERS[gameState.playerKey];
+        const enemy = CHARACTERS[gameState.enemyKey];
+        
+        if (won) {
+            // Award tokens via RewardSystem
+            const tokensEarned = RewardSystem.onWin(gameState.enemyShiny);
+            
+            const baseExp = Math.floor(enemy.hp * gameState.enemyLevel / 7);
+            const expGain = Math.floor(baseExp * (gameState.enemyShiny ? 1.5 : 1));
+            
+            document.getElementById('result-title').textContent = 'VICTORY!';
+            document.getElementById('result-subtitle').innerHTML = `
+                ${player.name} gained ${expGain} EXP!<br>
+                <span style="color: var(--primary)">+${tokensEarned} $PUMPMON</span>
+                ${gameState.enemyShiny ? '<br><span style="color: #ec4899">✨ Shiny bonus!</span>' : ''}
+                ${RewardSystem.state.winStreak >= 3 ? '<br><span style="color: #22c55e">🔥 ' + RewardSystem.state.winStreak + ' Win Streak!</span>' : ''}
+            `;
+            
+            const enemySprite = document.getElementById('enemy-sprite');
+            enemySprite.style.transition = 'all 0.5s';
+            enemySprite.style.opacity = '0';
+            enemySprite.style.transform = 'translateY(30px)';
+            
+            AudioSystem.playSound('victory');
+        } else {
+            // Track loss via RewardSystem
+            RewardSystem.onLose();
+            
+            document.getElementById('result-title').textContent = 'DEFEATED';
+            document.getElementById('result-subtitle').textContent = 'Try again!';
+            
+            const playerSpriteBack = document.getElementById('player-sprite-back');
+            playerSpriteBack.style.transition = 'all 0.5s';
+            playerSpriteBack.style.opacity = '0';
+            playerSpriteBack.style.transform = 'translateY(30px) rotate(10deg)';
+            
+            AudioSystem.playSound('defeat');
+        }
+        
+        setTimeout(() => {
+            result.style.display = 'block';
+            result.classList.add('show');
+        }, 600);
+    }
+
+    function resetBattle() {
+        const result = document.getElementById('battle-result');
+        result.style.display = 'none';
+        result.classList.remove('show');
+        initBattle();
+    }
+
+    function addLog(text, type = '') {
+        const log = document.getElementById('battle-log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry ' + type;
+        entry.textContent = '> ' + text;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function clearLog() {
+        document.getElementById('battle-log').innerHTML = '';
+    }
+
+    function screenShake() {
+        const arena = document.getElementById('battle-arena');
+        arena.classList.add('shake');
+        setTimeout(() => arena.classList.remove('shake'), 300);
+    }
+
+    function openModal() {
+        renderCharacterGrid();
+        const modal = document.getElementById('modal');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('modal');
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.classList.remove('show');
+    }
+
+    function confirmSelection() {
+        gameState.playerKey = gameState.selectedChar;
+        closeModal();
+        initBattle();
+        scrollToGame();
+    }
+
+    function scrollToGame() {
+        document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function shuffleCards() {
+        const preview = document.querySelector('.character-preview');
+        const cards = Array.from(preview.children);
+        
+        preview.classList.add('shuffling');
+        
+        setTimeout(() => {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                preview.appendChild(cards[j]);
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            
+            preview.classList.remove('shuffling');
+        }, 800);
+    }
+
+    setInterval(shuffleCards, 5000);
+    setTimeout(shuffleCards, 1500);
+
+    /* ================================
+       INITIALIZATION
+       ================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+        WalletSystem.init();
+        AudioSystem.init();
+        SafariGame.init();
+        RewardSystem.init();
+        AdminPanel.init();
+        init();
+        
+        // Switch music on scroll
+        let lastSection = 'main';
+        window.addEventListener('scroll', () => {
+            const gameSection = document.getElementById('game');
+            const rect = gameSection.getBoundingClientRect();
+            const inGame = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
+            
+            if (inGame && lastSection !== 'battle') {
+                lastSection = 'battle';
+                AudioSystem.switchTrack('battle');
+            } else if (!inGame && lastSection !== 'main') {
+                lastSection = 'main';
+                AudioSystem.switchTrack('main');
+            }
+        });
+    });
+</script>
 </body>
 </html>
