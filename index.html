@@ -8,8 +8,9 @@
     <!-- Add these CDN scripts to your HTML head -->
 <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
-    <style>
-       /* ================================
+
+<style>
+    /* ================================
    CSS VARIABLES & RESET
    ================================ */
 * { 
@@ -591,10 +592,10 @@ nav {
 .music-btn.playing {
     background: var(--primary);
     color: #000;
-    animation: pulse 2s ease-in-out infinite;
+    animation: musicPulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes musicPulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255, 217, 61, 0.4); }
     50% { box-shadow: 0 0 0 10px rgba(255, 217, 61, 0); }
 }
@@ -653,6 +654,11 @@ nav {
 
 .btn-wallet.connected {
     background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
+}
+
+.btn-large {
+    padding: 18px 48px;
+    font-size: 1rem;
 }
 
 /* ================================
@@ -854,7 +860,7 @@ nav {
 
 .game-section {
     padding: 60px 24px;
-    max-width: 1000px;
+    max-width: 1400px;
     margin: 0 auto;
     position: relative;
 }
@@ -870,7 +876,281 @@ nav {
     color: var(--primary); 
 }
 
-/* Battle Arena */
+/* ================================
+   BATTLE LAYOUT - Side by Side
+   ================================ */
+.battle-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+.battle-main {
+    flex: 1;
+    min-width: 0;
+    max-width: 900px;
+}
+
+.battle-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 100px;
+}
+
+/* ================================
+   ACTIVITY FEED
+   ================================ */
+.activity-feed {
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.feed-header span:first-child {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    color: var(--primary);
+}
+
+.live-badge {
+    font-size: 0.6rem;
+    color: #22c55e;
+    animation: livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.feed-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.feed-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.feed-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.feed-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    font-size: 0.65rem;
+    border-left: 3px solid transparent;
+    animation: feedSlideIn 0.3s ease-out;
+}
+
+.feed-item.new {
+    animation: feedHighlight 0.5s ease-out;
+}
+
+@keyframes feedSlideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes feedHighlight {
+    0% { background: rgba(255, 217, 61, 0.3); }
+    100% { background: rgba(0, 0, 0, 0.3); }
+}
+
+.feed-item.win { border-left-color: #22c55e; }
+.feed-item.loss { border-left-color: #ef4444; }
+.feed-item.claim { border-left-color: var(--primary); }
+.feed-item.shiny { border-left-color: #ec4899; background: rgba(236, 72, 153, 0.1); }
+.feed-item.streak { border-left-color: #f97316; }
+
+.feed-icon {
+    font-size: 1rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.feed-text {
+    flex: 1;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.feed-text .wallet {
+    color: var(--primary);
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.feed-text .amount-win {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.feed-text .amount-loss {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.feed-time {
+    font-size: 0.5rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* ================================
+   REWARDS PANEL
+   ================================ */
+.rewards-panel {
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.battle-sidebar .rewards-panel {
+    max-width: none;
+    margin: 0;
+}
+
+.rewards-header {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    color: var(--primary);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.rewards-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.reward-stat {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.reward-label {
+    display: block;
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.reward-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.reward-value.highlight {
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+}
+
+.reward-currency {
+    font-size: 0.6rem;
+    color: var(--primary);
+}
+
+.claimable-box {
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.15) 0%, rgba(249, 115, 22, 0.15) 100%);
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.claimable-label {
+    display: block;
+    font-size: 0.55rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.claimable-amount {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.3rem;
+    color: var(--primary);
+    text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+}
+
+.claimable-currency {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--primary);
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.claim-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.65rem;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.claim-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.total-earned {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-top: 10px;
+}
+
+.total-earned span {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* ================================
+   BATTLE ARENA
+   ================================ */
 .battle-arena {
     background-color: #228B22;
     background-image: url('assets/images/battle-bg.png');
@@ -1373,6 +1653,77 @@ nav {
     75% { transform: translateX(-3px); }
 }
 
+/* Token Earned Popup */
+.token-earned-popup,
+.reward-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary) 0%, #f97316 100%);
+    color: #000;
+    padding: 20px 40px;
+    border-radius: 16px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    z-index: 9999;
+    animation: rewardPopupAnim 3s ease-out forwards;
+    box-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+    text-align: center;
+}
+
+.reward-popup.danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+@keyframes rewardPopupAnim {
+    0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.8); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.1); }
+    30% { transform: translateX(-50%) translateY(0) scale(1); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+}
+
+/* Token Balance Display */
+.token-balance-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 217, 61, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: var(--primary);
+}
+
+#pumpmon-balance {
+    color: #fff;
+    font-weight: bold;
+}
+
+.demo-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: linear-gradient(135deg, var(--green), #16a34a);
+    color: #000;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.55rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+    animation: demoPulse 2s ease-in-out infinite;
+}
+
+@keyframes demoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 /* ================================
    SAFARI ZONE GAME - FULLSCREEN
    ================================ */
@@ -1850,11 +2201,10 @@ nav {
 /* Creature - Anchored to Ground */
 .encounter-creature {
     position: absolute;
-    bottom: 80px;
-    right: 50%;
+    bottom: 15%;
     left: 50%;
-    top: 10%;
     transform: translateX(-50%);
+    z-index: 5;
 }
 
 .encounter-creature img {
@@ -1897,11 +2247,6 @@ nav {
     100% { transform: translateX(300px); opacity: 0; }
 }
 
-@keyframes creatureFled {
-    0% { transform: translateX(0); opacity: 1; }
-    100% { transform: translateX(300px); opacity: 0; }
-}
-
 /* Creature Info - Top Overlay */
 .creature-info-overlay {
     position: absolute;
@@ -1915,6 +2260,14 @@ nav {
     border: 2px solid rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
     z-index: 10;
+    animation: popupFade 3s ease-out forwards;
+}
+
+@keyframes popupFade {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+    10% { opacity: 1; transform: translateX(-50%) scale(1); }
+    80% { opacity: 1; transform: translateX(-50%) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) scale(0.9); visibility: hidden; }
 }
 
 .creature-info-overlay .creature-name {
@@ -1959,15 +2312,6 @@ nav {
 .status-effect.eating { color: #fbbf24; border: 1px solid #fbbf24; }
 .status-effect.angry { color: #ef4444; border: 1px solid #ef4444; }
 
-/* Creature - Grounded on Grass */
-.encounter-creature {
-    position: absolute;
-    bottom: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-}
-
 /* UI Panel - Below Scene (Separated) */
 .encounter-ui-panel {
     background: rgba(10, 20, 10, 0.98);
@@ -2009,7 +2353,6 @@ nav {
     gap: 10px;
 }
 
-
 .encounter-btn {
     background: rgba(0, 0, 0, 0.7);
     border: 2px solid #3d5a3d;
@@ -2046,17 +2389,6 @@ nav {
     font-family: 'Press Start 2P', cursive;
     font-size: 0.55rem;
     color: #ffd93d;
-}
-
-.creature-info-overlay {
-    animation: popupFade 3s ease-out forwards;
-}
-
-@keyframes popupFade {
-    0% { opacity: 0; transform: translateX(-50%) scale(0.8); }
-    10% { opacity: 1; transform: translateX(-50%) scale(1); }
-    80% { opacity: 1; transform: translateX(-50%) scale(1); }
-    100% { opacity: 0; transform: translateX(-50%) scale(0.9); visibility: hidden; }
 }
 
 .encounter-btn.capsule:hover:not(:disabled) { 
@@ -2220,6 +2552,175 @@ nav {
     width: 2px;
     height: 32px;
     background: #3d5a3d;
+}
+
+/* ================================
+   GAME MECHANICS SECTION
+   ================================ */
+.mechanics-section {
+    padding: 80px 24px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(26,26,46,0.9) 100%);
+}
+
+.mechanics-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.mechanics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.mechanic-card {
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s;
+}
+
+.mechanic-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(255, 217, 61, 0.1);
+}
+
+.mechanic-card.warning {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.mechanic-card.warning:hover {
+    border-color: #ef4444;
+    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+}
+
+.mechanic-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.mechanic-card h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+}
+
+.mechanic-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mechanic-card li {
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mechanic-card li:last-child {
+    border-bottom: none;
+}
+
+.mechanic-card li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+.mechanic-card .highlight {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.mechanic-card .danger {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Type Chart Mini */
+.type-chart-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.type-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.type-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.type-badge.water { background: #3b82f6; color: #fff; }
+.type-badge.fire { background: #ef4444; color: #fff; }
+.type-badge.grass { background: #22c55e; color: #fff; }
+.type-badge.electric { background: #fbbf24; color: #000; }
+.type-badge.ice { background: #67e8f9; color: #000; }
+.type-badge.psychic { background: #ec4899; color: #fff; }
+.type-badge.dark { background: #374151; color: #fff; }
+.type-badge.rock { background: #a8a29e; color: #000; }
+.type-badge.normal { background: #a3a3a3; color: #000; }
+
+/* Tips Box */
+.tips-box {
+    background: rgba(255, 217, 61, 0.1);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 32px;
+}
+
+.tips-box h4 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.tip {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+/* Start Battle CTA */
+.start-battle-cta {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.start-battle-cta p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
 }
 
 /* ================================
@@ -2630,6 +3131,25 @@ footer {
    ================================ */
 
 /* Tablet */
+@media (max-width: 1024px) {
+    .battle-layout {
+        flex-direction: column;
+    }
+    
+    .battle-sidebar {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        position: static;
+    }
+    
+    .activity-feed,
+    .battle-sidebar .rewards-panel {
+        flex: 1;
+        min-width: 280px;
+    }
+}
+
 @media (max-width: 900px) {
     .steps {
         grid-template-columns: repeat(2, 1fr);
@@ -2698,6 +3218,10 @@ footer {
         width: 55px;
         height: 55px;
         font-size: 1.4rem;
+    }
+
+    .hamburger {
+        display: flex;
     }
 
     nav {
@@ -2834,6 +3358,45 @@ footer {
 
     .move-btn {
         padding: 10px;
+    }
+
+    /* Battle Sidebar Mobile */
+    .battle-sidebar {
+        flex-direction: column;
+    }
+    
+    .activity-feed,
+    .battle-sidebar .rewards-panel {
+        width: 100%;
+    }
+    
+    .feed-list {
+        max-height: 150px;
+    }
+
+    /* Mechanics */
+    .mechanics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .type-row {
+        font-size: 0.65rem;
+    }
+    
+    .mechanic-card {
+        padding: 20px 16px;
+    }
+    
+    .mechanic-icon {
+        font-size: 2rem;
+    }
+    
+    .mechanic-card h3 {
+        font-size: 0.8rem;
     }
 
     /* Safari Zone Mobile */
@@ -3244,328 +3807,7 @@ footer {
         width: 80px;
         height: 80px;
     }
-    .token-balance-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(255, 217, 61, 0.1);
-    border: 1px solid var(--primary);
-    border-radius: 12px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.7rem;
-    color: var(--primary);
 }
-.demo-badge {
-    position: absolute;
-    top: -12px;
-    right: -12px;
-    background: linear-gradient(135deg, var(--green), #16a34a);
-    color: #000;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.55rem;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 700;
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-    animation: demoPulse 2s ease-in-out infinite;
-}
-
-@keyframes demoPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-#pumpmon-balance {
-    color: #fff;
-    font-weight: bold;
-}
-}
-
-/* Rewards Panel */
-.rewards-panel {
-    background: rgba(26, 26, 46, 0.95);
-    border: 2px solid var(--primary);
-    border-radius: 16px;
-    padding: 20px;
-    max-width: 300px;
-    margin: 20px auto;
-    text-align: center;
-}
-
-.rewards-header {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.8rem;
-    color: var(--primary);
-    margin-bottom: 16px;
-}
-
-.rewards-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 16px;
-}
-
-.reward-stat {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.reward-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.reward-value {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 1.2rem;
-    color: #fff;
-}
-
-.reward-value.highlight {
-    color: var(--primary);
-    text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
-}
-
-.reward-currency {
-    font-size: 0.7rem;
-    color: var(--primary);
-}
-
-.claim-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 0.9rem;
-}
-
-/* Token Earned Popup */
-.token-earned-popup {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--primary) 0%, #f97316 100%);
-    color: #000;
-    padding: 20px 40px;
-    border-radius: 16px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 1.2rem;
-    z-index: 9999;
-    animation: popupAnim 3s ease-out forwards;
-    box-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
-}
-
-@keyframes popupAnim {
-    0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.8); }
-    15% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.1); }
-    30% { transform: translateX(-50%) translateY(0) scale(1); }
-    80% { opacity: 1; }
-    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
-}
-
-/* ================================
-   GAME MECHANICS SECTION
-   ================================ */
-.mechanics-section {
-    padding: 80px 24px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(26,26,46,0.9) 100%);
-}
-
-.mechanics-container {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.mechanics-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    margin-top: 40px;
-}
-
-.mechanic-card {
-    background: rgba(26, 26, 46, 0.95);
-    border: 2px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    transition: all 0.3s;
-}
-
-.mechanic-card:hover {
-    border-color: var(--primary);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 40px rgba(255, 217, 61, 0.1);
-}
-
-.mechanic-card.warning {
-    border-color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.mechanic-card.warning:hover {
-    border-color: #ef4444;
-    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
-}
-
-.mechanic-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-}
-
-.mechanic-card h3 {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.9rem;
-    color: var(--primary);
-    margin-bottom: 16px;
-}
-
-.mechanic-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.mechanic-card li {
-    padding: 8px 0;
-    padding-left: 20px;
-    position: relative;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.mechanic-card li:last-child {
-    border-bottom: none;
-}
-
-.mechanic-card li::before {
-    content: '▸';
-    position: absolute;
-    left: 0;
-    color: var(--primary);
-}
-
-.mechanic-card .highlight {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.mechanic-card .danger {
-    color: #ef4444;
-    font-weight: 600;
-}
-
-/* Type Chart Mini */
-.type-chart-mini {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.type-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    flex-wrap: wrap;
-}
-
-.type-badge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.6rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.type-badge.water { background: #3b82f6; color: #fff; }
-.type-badge.fire { background: #ef4444; color: #fff; }
-.type-badge.grass { background: #22c55e; color: #fff; }
-.type-badge.electric { background: #fbbf24; color: #000; }
-.type-badge.ice { background: #67e8f9; color: #000; }
-.type-badge.psychic { background: #ec4899; color: #fff; }
-.type-badge.dark { background: #374151; color: #fff; }
-.type-badge.rock { background: #a8a29e; color: #000; }
-.type-badge.normal { background: #a3a3a3; color: #000; }
-
-/* Tips Box */
-.tips-box {
-    background: rgba(255, 217, 61, 0.1);
-    border: 2px solid var(--primary);
-    border-radius: 16px;
-    padding: 24px;
-    margin-top: 32px;
-}
-
-.tips-box h4 {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.85rem;
-    color: var(--primary);
-    margin-bottom: 16px;
-    text-align: center;
-}
-
-.tips-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-.tip {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    color: var(--text);
-}
-
-/* Start Battle CTA */
-.start-battle-cta {
-    text-align: center;
-    margin-top: 40px;
-}
-
-.start-battle-cta p {
-    font-size: 1rem;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-}
-
-.btn-large {
-    padding: 18px 48px;
-    font-size: 1rem;
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .mechanics-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .tips-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .type-row {
-        font-size: 0.65rem;
-    }
-    
-    .mechanic-card {
-        padding: 20px 16px;
-    }
-    
-    .mechanic-icon {
-        font-size: 2rem;
-    }
-    
-    .mechanic-card h3 {
-        font-size: 0.8rem;
-    }
-}
-
     </style>
 </head>
 <body>
@@ -3828,91 +4070,133 @@ footer {
 <!-- Your existing game section below -->
 <div class="game-wrapper">
     <section class="game-section" id="game">
-        <!-- ... rest of your game code ... -->
-        <section class="game-section" id="game">
-            <h2 class="section-title">⚔️ Battle <span class="highlight">Arena</span></h2>
+        <h2 class="section-title">⚔️ Battle <span class="highlight">Arena</span></h2>
+        
+        <!-- New Layout Container -->
+        <div class="battle-layout">
             
-            <div class="battle-arena" id="battle-arena">
-                <div class="sun"></div>
+            <!-- Left Side: Battle Arena -->
+            <div class="battle-main">
+                <div class="battle-arena" id="battle-arena">
+                    <div class="sun"></div>
+                    
+                    <div class="turn-indicator" id="turn-indicator">YOUR TURN</div>
+
+                    <div class="hp-box enemy">
+                        <div class="hp-header">
+                            <span class="pokemon-name" id="enemy-name">WHALE</span>
+                            <span class="level">Lv<span id="enemy-level">48</span></span>
+                        </div>
+                        <div class="hp-bar-outer">
+                            <div class="hp-bar-inner" id="enemy-hp-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="status-container" id="enemy-status"></div>
+                    </div>
+
+                    <div class="hp-box player">
+                        <div class="hp-header">
+                            <span class="pokemon-name" id="player-name">PEPE</span>
+                            <span class="level">Lv<span id="player-level">50</span></span>
+                        </div>
+                        <div class="hp-bar-outer">
+                            <div class="hp-bar-inner" id="player-hp-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="hp-text"><span id="player-hp">100</span>/<span id="player-max-hp">100</span></div>
+                        <div class="status-container" id="player-status"></div>
+                    </div>
+
+                    <div class="sprite-player" id="player-sprite">
+                        <img id="player-img" src="assets/images/characters/pepe.png" alt="Player">
+                    </div>
+
+                    <div class="sprite-player-back" id="player-sprite-back">
+                        <img id="player-img-back" src="assets/images/characters/peng-back.png" alt="Player Back">
+                    </div>
+
+                    <div class="sprite-enemy" id="enemy-sprite">
+                        <img id="enemy-img" src="assets/images/characters/whale.png" alt="Enemy">
+                    </div>
+
+                    <div class="battle-intro" id="battle-intro">
+                        <div class="intro-text" id="intro-text">A wild WHALE appeared!</div>
+                    </div>
+
+                    <div class="battle-result" id="battle-result">
+                        <div class="result-title" id="result-title">VICTORY!</div>
+                        <div class="result-subtitle" id="result-subtitle">You earned 500 $PUMP!</div>
+                        <button class="btn btn-primary" onclick="resetBattle()">Battle Again</button>
+                    </div>
+                </div>
+
+                <div class="battle-menu">
+                    <div class="battle-log" id="battle-log">
+                        <div class="log-entry system">Choose a move to attack!</div>
+                    </div>
+                    <div class="move-grid" id="move-grid">
+                        <!-- Moves will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Activity Feed & Rewards -->
+            <div class="battle-sidebar">
                 
-                <div class="turn-indicator" id="turn-indicator">YOUR TURN</div>
-
-                <div class="hp-box enemy">
-                    <div class="hp-header">
-                        <span class="pokemon-name" id="enemy-name">WHALE</span>
-                        <span class="level">Lv<span id="enemy-level">48</span></span>
+                <!-- Live Activity Feed -->
+                <div class="activity-feed" id="activity-feed">
+                    <div class="feed-header">
+                        <span>📢 Live Activity</span>
+                        <span class="live-badge">● LIVE</span>
                     </div>
-                    <div class="hp-bar-outer">
-                        <div class="hp-bar-inner" id="enemy-hp-bar" style="width: 100%"></div>
+                    <div class="feed-list" id="feed-list">
+                        <div class="feed-item win">
+                            <span class="feed-icon">🎮</span>
+                            <span class="feed-text">Waiting for battles...</span>
+                            <span class="feed-time">Now</span>
+                        </div>
                     </div>
-                    <div class="status-container" id="enemy-status"></div>
                 </div>
-
-                <div class="hp-box player">
-                    <div class="hp-header">
-                        <span class="pokemon-name" id="player-name">PEPE</span>
-                        <span class="level">Lv<span id="player-level">50</span></span>
+                
+                <!-- Rewards Panel -->
+                <div class="rewards-panel" id="rewards-panel">
+                    <div class="rewards-header">
+                        <span>💰 Your Rewards</span>
                     </div>
-                    <div class="hp-bar-outer">
-                        <div class="hp-bar-inner" id="player-hp-bar" style="width: 100%"></div>
+                    <div class="rewards-stats">
+                        <div class="reward-stat">
+                            <span class="reward-label">Wins</span>
+                            <span class="reward-value" id="total-wins">0</span>
+                        </div>
+                        <div class="reward-stat">
+                            <span class="reward-label">Losses</span>
+                            <span class="reward-value" id="total-losses">0</span>
+                        </div>
+                        <div class="reward-stat">
+                            <span class="reward-label">Streak</span>
+                            <span class="reward-value" id="win-streak">0</span>
+                        </div>
+                        <div class="reward-stat">
+                            <span class="reward-label">Win Rate</span>
+                            <span class="reward-value" id="win-rate">0%</span>
+                        </div>
                     </div>
-                    <div class="hp-text"><span id="player-hp">100</span>/<span id="player-max-hp">100</span></div>
-                    <div class="status-container" id="player-status"></div>
+                    <div class="claimable-box">
+                        <span class="claimable-label">Claimable</span>
+                        <span class="claimable-amount" id="claimable-tokens">0</span>
+                        <span class="claimable-currency">$PENG</span>
+                    </div>
+                    <button class="btn btn-primary claim-btn" id="claim-btn" onclick="RewardSystem.claim()">
+                        💰 Claim $PENG
+                    </button>
+                    <div class="total-earned">
+                        Total earned: <span id="total-earned">0</span> $PENG
+                    </div>
                 </div>
-
-                <div class="sprite-player" id="player-sprite">
-                    <img id="player-img" src="assets/images/characters/pepe.png" alt="Player">
-                </div>
-
-                <div class="sprite-player-back" id="player-sprite-back">
-                    <img id="player-img-back" src="assets/images/characters/peng-back.png" alt="Player Back">
-                </div>
-
-                <div class="sprite-enemy" id="enemy-sprite">
-                    <img id="enemy-img" src="assets/images/characters/whale.png" alt="Enemy">
-                </div>
-
-                <div class="battle-intro" id="battle-intro">
-                    <div class="intro-text" id="intro-text">A wild WHALE appeared!</div>
-                </div>
-
-                <div class="battle-result" id="battle-result">
-                    <div class="result-title" id="result-title">VICTORY!</div>
-                    <div class="result-subtitle" id="result-subtitle">You earned 500 $PUMP!</div>
-                    <button class="btn btn-primary" onclick="resetBattle()">Battle Again</button>
-                </div>
+                
             </div>
-
-            <div class="battle-menu">
-                <div class="battle-log" id="battle-log">
-                    <div class="log-entry system">Choose a move to attack!</div>
-                </div>
-                <div class="move-grid" id="move-grid">
-                    <!-- Moves will be inserted here -->
-                </div>
-            </div>
-            <!-- Rewards Panel - Add after battle arena or in navbar -->
-<div class="rewards-panel" id="rewards-panel">
-    <div class="rewards-header">
-        <span>🎮 Your Rewards</span>
-    </div>
-    <div class="rewards-stats">
-        <div class="reward-stat">
-            <span class="reward-label">Total Wins</span>
-            <span class="reward-value" id="total-wins">0</span>
+            
         </div>
-        <div class="reward-stat">
-            <span class="reward-label">Claimable</span>
-            <span class="reward-value highlight" id="claimable-tokens">0</span>
-            <span class="reward-currency">$PUMPMON</span>
-        </div>
-    </div>
-    <button class="btn btn-primary claim-btn" id="claim-btn" onclick="RewardSystem.claimTokens()">
-        💰 Claim $PUMPMON
-    </button>
+    </section>
 </div>
-        </section>
-    </div>
 
     <!-- How It Works -->
     <section class="how-it-works" id="how">
