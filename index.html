@@ -3364,6 +3364,208 @@ footer {
     80% { opacity: 1; }
     100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
 }
+
+/* ================================
+   GAME MECHANICS SECTION
+   ================================ */
+.mechanics-section {
+    padding: 80px 24px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(26,26,46,0.9) 100%);
+}
+
+.mechanics-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.mechanics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.mechanic-card {
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s;
+}
+
+.mechanic-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(255, 217, 61, 0.1);
+}
+
+.mechanic-card.warning {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.mechanic-card.warning:hover {
+    border-color: #ef4444;
+    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+}
+
+.mechanic-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.mechanic-card h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+}
+
+.mechanic-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mechanic-card li {
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mechanic-card li:last-child {
+    border-bottom: none;
+}
+
+.mechanic-card li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+.mechanic-card .highlight {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.mechanic-card .danger {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Type Chart Mini */
+.type-chart-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.type-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.type-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.type-badge.water { background: #3b82f6; color: #fff; }
+.type-badge.fire { background: #ef4444; color: #fff; }
+.type-badge.grass { background: #22c55e; color: #fff; }
+.type-badge.electric { background: #fbbf24; color: #000; }
+.type-badge.ice { background: #67e8f9; color: #000; }
+.type-badge.psychic { background: #ec4899; color: #fff; }
+.type-badge.dark { background: #374151; color: #fff; }
+.type-badge.rock { background: #a8a29e; color: #000; }
+.type-badge.normal { background: #a3a3a3; color: #000; }
+
+/* Tips Box */
+.tips-box {
+    background: rgba(255, 217, 61, 0.1);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 32px;
+}
+
+.tips-box h4 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.tip {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+/* Start Battle CTA */
+.start-battle-cta {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.start-battle-cta p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.btn-large {
+    padding: 18px 48px;
+    font-size: 1rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .mechanics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .type-row {
+        font-size: 0.65rem;
+    }
+    
+    .mechanic-card {
+        padding: 20px 16px;
+    }
+    
+    .mechanic-icon {
+        font-size: 2rem;
+    }
+    
+    .mechanic-card h3 {
+        font-size: 0.8rem;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -3545,6 +3747,88 @@ footer {
 
     <!-- Game Section -->
     <div class="game-wrapper">
+        <!-- Game Mechanics Section -->
+<section class="mechanics-section" id="how-to-play">
+    <div class="mechanics-container">
+        <h2 class="section-title">📖 How To <span class="highlight">Play</span></h2>
+        
+        <div class="mechanics-grid">
+            <!-- Basic Rules -->
+            <div class="mechanic-card">
+                <div class="mechanic-icon">⚔️</div>
+                <h3>Battle System</h3>
+                <ul>
+                    <li>Choose your fighter and battle wild enemies</li>
+                    <li>Select moves to attack, heal, or boost stats</li>
+                    <li>Reduce enemy HP to 0 to win</li>
+                    <li>Faster Pokémon moves first each turn</li>
+                </ul>
+            </div>
+            
+            <!-- Type Advantages -->
+            <div class="mechanic-card">
+                <div class="mechanic-icon">🔥</div>
+                <h3>Type Advantages</h3>
+                <div class="type-chart-mini">
+                    <div class="type-row"><span class="type-badge water">WATER</span> → beats → <span class="type-badge fire">FIRE</span> <span class="type-badge rock">ROCK</span></div>
+                    <div class="type-row"><span class="type-badge fire">FIRE</span> → beats → <span class="type-badge grass">GRASS</span> <span class="type-badge ice">ICE</span></div>
+                    <div class="type-row"><span class="type-badge grass">GRASS</span> → beats → <span class="type-badge water">WATER</span> <span class="type-badge rock">ROCK</span></div>
+                    <div class="type-row"><span class="type-badge electric">ELECTRIC</span> → beats → <span class="type-badge water">WATER</span></div>
+                    <div class="type-row"><span class="type-badge ice">ICE</span> → beats → <span class="type-badge grass">GRASS</span></div>
+                    <div class="type-row"><span class="type-badge psychic">PSYCHIC</span> → beats → <span class="type-badge dark">DARK</span> is immune!</div>
+                </div>
+            </div>
+            
+            <!-- Rewards -->
+            <div class="mechanic-card">
+                <div class="mechanic-icon">💰</div>
+                <h3>Earn $PENG</h3>
+                <ul>
+                    <li><span class="highlight">+100 $PENG</span> per win</li>
+                    <li><span class="highlight">x2 bonus</span> for beating shiny enemies ✨</li>
+                    <li><span class="highlight">x1.5 bonus</span> for 5+ win streak 🔥</li>
+                    <li>Connect wallet to track rewards</li>
+                    <li>Claim tokens anytime!</li>
+                </ul>
+            </div>
+            
+            <!-- Difficulty & Penalties -->
+            <div class="mechanic-card warning">
+                <div class="mechanic-icon">⚠️</div>
+                <h3>Risk & Difficulty</h3>
+                <ul>
+                    <li><span class="danger">-10% tokens</span> when you lose!</li>
+                    <li>Enemies get <span class="danger">stronger</span> as you win more</li>
+                    <li>Enemy AI targets your weaknesses</li>
+                    <li>Win streak resets on loss</li>
+                    <li>Choose battles wisely!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Quick Tips -->
+        <div class="tips-box">
+            <h4>💡 Pro Tips</h4>
+            <div class="tips-grid">
+                <div class="tip">🎯 Use super effective moves for 2x damage</div>
+                <div class="tip">🛡️ Tanks survive longer but deal less damage</div>
+                <div class="tip">⚡ Speedsters attack first - great for finishing enemies</div>
+                <div class="tip">✨ Shiny enemies are rare - worth double rewards!</div>
+            </div>
+        </div>
+        
+        <!-- Start Button -->
+        <div class="start-battle-cta">
+            <p>Ready to earn $PENG?</p>
+            <a href="#game" class="btn btn-primary btn-large">⚔️ Start Battle</a>
+        </div>
+    </div>
+</section>
+
+<!-- Your existing game section below -->
+<div class="game-wrapper">
+    <section class="game-section" id="game">
+        <!-- ... rest of your game code ... -->
         <section class="game-section" id="game">
             <h2 class="section-title">⚔️ Battle <span class="highlight">Arena</span></h2>
             
