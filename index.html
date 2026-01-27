@@ -3281,6 +3281,89 @@ footer {
     font-weight: bold;
 }
 }
+
+/* Rewards Panel */
+.rewards-panel {
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 300px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.rewards-header {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+}
+
+.rewards-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 16px;
+}
+
+.reward-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reward-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.reward-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.reward-value.highlight {
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+}
+
+.reward-currency {
+    font-size: 0.7rem;
+    color: var(--primary);
+}
+
+.claim-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.9rem;
+}
+
+/* Token Earned Popup */
+.token-earned-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary) 0%, #f97316 100%);
+    color: #000;
+    padding: 20px 40px;
+    border-radius: 16px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    z-index: 9999;
+    animation: popupAnim 3s ease-out forwards;
+    box-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+}
+
+@keyframes popupAnim {
+    0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.8); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.1); }
+    30% { transform: translateX(-50%) translateY(0) scale(1); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+}
     </style>
 </head>
 <body>
@@ -3415,8 +3498,6 @@ footer {
 
     <!-- Hero -->
     <section class="hero">
-
-        
         <h1 class="hero-title">
             Battle Memecoins.<br>
             <span class="highlight">Win $PUMP.</span>
@@ -3526,6 +3607,26 @@ footer {
                     <!-- Moves will be inserted here -->
                 </div>
             </div>
+            <!-- Rewards Panel - Add after battle arena or in navbar -->
+<div class="rewards-panel" id="rewards-panel">
+    <div class="rewards-header">
+        <span>🎮 Your Rewards</span>
+    </div>
+    <div class="rewards-stats">
+        <div class="reward-stat">
+            <span class="reward-label">Total Wins</span>
+            <span class="reward-value" id="total-wins">0</span>
+        </div>
+        <div class="reward-stat">
+            <span class="reward-label">Claimable</span>
+            <span class="reward-value highlight" id="claimable-tokens">0</span>
+            <span class="reward-currency">$PUMPMON</span>
+        </div>
+    </div>
+    <button class="btn btn-primary claim-btn" id="claim-btn" onclick="RewardSystem.claimTokens()">
+        💰 Claim $PUMPMON
+    </button>
+</div>
         </section>
     </div>
 
@@ -5929,6 +6030,149 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+const RewardSystem = {
+    // Reward rate: 1 win = 100 $PENG
+    tokensPerWin: 100,
+    
+    // Track earnings
+    state: {
+        totalWins: 0,
+        totalPointsEarned: 0,
+        claimableTokens: 0,
+        claimedTokens: 0
+    },
+    
+    init() {
+        // Load saved progress from localStorage
+        const saved = localStorage.getItem('peng_rewards');
+        if (saved) {
+            this.state = JSON.parse(saved);
+        }
+        this.updateUI();
+    },
+    
+    // Call this when player wins a battle
+    onBattleWin(basePoints = 100) {
+        if (!WalletSystem.connected) {
+            console.log('Connect wallet to earn $PENG!');
+            return;
+        }
+        
+        this.state.totalWins++;
+        this.state.totalPointsEarned += basePoints;
+        this.state.claimableTokens += this.tokensPerWin;
+        
+        this.save();
+        this.updateUI();
+        this.showEarnedPopup(this.tokensPerWin);
+        
+        console.log(`🎮 Battle won! Earned ${this.tokensPerWin} $PENG`);
+    },
+    
+    // Save to localStorage
+    save() {
+        localStorage.setItem('peng_rewards', JSON.stringify(this.state));
+        localStorage.setItem('peng_wallet', WalletSystem.address);
+    },
+    
+    // Update UI elements
+    updateUI() {
+        const claimableEl = document.getElementById('claimable-tokens');
+        const totalWinsEl = document.getElementById('total-wins');
+        const totalEarnedEl = document.getElementById('total-earned');
+        
+        if (claimableEl) claimableEl.textContent = this.state.claimableTokens.toLocaleString();
+        if (totalWinsEl) totalWinsEl.textContent = this.state.totalWins;
+        if (totalEarnedEl) totalEarnedEl.textContent = this.state.totalPointsEarned.toLocaleString();
+    },
+    
+    // Show popup when tokens earned
+    showEarnedPopup(amount) {
+        const popup = document.createElement('div');
+        popup.className = 'token-earned-popup';
+        popup.innerHTML = `+${amount} $PENG! 🎉`;
+        document.body.appendChild(popup);
+        
+        setTimeout(() => popup.remove(), 3000);
+    },
+    
+    // Claim tokens (connects to backend)
+    async claimTokens() {
+        if (!WalletSystem.connected) {
+            alert('Please connect your wallet first!');
+            return;
+        }
+        
+        if (this.state.claimableTokens <= 0) {
+            alert('No tokens to claim!');
+            return;
+        }
+        
+        const amount = this.state.claimableTokens;
+        const wallet = WalletSystem.address;
+        
+        // Show loading
+        const claimBtn = document.getElementById('claim-btn');
+        if (claimBtn) {
+            claimBtn.disabled = true;
+            claimBtn.textContent = 'Claiming...';
+        }
+        
+        try {
+            // TODO: Replace with your backend API
+            const response = await fetch('https://your-backend.com/api/claim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    wallet: wallet,
+                    amount: amount,
+                    wins: this.state.totalWins
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.state.claimedTokens += amount;
+                this.state.claimableTokens = 0;
+                this.save();
+                this.updateUI();
+                alert(`Successfully claimed ${amount} $PENG! 🎉`);
+            } else {
+                alert('Claim failed: ' + result.error);
+            }
+        } catch (error) {
+            // For now, simulate success (remove this in production)
+            console.log('Backend not connected. Simulating claim...');
+            alert(`Demo mode: ${amount} $PENG would be sent to your wallet!`);
+            
+            // Uncomment below for demo/testing
+            // this.state.claimedTokens += amount;
+            // this.state.claimableTokens = 0;
+            // this.save();
+            // this.updateUI();
+        }
+        
+        if (claimBtn) {
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'Claim $PENG';
+        }
+    },
+    
+    // Reset (for testing)
+    reset() {
+        this.state = {
+            totalWins: 0,
+            totalPointsEarned: 0,
+            claimableTokens: 0,
+            claimedTokens: 0
+        };
+        this.save();
+        this.updateUI();
+    }
+};
+
     </script>
 </body>
 </html>
