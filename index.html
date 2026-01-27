@@ -3256,6 +3256,25 @@ footer {
     font-size: 0.7rem;
     color: var(--primary);
 }
+.demo-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: linear-gradient(135deg, var(--green), #16a34a);
+    color: #000;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.55rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+    animation: demoPulse 2s ease-in-out infinite;
+}
+
+@keyframes demoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
 
 #pumpmon-balance {
     color: #fff;
@@ -3542,6 +3561,7 @@ footer {
     <div class="safari-container">
         <h2 class="section-title">🌴 Enter the <span class="highlight">Safari Zone</span></h2>
         <div class="safari-card">
+            <span class="demo-badge">🎮 DEMO</span>
             <div class="safari-icon">🎟️</div>
             <div class="safari-info">
                 <div class="safari-tokens">1000 <span class="highlight">$P</span></div>
@@ -4785,137 +4805,176 @@ setInterval(() => {
            AUDIO SYSTEM
            ================================ */
         const AudioSystem = {
-            music: null,
-            battleMusic: null,
-            isMusicPlaying: false,
-            currentTrack: 'main',
-            
-            init() {
-                this.music = new Audio('assets/audio/main-theme.mp3');
-                this.battleMusic = new Audio('assets/audio/battle-theme.mp3');
-                this.music.loop = true;
-                this.battleMusic.loop = true;
-                this.music.volume = 0.4;
-                this.battleMusic.volume = 0.5;
-            },
-            
-            toggleMusic() {
-                if (this.isMusicPlaying) {
-                    this.stopMusic();
-                } else {
+    music: null,
+    battleMusic: null,
+    isMusicPlaying: false,
+    currentTrack: 'main',
+    
+    init() {
+        this.music = new Audio('assets/audio/main-theme.mp3');
+        this.battleMusic = new Audio('assets/audio/battle-theme.mp3');
+        this.music.loop = true;
+        this.battleMusic.loop = true;
+        this.music.volume = 0.4;
+        this.battleMusic.volume = 0.5;
+        
+        // Try autoplay
+        this.tryAutoplay();
+    },
+    
+    tryAutoplay() {
+        const playAttempt = this.music.play();
+        
+        if (playAttempt !== undefined) {
+            playAttempt.then(() => {
+                // Autoplay worked
+                this.isMusicPlaying = true;
+                this.updateButton(true);
+                console.log('Music autoplay started');
+            }).catch(() => {
+                // Autoplay blocked - play on first interaction
+                console.log('Autoplay blocked, waiting for interaction');
+                
+                const startMusic = () => {
                     this.playMusic();
-                }
-            },
-            
-            playMusic() {
-                const track = this.currentTrack === 'battle' ? this.battleMusic : this.music;
-                track.play().then(() => {
-                    this.isMusicPlaying = true;
-                    document.getElementById('music-btn').classList.add('playing');
-                    document.getElementById('music-btn').textContent = '🔊';
-                }).catch(e => console.log('Audio play failed:', e));
-            },
-            
-            stopMusic() {
-                this.music.pause();
-                this.battleMusic.pause();
-                this.isMusicPlaying = false;
-                document.getElementById('music-btn').classList.remove('playing');
-                document.getElementById('music-btn').textContent = '🎵';
-            },
-            
-            switchTrack(track) {
-                if (this.currentTrack === track) return;
+                    document.removeEventListener('click', startMusic);
+                    document.removeEventListener('scroll', startMusic);
+                };
                 
-                const wasPlaying = this.isMusicPlaying;
-                this.music.pause();
-                this.battleMusic.pause();
-                this.music.currentTime = 0;
-                this.battleMusic.currentTime = 0;
-                this.currentTrack = track;
-                
-                if (wasPlaying) {
-                    this.playMusic();
-                }
-            },
-            
-            playSound(type) {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(ctx.destination);
-                
-                switch(type) {
-                    case 'hit':
-                        oscillator.frequency.setValueAtTime(200, ctx.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-                        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                        oscillator.start(ctx.currentTime);
-                        oscillator.stop(ctx.currentTime + 0.1);
-                        break;
-                        
-                    case 'critical':
-                        oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
-                        gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                        oscillator.start(ctx.currentTime);
-                        oscillator.stop(ctx.currentTime + 0.2);
-                        break;
-                        
-                    case 'victory':
-                        const notes = [523, 659, 784, 1047];
-                        notes.forEach((freq, i) => {
-                            const osc = ctx.createOscillator();
-                            const gain = ctx.createGain();
-                            osc.connect(gain);
-                            gain.connect(ctx.destination);
-                            osc.frequency.value = freq;
-                            gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.15);
-                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
-                            osc.start(ctx.currentTime + i * 0.15);
-                            osc.stop(ctx.currentTime + i * 0.15 + 0.3);
-                        });
-                        break;
-                        
-                    case 'defeat':
-                        oscillator.frequency.setValueAtTime(300, ctx.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.5);
-                        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                        oscillator.start(ctx.currentTime);
-                        oscillator.stop(ctx.currentTime + 0.5);
-                        break;
-                        
-                    case 'select':
-                        oscillator.frequency.setValueAtTime(600, ctx.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
-                        gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-                        oscillator.start(ctx.currentTime);
-                        oscillator.stop(ctx.currentTime + 0.05);
-                        break;
-                        
-                    case 'heal':
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
-                        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                        oscillator.start(ctx.currentTime);
-                        oscillator.stop(ctx.currentTime + 0.3);
-                        break;
-                }
-            }
-        };
-
-        function toggleMusic() {
-            AudioSystem.toggleMusic();
+                document.addEventListener('click', startMusic, { once: true });
+                document.addEventListener('scroll', startMusic, { once: true });
+            });
         }
+    },
+    
+    updateButton(isPlaying) {
+        const btn = document.getElementById('music-btn');
+        if (btn) {
+            if (isPlaying) {
+                btn.classList.add('playing');
+                btn.textContent = '🔊';
+            } else {
+                btn.classList.remove('playing');
+                btn.textContent = '🎵';
+            }
+        }
+    },
+    
+    toggleMusic() {
+        if (this.isMusicPlaying) {
+            this.stopMusic();
+        } else {
+            this.playMusic();
+        }
+    },
+    
+    playMusic() {
+        const track = this.currentTrack === 'battle' ? this.battleMusic : this.music;
+        track.play().then(() => {
+            this.isMusicPlaying = true;
+            this.updateButton(true);
+        }).catch(e => console.log('Audio play failed:', e));
+    },
+    
+    stopMusic() {
+        this.music.pause();
+        this.battleMusic.pause();
+        this.isMusicPlaying = false;
+        this.updateButton(false);
+    },
+    
+    switchTrack(track) {
+        if (this.currentTrack === track) return;
+        
+        const wasPlaying = this.isMusicPlaying;
+        this.music.pause();
+        this.battleMusic.pause();
+        this.music.currentTime = 0;
+        this.battleMusic.currentTime = 0;
+        this.currentTrack = track;
+        
+        if (wasPlaying) {
+            this.playMusic();
+        }
+    },
+    
+    playSound(type) {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        switch(type) {
+            case 'hit':
+                oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+                break;
+                
+            case 'critical':
+                oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.2);
+                break;
+                
+            case 'victory':
+                const notes = [523, 659, 784, 1047];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
+                    osc.start(ctx.currentTime + i * 0.15);
+                    osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+                });
+                break;
+                
+            case 'defeat':
+                oscillator.frequency.setValueAtTime(300, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.5);
+                break;
+                
+            case 'select':
+                oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
+                gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.05);
+                break;
+                
+            case 'heal':
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.3);
+                break;
+        }
+    }
+};
+
+function toggleMusic() {
+    AudioSystem.toggleMusic();
+}
 
         /* ================================
            GAME DATA
@@ -5808,27 +5867,68 @@ setTimeout(shuffleCards, 1500);
         /* ================================
            INITIALIZATION
            ================================ */
-        document.addEventListener('DOMContentLoaded', () => {
-            WalletSystem.init();
-            AudioSystem.init();
-            init();
+document.addEventListener('DOMContentLoaded', () => {
+    WalletSystem.init();
+    AudioSystem.init();
+    init();
+    
+    // Try autoplay music
+    const tryAutoplay = () => {
+        if (AudioSystem.tracks && AudioSystem.tracks.main) {
+            AudioSystem.tracks.main.volume = 0.3;
+            const playAttempt = AudioSystem.tracks.main.play();
             
-            // Switch music on scroll
-            let lastSection = 'main';
-            window.addEventListener('scroll', () => {
-                const gameSection = document.getElementById('game');
-                const rect = gameSection.getBoundingClientRect();
-                const inGame = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
-                
-                if (inGame && lastSection !== 'battle') {
-                    lastSection = 'battle';
-                    AudioSystem.switchTrack('battle');
-                } else if (!inGame && lastSection !== 'main') {
-                    lastSection = 'main';
-                    AudioSystem.switchTrack('main');
-                }
-            });
-        });
+            if (playAttempt !== undefined) {
+                playAttempt.then(() => {
+                    // Autoplay worked
+                    AudioSystem.isPlaying = true;
+                    const musicBtn = document.querySelector('.music-btn');
+                    if (musicBtn) {
+                        musicBtn.classList.add('playing');
+                        musicBtn.textContent = '🔊';
+                    }
+                    console.log('Music autoplay started');
+                }).catch(() => {
+                    // Autoplay blocked - play on first interaction
+                    console.log('Autoplay blocked, waiting for interaction');
+                    
+                    const startMusic = () => {
+                        AudioSystem.tracks.main.play();
+                        AudioSystem.isPlaying = true;
+                        const musicBtn = document.querySelector('.music-btn');
+                        if (musicBtn) {
+                            musicBtn.classList.add('playing');
+                            musicBtn.textContent = '🔊';
+                        }
+                        document.removeEventListener('click', startMusic);
+                        document.removeEventListener('scroll', startMusic);
+                    };
+                    
+                    document.addEventListener('click', startMusic, { once: true });
+                    document.addEventListener('scroll', startMusic, { once: true });
+                });
+            }
+        }
+    };
+    
+    tryAutoplay();
+    
+    // Switch music on scroll
+    let lastSection = 'main';
+    window.addEventListener('scroll', () => {
+        const gameSection = document.getElementById('game');
+        const rect = gameSection.getBoundingClientRect();
+        const inGame = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
+        
+        if (inGame && lastSection !== 'battle') {
+            lastSection = 'battle';
+            AudioSystem.switchTrack('battle');
+        } else if (!inGame && lastSection !== 'main') {
+            lastSection = 'main';
+            AudioSystem.switchTrack('main');
+        }
+    });
+});
     </script>
 </body>
 </html>
