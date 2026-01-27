@@ -3931,7 +3931,7 @@ footer {
         tokensPerWin: 100,
         shinyBonus: 2,
         streakBonus: 1.5,
-        streakThreshold: 3,
+        streakThreshold: 5,
         
         // State
         state: {
@@ -5711,77 +5711,79 @@ footer {
         scrollToGame();
     }
 
-    function initBattle() {
-        const playerKey = gameState.playerKey;
-        const player = CHARACTERS[playerKey];
-        
-        const enemyKeys = Object.keys(CHARACTERS).filter(k => k !== playerKey);
-        const enemyKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
-        const enemy = CHARACTERS[enemyKey];
-        
-        gameState.enemyKey = enemyKey;
-        gameState.playerHP = player.hp;
-        gameState.playerMaxHP = player.hp;
-        gameState.enemyHP = enemy.hp;
-        gameState.enemyMaxHP = enemy.hp;
-        gameState.playerLevel = 50;
-        gameState.enemyLevel = 45 + Math.floor(Math.random() * 10);
-        gameState.moves = MOVES[playerKey].map(m => ({...m, currentPP: m.pp}));
-        
-        gameState.playerStatus = null;
-        gameState.enemyStatus = null;
-        gameState.playerBoosts = { attack: 0, defense: 0, speed: 0 };
-        gameState.enemyBoosts = { attack: 0, defense: 0, speed: 0 };
-        gameState.turnCount = 0;
-        
-        gameState.playerShiny = Math.random() < 0.05;
-        gameState.enemyShiny = Math.random() < 0.05;
-        
-        gameState.isPlayerTurn = player.speed >= enemy.speed;
-        
-        document.getElementById('player-name').textContent = player.name + (gameState.playerShiny ? ' ✨' : '');
-        document.getElementById('enemy-name').textContent = enemy.name + (gameState.enemyShiny ? ' ✨' : '');
-        document.getElementById('player-hp').textContent = player.hp;
-        document.getElementById('player-max-hp').textContent = player.hp;
-        document.getElementById('player-level').textContent = gameState.playerLevel;
-        document.getElementById('enemy-level').textContent = gameState.enemyLevel;
-        
-        document.getElementById('player-img').src = `assets/images/characters/${player.image}`;
-        document.getElementById('enemy-img').src = `assets/images/characters/${enemy.image}`;
-        
-        const backImageName = player.image.replace('.png', '-back.png');
-        document.getElementById('player-img-back').src = `assets/images/characters/${backImageName}`;
-        document.getElementById('player-img-back').onerror = function() {
-            this.src = `assets/images/characters/${player.image}`;
-        };
-        
-        const playerSprite = document.getElementById('player-sprite');
-        const playerSpriteBack = document.getElementById('player-sprite-back');
-        const enemySprite = document.getElementById('enemy-sprite');
-        playerSprite.classList.toggle('shiny', gameState.playerShiny);
-        playerSpriteBack.classList.toggle('shiny', gameState.playerShiny);
-        enemySprite.classList.toggle('shiny', gameState.enemyShiny);
-        
-        playerSprite.style.opacity = '1';
-        playerSprite.style.transform = '';
-        playerSpriteBack.style.opacity = '1';
-        playerSpriteBack.style.transform = '';
-        enemySprite.style.opacity = '1';
-        enemySprite.style.transform = '';
-        
-        updateHPBars();
-        updateStatusDisplay();
-        updateTurnIndicator();
-        renderMoves();
-        clearLog();
-        
-        showBattleIntro(enemy);
-        
-        const battleResult = document.getElementById('battle-result');
-        battleResult.style.display = 'none';
-        battleResult.classList.remove('show');
-    }
+function initBattle() {
+    // Difficulty scaling - more wins = harder enemies
+    const difficultyBonus = Math.min(10, Math.floor(RewardSystem.state.totalWins / 3)); // +1 level per 3 wins, max +10
     
+    const playerKey = gameState.playerKey;
+    const player = CHARACTERS[playerKey];
+    
+    const enemyKeys = Object.keys(CHARACTERS).filter(k => k !== playerKey);
+    const enemyKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
+    const enemy = CHARACTERS[enemyKey];
+    
+    gameState.enemyKey = enemyKey;
+    gameState.playerHP = player.hp;
+    gameState.playerMaxHP = player.hp;
+    gameState.enemyHP = enemy.hp;
+    gameState.enemyMaxHP = enemy.hp;
+    gameState.playerLevel = 50;
+    gameState.enemyLevel = 50 + Math.floor(Math.random() * 11) + difficultyBonus; // Level 50-60 + bonus from wins!
+    gameState.moves = MOVES[playerKey].map(m => ({...m, currentPP: m.pp}));
+    
+    gameState.playerStatus = null;
+    gameState.enemyStatus = null;
+    gameState.playerBoosts = { attack: 0, defense: 0, speed: 0 };
+    gameState.enemyBoosts = { attack: 0, defense: 0, speed: 0 };
+    gameState.turnCount = 0;
+    
+    gameState.playerShiny = Math.random() < 0.05;
+    gameState.enemyShiny = Math.random() < 0.05;
+    
+    gameState.isPlayerTurn = player.speed >= enemy.speed;
+    
+    document.getElementById('player-name').textContent = player.name + (gameState.playerShiny ? ' ✨' : '');
+    document.getElementById('enemy-name').textContent = enemy.name + (gameState.enemyShiny ? ' ✨' : '');
+    document.getElementById('player-hp').textContent = player.hp;
+    document.getElementById('player-max-hp').textContent = player.hp;
+    document.getElementById('player-level').textContent = gameState.playerLevel;
+    document.getElementById('enemy-level').textContent = gameState.enemyLevel;
+    
+    document.getElementById('player-img').src = `assets/images/characters/${player.image}`;
+    document.getElementById('enemy-img').src = `assets/images/characters/${enemy.image}`;
+    
+    const backImageName = player.image.replace('.png', '-back.png');
+    document.getElementById('player-img-back').src = `assets/images/characters/${backImageName}`;
+    document.getElementById('player-img-back').onerror = function() {
+        this.src = `assets/images/characters/${player.image}`;
+    };
+    
+    const playerSprite = document.getElementById('player-sprite');
+    const playerSpriteBack = document.getElementById('player-sprite-back');
+    const enemySprite = document.getElementById('enemy-sprite');
+    playerSprite.classList.toggle('shiny', gameState.playerShiny);
+    playerSpriteBack.classList.toggle('shiny', gameState.playerShiny);
+    enemySprite.classList.toggle('shiny', gameState.enemyShiny);
+    
+    playerSprite.style.opacity = '1';
+    playerSprite.style.transform = '';
+    playerSpriteBack.style.opacity = '1';
+    playerSpriteBack.style.transform = '';
+    enemySprite.style.opacity = '1';
+    enemySprite.style.transform = '';
+    
+    updateHPBars();
+    updateStatusDisplay();
+    updateTurnIndicator();
+    renderMoves();
+    clearLog();
+    
+    showBattleIntro(enemy);
+    
+    const battleResult = document.getElementById('battle-result');
+    battleResult.style.display = 'none';
+    battleResult.classList.remove('show');
+}
     function showBattleIntro(enemy) {
         const intro = document.getElementById('battle-intro');
         const text = document.getElementById('intro-text');
@@ -5986,125 +5988,173 @@ footer {
     }
 
     function enemyTurn() {
-        const enemy = CHARACTERS[gameState.enemyKey];
-        const player = CHARACTERS[gameState.playerKey];
-        const enemyMoves = MOVES[gameState.enemyKey];
+    const enemy = CHARACTERS[gameState.enemyKey];
+    const player = CHARACTERS[gameState.playerKey];
+    const enemyMoves = MOVES[gameState.enemyKey];
+    
+    gameState.turnCount++;
+    
+    // Status damage
+    if (gameState.enemyStatus === 'brn' || gameState.enemyStatus === 'psn') {
+        const statusDamage = Math.floor(gameState.enemyMaxHP / 16);
+        gameState.enemyHP = Math.max(0, gameState.enemyHP - statusDamage);
+        const statusName = gameState.enemyStatus === 'brn' ? 'burn' : 'poison';
+        addLog(`${enemy.name} was hurt by ${statusName}!`, 'info');
+        updateHPBars();
         
-        gameState.turnCount++;
-        
-        if (gameState.enemyStatus === 'brn' || gameState.enemyStatus === 'psn') {
-            const statusDamage = Math.floor(gameState.enemyMaxHP / 16);
-            gameState.enemyHP = Math.max(0, gameState.enemyHP - statusDamage);
-            const statusName = gameState.enemyStatus === 'brn' ? 'burn' : 'poison';
-            addLog(`${enemy.name} was hurt by ${statusName}!`, 'info');
-            updateHPBars();
-            
-            if (gameState.enemyHP <= 0) {
-                endBattle(true);
-                return;
+        if (gameState.enemyHP <= 0) {
+            endBattle(true);
+            return;
+        }
+    }
+    
+    // Paralysis check
+    if (gameState.enemyStatus === 'par' && Math.random() < 0.25) {
+        addLog(`${enemy.name} is paralyzed! It can't move!`, 'enemy');
+        endEnemyTurn();
+        return;
+    }
+    
+    // Sleep check
+    if (gameState.enemyStatus === 'slp') {
+        if (Math.random() < 0.33) {
+            gameState.enemyStatus = null;
+            updateStatusDisplay();
+            addLog(`${enemy.name} woke up!`, 'enemy');
+        } else {
+            addLog(`${enemy.name} is fast asleep!`, 'enemy');
+            endEnemyTurn();
+            return;
+        }
+    }
+    
+    // ========== SMART AI ==========
+    let move;
+    
+    // Priority 1: Heal if low HP (30% or less)
+    const healMoves = enemyMoves.filter(m => m.heal);
+    if (gameState.enemyHP < gameState.enemyMaxHP * 0.3 && healMoves.length > 0 && Math.random() < 0.8) {
+        move = healMoves[0];
+    }
+    // Priority 2: Boost if first few turns
+    else if (gameState.turnCount <= 2) {
+        const boostMoves = enemyMoves.filter(m => m.boost);
+        if (boostMoves.length > 0 && Math.random() < 0.5) {
+            move = boostMoves[0];
+        }
+    }
+    
+    // Priority 3: Use super effective moves (90% chance)
+    if (!move) {
+        const superMoves = enemyMoves.filter(m => m.power && getTypeEffectiveness(m.type, player.type) > 1);
+        if (superMoves.length > 0 && Math.random() < 0.9) {
+            // Pick highest power super effective move
+            move = superMoves.reduce((best, m) => (m.power || 0) > (best.power || 0) ? m : best);
+        }
+    }
+    
+    // Priority 4: Finish off low HP player with strongest move
+    if (!move && gameState.playerHP < gameState.playerMaxHP * 0.25) {
+        move = enemyMoves.filter(m => m.power).reduce((best, m) => (m.power || 0) > (best.power || 0) ? m : best);
+    }
+    
+    // Priority 5: Use high power moves more often
+    if (!move) {
+        const attackMoves = enemyMoves.filter(m => m.power);
+        if (attackMoves.length > 0) {
+            // Weight towards higher power moves
+            const weighted = attackMoves.sort((a, b) => b.power - a.power);
+            const roll = Math.random();
+            if (roll < 0.5) {
+                move = weighted[0]; // 50% strongest
+            } else if (roll < 0.8 && weighted.length > 1) {
+                move = weighted[1]; // 30% second strongest
+            } else {
+                move = weighted[Math.floor(Math.random() * weighted.length)];
             }
         }
-        
-        if (gameState.enemyStatus === 'par' && Math.random() < 0.25) {
-            addLog(`${enemy.name} is paralyzed! It can't move!`, 'enemy');
+    }
+    
+    // Fallback: random move
+    if (!move) {
+        move = enemyMoves[Math.floor(Math.random() * enemyMoves.length)];
+    }
+    
+    addLog(`${enemy.name} used ${move.name}!`, 'enemy');
+    
+    const enemySprite = document.getElementById('enemy-sprite');
+    enemySprite.classList.add('attacking');
+    setTimeout(() => enemySprite.classList.remove('attacking'), 400);
+    
+    setTimeout(() => {
+        // Accuracy check
+        if (move.accuracy && Math.random() * 100 > move.accuracy) {
+            addLog(`${enemy.name}'s attack missed!`, 'enemy');
+            showDamageNumber('MISS', 'player', true);
             endEnemyTurn();
             return;
         }
         
-        if (gameState.enemyStatus === 'slp') {
-            if (Math.random() < 0.33) {
-                gameState.enemyStatus = null;
-                updateStatusDisplay();
-                addLog(`${enemy.name} woke up!`, 'enemy');
-            } else {
-                addLog(`${enemy.name} is fast asleep!`, 'enemy');
-                endEnemyTurn();
-                return;
-            }
-        }
-        
-        let move;
-        if (gameState.playerHP < gameState.playerMaxHP * 0.3) {
-            move = enemyMoves.reduce((best, m) => (m.power || 0) > (best.power || 0) ? m : best);
-        } else {
-            const superMoves = enemyMoves.filter(m => m.power && getTypeEffectiveness(m.type, player.type) > 1);
-            if (superMoves.length > 0 && Math.random() < 0.7) {
-                move = superMoves[Math.floor(Math.random() * superMoves.length)];
-            } else {
-                move = enemyMoves[Math.floor(Math.random() * enemyMoves.length)];
-            }
-        }
-        
-        addLog(`${enemy.name} used ${move.name}!`, 'enemy');
-        
-        const enemySprite = document.getElementById('enemy-sprite');
-        enemySprite.classList.add('attacking');
-        setTimeout(() => enemySprite.classList.remove('attacking'), 400);
-        
-        setTimeout(() => {
-            if (move.accuracy && Math.random() * 100 > move.accuracy) {
-                addLog(`${enemy.name}'s attack missed!`, 'enemy');
-                showDamageNumber('MISS', 'player', true);
-                endEnemyTurn();
-                return;
-            }
-            
-            if (move.heal) {
-                const healAmount = Math.floor(gameState.enemyMaxHP * (move.heal / 100));
-                gameState.enemyHP = Math.min(gameState.enemyMaxHP, gameState.enemyHP + healAmount);
-                addLog(`${enemy.name} recovered health!`, 'enemy');
-                AudioSystem.playSound('heal');
-                updateHPBars();
-                endEnemyTurn();
-                return;
-            }
-            
-            if (move.boost) {
-                Object.entries(move.boost).forEach(([stat, amount]) => {
-                    gameState.enemyBoosts[stat] = Math.min(6, gameState.enemyBoosts[stat] + amount);
-                });
-                addLog(`${enemy.name}'s stats rose!`, 'enemy');
-                endEnemyTurn();
-                return;
-            }
-            
-            const result = calculateDamage(move, enemy, player, false);
-            gameState.playerHP = Math.max(0, gameState.playerHP - result.damage);
-            
-            showDamageNumber(result.damage, 'player', result.isCritical);
-            
-            if (result.effectiveness > 1) {
-                addLog("It's super effective!", 'enemy');
-            } else if (result.effectiveness < 1 && result.effectiveness > 0) {
-                addLog("It's not very effective...", 'enemy');
-            }
-            
-            if (result.isCritical) {
-                addLog(`Critical hit! Took ${result.damage} damage!`, 'enemy');
-                AudioSystem.playSound('critical');
-                screenShake();
-            } else {
-                addLog(`Took ${result.damage} damage!`, 'enemy');
-                AudioSystem.playSound('hit');
-            }
-            
-            if (move.effect && move.effectChance && Math.random() * 100 < move.effectChance) {
-                applyStatus('player', move.effect);
-            }
-            
-            const playerSpriteBack = document.getElementById('player-sprite-back');
-            playerSpriteBack.classList.add('damaged');
-            setTimeout(() => playerSpriteBack.classList.remove('damaged'), 400);
-            
+        // Healing move
+        if (move.heal) {
+            const healAmount = Math.floor(gameState.enemyMaxHP * (move.heal / 100));
+            gameState.enemyHP = Math.min(gameState.enemyMaxHP, gameState.enemyHP + healAmount);
+            addLog(`${enemy.name} recovered health!`, 'enemy');
+            AudioSystem.playSound('heal');
             updateHPBars();
-            
-            if (gameState.playerHP <= 0) {
-                endBattle(false);
-            } else {
-                endEnemyTurn();
-            }
-        }, 300);
-    }
+            endEnemyTurn();
+            return;
+        }
+        
+        // Boost move
+        if (move.boost) {
+            Object.entries(move.boost).forEach(([stat, amount]) => {
+                gameState.enemyBoosts[stat] = Math.min(6, gameState.enemyBoosts[stat] + amount);
+            });
+            addLog(`${enemy.name}'s stats rose!`, 'enemy');
+            endEnemyTurn();
+            return;
+        }
+        
+        // Damage calculation
+        const result = calculateDamage(move, enemy, player, false);
+        gameState.playerHP = Math.max(0, gameState.playerHP - result.damage);
+        
+        showDamageNumber(result.damage, 'player', result.isCritical);
+        
+        if (result.effectiveness > 1) {
+            addLog("It's super effective!", 'enemy');
+        } else if (result.effectiveness < 1 && result.effectiveness > 0) {
+            addLog("It's not very effective...", 'enemy');
+        }
+        
+        if (result.isCritical) {
+            addLog(`Critical hit! Took ${result.damage} damage!`, 'enemy');
+            AudioSystem.playSound('critical');
+            screenShake();
+        } else {
+            addLog(`Took ${result.damage} damage!`, 'enemy');
+            AudioSystem.playSound('hit');
+        }
+        
+        // Apply status effects
+        if (move.effect && move.effectChance && Math.random() * 100 < move.effectChance) {
+            applyStatus('player', move.effect);
+        }
+        
+        const playerSpriteBack = document.getElementById('player-sprite-back');
+        playerSpriteBack.classList.add('damaged');
+        setTimeout(() => playerSpriteBack.classList.remove('damaged'), 400);
+        
+        updateHPBars();
+        
+        if (gameState.playerHP <= 0) {
+            endBattle(false);
+        } else {
+            endEnemyTurn();
+        }
+    }, 300);
+}
     
     function endEnemyTurn() {
         if (gameState.playerStatus === 'brn' || gameState.playerStatus === 'psn') {
@@ -6170,7 +6220,9 @@ footer {
         const effectiveness = getTypeEffectiveness(move.type, defender.type);
         damage = Math.floor(damage * effectiveness);
         
-        const critChance = move.highCrit ? 0.25 : 0.0625;
+        // Enemy crits more, player crits less
+const baseCrit = isPlayer ? 0.05 : 0.12; // Player 5%, Enemy 12%
+const critChance = move.highCrit ? 0.25 : baseCrit;
         const isCritical = Math.random() < critChance;
         if (isCritical) {
             damage = Math.floor(damage * 1.5);
