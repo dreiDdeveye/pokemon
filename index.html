@@ -17,6 +17,7 @@
 
 <!-- BigNumber (required for Solana Pay) -->
 <script src="https://unpkg.com/bignumber.js@latest/bignumber.min.js"></script>
+<script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
 <style>
 /* ================================
    CSS VARIABLES & RESET
@@ -8013,8 +8014,9 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
 // ================================
 
 const PayToPlay = {
-    ENTRY_FEE: 0.01,
+    ENTRY_FEE: 1000, // Amount of tokens (adjust as needed)
     TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',
+    TOKEN_DECIMALS: 6, // Most pump.fun tokens are 6 decimals
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
 
@@ -8064,19 +8066,46 @@ const PayToPlay = {
             this.updateWalletStatus();
 
             const connection = new solanaWeb3.Connection(
-                'https://mainnet.helius-rpc.com/?api-key=b32c2d78-dee3-42c2-a5e4-5e53a8d11704',
+                'https://mainnet.helius-rpc.com/?api-key=728b1810-b6e2-4150-8d49-e04e0d36ba02',
                 'confirmed'
             );
 
-            const transaction = new solanaWeb3.Transaction().add(
-                solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: resp.publicKey,
-                    toPubkey: new solanaWeb3.PublicKey(this.TREASURY_WALLET),
-                    lamports: this.ENTRY_FEE * solanaWeb3.LAMPORTS_PER_SOL
-                })
+            const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
+            const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
+            const senderPubkey = resp.publicKey;
+
+            // Get token accounts
+            const senderATA = await splToken.getAssociatedTokenAddress(mintPubkey, senderPubkey);
+            const treasuryATA = await splToken.getAssociatedTokenAddress(mintPubkey, treasuryPubkey);
+
+            // Build transaction
+            const transaction = new solanaWeb3.Transaction();
+
+            // Check if treasury token account exists, if not create it
+            const treasuryAccount = await connection.getAccountInfo(treasuryATA);
+            if (!treasuryAccount) {
+                transaction.add(
+                    splToken.createAssociatedTokenAccountInstruction(
+                        senderPubkey,    // payer
+                        treasuryATA,     // ata
+                        treasuryPubkey,  // owner
+                        mintPubkey       // mint
+                    )
+                );
+            }
+
+            // Add transfer instruction
+            const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
+            transaction.add(
+                splToken.createTransferInstruction(
+                    senderATA,       // from
+                    treasuryATA,     // to
+                    senderPubkey,    // owner
+                    amount           // amount
+                )
             );
 
-            transaction.feePayer = resp.publicKey;
+            transaction.feePayer = senderPubkey;
             const { blockhash } = await connection.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
 
