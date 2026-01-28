@@ -8023,7 +8023,6 @@ const PayToPlay = {
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
 
-    // SPL Token Program IDs
     TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
     ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 
@@ -8058,20 +8057,18 @@ const PayToPlay = {
         }
     },
 
-    // Calculate Associated Token Address manually
     async getATA(mint, owner) {
         const [ata] = await solanaWeb3.PublicKey.findProgramAddress(
             [
-                owner.toBuffer(),
-                new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID).toBuffer(),
-                mint.toBuffer(),
+                owner.toBytes(),
+                new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID).toBytes(),
+                mint.toBytes(),
             ],
             new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID)
         );
         return ata;
     },
 
-    // Create ATA instruction manually
     createATAInstruction(payer, ata, owner, mint) {
         const keys = [
             { pubkey: payer, isSigner: true, isWritable: true },
@@ -8085,11 +8082,10 @@ const PayToPlay = {
         return new solanaWeb3.TransactionInstruction({
             keys,
             programId: new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID),
-            data: Buffer.from([]),
+            data: new Uint8Array([]),
         });
     },
 
-    // Create transfer instruction manually
     createTransferInstruction(source, destination, owner, amount) {
         const keys = [
             { pubkey: source, isSigner: false, isWritable: true },
@@ -8097,9 +8093,15 @@ const PayToPlay = {
             { pubkey: owner, isSigner: true, isWritable: false },
         ];
 
-        const data = Buffer.alloc(9);
-        data.writeUInt8(3, 0); // Transfer instruction
-        data.writeBigUInt64LE(BigInt(amount), 1);
+        // Create data array for transfer instruction
+        const data = new Uint8Array(9);
+        data[0] = 3; // Transfer instruction
+
+        // Write amount as little-endian 64-bit
+        const bigAmount = BigInt(amount);
+        for (let i = 0; i < 8; i++) {
+            data[1 + i] = Number((bigAmount >> BigInt(i * 8)) & BigInt(0xff));
+        }
 
         return new solanaWeb3.TransactionInstruction({
             keys,
@@ -8123,9 +8125,9 @@ const PayToPlay = {
             this.updateWalletStatus();
 
             const connection = new solanaWeb3.Connection(
-                'https://mainnet.helius-rpc.com/?api-key=cd9d45d5-e888-4613-9173-5ca50e1f1040',
-                'confirmed'
-            );
+    'https://mainnet.helius-rpc.com/?api-key=c092f56b-5d0d-4ea9-8389-dd8b64d2276f',
+    'confirmed'
+);
 
             const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
             const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
