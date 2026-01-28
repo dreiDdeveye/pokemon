@@ -8067,30 +8067,24 @@ const PayToPlay = {
                 'confirmed'
             );
 
-            // Create unique reference for tracking
-            const reference = new solanaWeb3.Keypair().publicKey;
+            const transaction = new solanaWeb3.Transaction().add(
+                solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: resp.publicKey,
+                    toPubkey: new solanaWeb3.PublicKey(this.TREASURY_WALLET),
+                    lamports: this.ENTRY_FEE * solanaWeb3.LAMPORTS_PER_SOL
+                })
+            );
 
-            // Build Solana Pay transfer
-            const recipient = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
-            const amount = new BigNumber(this.ENTRY_FEE);
+            transaction.feePayer = resp.publicKey;
+            const { blockhash } = await connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
 
-            const { transaction } = await createTransfer(connection, resp.publicKey, {
-                recipient,
-                amount,
-                reference,
-                memo: 'PumpPals Entry Fee'
-            });
-
-            // Sign and send
             const signed = await window.solana.signTransaction(transaction);
             const signature = await connection.sendRawTransaction(signed.serialize());
-            
-            // Wait for confirmation
-            await connection.confirmTransaction(signature, 'confirmed');
+            await connection.confirmTransaction(signature);
 
             console.log('Payment successful:', signature);
 
-            // Success
             this.hasPaid = true;
             sessionStorage.setItem('pumpmon_paid', 'true');
             this.updateUI();
