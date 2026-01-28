@@ -8275,15 +8275,14 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
 
 const PayToPlay = {
     ENTRY_FEE: 1000,
-    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mM7qzvyFLSbDpjeyzwRpump',
+    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',  // ✅ Fixed
     TOKEN_DECIMALS: 6,
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
 
-    // Token 2022 Program (for pump.fun tokens)
-    TOKEN_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
+    // ✅ Regular SPL Token Program
+    TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
     ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
-
     init() {
         this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
         this.updateUI();
