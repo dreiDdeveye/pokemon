@@ -613,6 +613,29 @@ nav {
 /* ================================
    BUTTONS
    ================================ */
+.btn-upgrade {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #000;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.6rem;
+    cursor: pointer;
+    margin-top: 12px;
+    border: none;
+    animation: pulse 2s infinite;
+    width: 100%;
+}
+
+.btn-upgrade:hover {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    transform: scale(1.02);
+}
+
+.btn-upgrade.hidden {
+    display: none;
+}
+
 .btn {
     padding: 10px 20px;
     border-radius: 8px;
@@ -3153,7 +3176,256 @@ nav {
     color: var(--text-muted);
     margin-bottom: 16px;
 }
+/* ================================
+   HOW TO PLAY SECTION
+   ================================ */
+.how-to-play {
+    padding: 80px 24px;
+    background: linear-gradient(180deg, rgba(10, 10, 26, 0.95) 0%, rgba(18, 18, 40, 0.98) 100%);
+}
 
+.guide-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Steps */
+.guide-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.guide-step {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.guide-step:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(255, 217, 61, 0.1);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary), #f97316);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    color: #000;
+    margin: 0 auto 16px;
+}
+
+.step-content h4 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.step-content p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* Info Cards */
+.guide-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.guide-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+}
+
+.card-header h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    color: var(--primary);
+}
+
+/* Type Matchups */
+.type-matchups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.matchup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.type-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.type-badge.water { background: #3b82f6; color: #fff; }
+.type-badge.fire { background: #ef4444; color: #fff; }
+.type-badge.grass { background: #22c55e; color: #fff; }
+.type-badge.electric { background: #fbbf24; color: #000; }
+.type-badge.ice { background: #67e8f9; color: #000; }
+.type-badge.rock { background: #a8a29e; color: #000; }
+.type-badge.psychic { background: #ec4899; color: #fff; }
+.type-badge.dark { background: #374151; color: #fff; }
+.type-badge.normal { background: #9ca3af; color: #000; }
+
+.beats {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.immune {
+    color: #ef4444;
+    font-size: 0.6rem;
+    font-style: italic;
+}
+
+/* Rewards List */
+.rewards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+}
+
+.reward-item.bonus {
+    border-left-color: #22c55e;
+}
+
+.reward-item.danger {
+    border-left-color: #ef4444;
+}
+
+.reward-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: var(--primary);
+    min-width: 60px;
+}
+
+.reward-item.bonus .reward-value {
+    color: #22c55e;
+}
+
+.reward-item.danger .reward-value {
+    color: #ef4444;
+}
+
+.reward-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Pro Tips */
+.pro-tips {
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.08), rgba(249, 115, 22, 0.08));
+    border: 1px solid rgba(255, 217, 61, 0.2);
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.pro-tips h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.tip {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+/* ================================
+   RESPONSIVE - How To Play
+   ================================ */
+@media (max-width: 900px) {
+    .guide-steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .guide-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .guide-steps {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-content h4 {
+        font-size: 0.6rem;
+    }
+    
+    .pro-tips h3 {
+        font-size: 0.65rem;
+    }
+    
+    .tip {
+        font-size: 0.7rem;
+        padding: 12px 14px;
+    }
+}
 /* ================================
    HOW IT WORKS SECTION
    ================================ */
@@ -3761,6 +4033,183 @@ footer {
     .pay-overlay-btn {
         padding: 14px 32px;
         font-size: 0.8rem;
+    }
+}
+/* ================================
+   WELCOME POPUP
+   ================================ */
+.welcome-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.welcome-popup.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.welcome-popup-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid var(--primary);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(255, 217, 61, 0.2);
+}
+
+.welcome-popup.show .welcome-popup-content {
+    transform: scale(1);
+}
+
+.welcome-popup-header {
+    margin-bottom: 24px;
+}
+
+.welcome-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.welcome-popup-header h2 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.1rem;
+    color: var(--primary);
+    text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+}
+
+.welcome-popup-body {
+    margin-bottom: 28px;
+}
+
+.welcome-message {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 24px;
+}
+
+.welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.welcome-feature {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.welcome-feature span:first-child {
+    font-size: 1.2rem;
+}
+
+.welcome-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 217, 61, 0.1);
+    border: 1px solid rgba(255, 217, 61, 0.3);
+    border-radius: 12px;
+    text-align: left;
+}
+
+.notice-icon {
+    font-size: 1.5rem;
+}
+
+.welcome-notice p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.welcome-notice strong {
+    color: var(--primary);
+}
+
+.welcome-popup-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.welcome-btn {
+    width: 100%;
+    padding: 16px 32px;
+    font-size: 0.8rem;
+}
+
+.dont-show-again {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.dont-show-again input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.dont-show-again:hover {
+    color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    .welcome-popup-content {
+        padding: 28px 20px;
+    }
+    
+    .welcome-popup-header h2 {
+        font-size: 0.85rem;
+    }
+    
+    .welcome-icon {
+        font-size: 2.5rem;
+    }
+    
+    .welcome-feature {
+        font-size: 0.8rem;
+        padding: 10px 16px;
+    }
+    
+    .welcome-notice p {
+        font-size: 0.75rem;
     }
 }
 
@@ -4786,10 +5235,54 @@ footer {
 .trial-badge.hidden {
     display: none;
 }
+
 }
 </style>
 </head>
 <body>
+    <!-- Welcome Popup -->
+<div class="welcome-popup" id="welcome-popup">
+    <div class="welcome-popup-content">
+        <div class="welcome-popup-header">
+            <span class="welcome-icon">🎮</span>
+            <h2>Welcome to PumpPals!</h2>
+        </div>
+        
+        <div class="welcome-popup-body">
+            <p class="welcome-message">Battle memecoins. Win $PALS tokens!</p>
+            
+            <div class="welcome-features">
+                <div class="welcome-feature">
+                    <span>⚔️</span>
+                    <span>Pokemon-style battles</span>
+                </div>
+                <div class="welcome-feature">
+                    <span>💰</span>
+                    <span>Earn real $PALS tokens</span>
+                </div>
+                <div class="welcome-feature">
+                    <span>🎮</span>
+                    <span>Free trial available</span>
+                </div>
+            </div>
+            
+            <div class="welcome-notice">
+                <span class="notice-icon">⚠️</span>
+                <p>Entry fee: <strong>1000 $PALS</strong> to earn rewards. Try free trial first!</p>
+            </div>
+        </div>
+        
+        <div class="welcome-popup-actions">
+            <button class="btn btn-primary welcome-btn" onclick="closeWelcomePopup()">
+                🚀 Let's Go!
+            </button>
+            <label class="dont-show-again">
+                <input type="checkbox" id="dont-show-checkbox">
+                <span>Don't show again</span>
+            </label>
+        </div>
+    </div>
+</div>
     <div class="trial-badge hidden" id="trial-badge">⚠️ FREE TRIAL - No Rewards</div>
     <!-- Pokemon Style Animated Background -->
     <div class="bg-animation">
@@ -4981,79 +5474,96 @@ footer {
     <!-- Game Section -->
 <div class="game-wrapper">
         <!-- Game Mechanics Section -->
-<section class="mechanics-section" id="how-to-play">
-    <div class="mechanics-container">
-        <h2 class="section-title">📖 How To <span class="highlight">Play</span></h2>
-        
-        <div class="mechanics-grid">
-            <!-- Basic Rules -->
-            <div class="mechanic-card">
-                <div class="mechanic-icon">⚔️</div>
-                <h3>Battle System</h3>
-                <ul>
-                    <li>Choose your fighter and battle wild enemies</li>
-                    <li>Select moves to attack, heal, or boost stats</li>
-                    <li>Reduce enemy HP to 0 to win</li>
-                    <li>Faster Pokémon moves first each turn</li>
-                </ul>
+<section class="how-to-play" id="how-to-play">
+    <h2 class="section-title">📖 How To <span class="highlight">Play</span></h2>
+    
+    <div class="guide-container">
+        <!-- Step by Step -->
+        <div class="guide-steps">
+            <div class="guide-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Choose Your Fighter</h4>
+                    <p>Pick from 11 unique memecoin characters, each with special moves and stats</p>
+                </div>
             </div>
-            
+            <div class="guide-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Battle Enemies</h4>
+                    <p>Use attacks, heals, and boosts strategically to defeat wild opponents</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Earn $PALS</h4>
+                    <p>Win battles to earn tokens. Build streaks for bonus rewards!</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Claim Rewards</h4>
+                    <p>Connect wallet and claim your earned $PALS tokens anytime</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Cards -->
+        <div class="guide-cards">
             <!-- Type Advantages -->
-            <div class="mechanic-card">
-                <div class="mechanic-icon">🔥</div>
-                <h3>Type Advantages</h3>
-                <div class="type-chart-mini">
-                    <div class="type-row"><span class="type-badge water">WATER</span> → beats → <span class="type-badge fire">FIRE</span> <span class="type-badge rock">ROCK</span></div>
-                    <div class="type-row"><span class="type-badge fire">FIRE</span> → beats → <span class="type-badge grass">GRASS</span> <span class="type-badge ice">ICE</span></div>
-                    <div class="type-row"><span class="type-badge grass">GRASS</span> → beats → <span class="type-badge water">WATER</span> <span class="type-badge rock">ROCK</span></div>
-                    <div class="type-row"><span class="type-badge electric">ELECTRIC</span> → beats → <span class="type-badge water">WATER</span></div>
-                    <div class="type-row"><span class="type-badge ice">ICE</span> → beats → <span class="type-badge grass">GRASS</span></div>
-                    <div class="type-row"><span class="type-badge psychic">PSYCHIC</span> → beats → <span class="type-badge dark">DARK</span> is immune!</div>
+            <div class="guide-card">
+                <div class="card-header">
+                    <span class="card-icon">🔥</span>
+                    <h3>Type Advantages</h3>
+                </div>
+                <div class="type-matchups">
+                    <div class="matchup"><span class="type-badge water">WATER</span> <span class="beats">→</span> <span class="type-badge fire">FIRE</span> <span class="type-badge rock">ROCK</span></div>
+                    <div class="matchup"><span class="type-badge fire">FIRE</span> <span class="beats">→</span> <span class="type-badge grass">GRASS</span> <span class="type-badge ice">ICE</span></div>
+                    <div class="matchup"><span class="type-badge grass">GRASS</span> <span class="beats">→</span> <span class="type-badge water">WATER</span> <span class="type-badge rock">ROCK</span></div>
+                    <div class="matchup"><span class="type-badge electric">ELEC</span> <span class="beats">→</span> <span class="type-badge water">WATER</span></div>
+                    <div class="matchup"><span class="type-badge ice">ICE</span> <span class="beats">→</span> <span class="type-badge grass">GRASS</span></div>
+                    <div class="matchup"><span class="type-badge psychic">PSYCHIC</span> <span class="beats">→</span> <span class="type-badge dark">DARK</span> <span class="immune">immune!</span></div>
                 </div>
             </div>
             
             <!-- Rewards -->
-            <div class="mechanic-card">
-                <div class="mechanic-icon">💰</div>
-                <h3>Earn $PALS</h3>
-                <ul>
-                    <li><span class="highlight">+100 $PALS</span> per win</li>
-                    <li><span class="highlight">x2 bonus</span> for beating shiny enemies ✨</li>
-                    <li><span class="highlight">x1.5 bonus</span> for 5+ win streak 🔥</li>
-                    <li>Connect wallet to track rewards</li>
-                    <li>Claim tokens anytime!</li>
-                </ul>
-            </div>
-            
-            <!-- Difficulty & Penalties -->
-            <div class="mechanic-card warning">
-                <div class="mechanic-icon">⚠️</div>
-                <h3>Risk & Difficulty</h3>
-                <ul>
-                    <li><span class="danger">-10% tokens</span> when you lose!</li>
-                    <li>Enemies get <span class="danger">stronger</span> as you win more</li>
-                    <li>Enemy AI targets your weaknesses</li>
-                    <li>Win streak resets on loss</li>
-                    <li>Choose battles wisely!</li>
-                </ul>
+            <div class="guide-card rewards-card">
+                <div class="card-header">
+                    <span class="card-icon">💰</span>
+                    <h3>Rewards</h3>
+                </div>
+                <div class="rewards-list">
+                    <div class="reward-item">
+                        <span class="reward-value">+100</span>
+                        <span class="reward-label">$PALS per win</span>
+                    </div>
+                    <div class="reward-item bonus">
+                        <span class="reward-value">x2</span>
+                        <span class="reward-label">Shiny enemy bonus ✨</span>
+                    </div>
+                    <div class="reward-item bonus">
+                        <span class="reward-value">x1.5</span>
+                        <span class="reward-label">5+ win streak 🔥</span>
+                    </div>
+                    <div class="reward-item danger">
+                        <span class="reward-value">-10%</span>
+                        <span class="reward-label">tokens on loss</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Quick Tips -->
-        <div class="tips-box">
-            <h4>💡 Pro Tips</h4>
+        <!-- Pro Tips -->
+        <div class="pro-tips">
+            <h3>⚡ Pro Tips</h3>
             <div class="tips-grid">
-                <div class="tip">🎯 Use super effective moves for 2x damage</div>
-                <div class="tip">🛡️ Tanks survive longer but deal less damage</div>
+                <div class="tip">💎 Use super effective moves for 2x damage</div>
                 <div class="tip">⚡ Speedsters attack first - great for finishing enemies</div>
+                <div class="tip">🛡️ Tanks survive longer but deal less damage</div>
                 <div class="tip">✨ Shiny enemies are rare - worth double rewards!</div>
             </div>
-        </div>
-        
-        <!-- Start Button -->
-        <div class="start-battle-cta">
-            <p>Ready to earn $PALS?</p>
-            <a href="#game" class="btn btn-primary btn-large">⚔️ Start Battle</a>
         </div>
     </div>
 </section>
@@ -5248,6 +5758,9 @@ footer {
                 <div class="result-title" id="result-title">VICTORY!</div>
                 <div class="result-subtitle" id="result-subtitle">You earned 500 $PALS!</div>
                 <button class="btn btn-primary" onclick="resetBattle()">Battle Again</button>
+<button class="btn btn-upgrade hidden" id="upgrade-btn" onclick="showPayModal()">
+    💰 Pay 1000 $PALS to Earn Rewards
+</button>
             </div>
         </div>
 
@@ -8234,53 +8747,84 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
     }
 
     // ⬇️ UPDATED endBattle FUNCTION - Now integrates with RewardSystem ⬇️
-    function endBattle(won) {
-        const result = document.getElementById('battle-result');
-        const player = CHARACTERS[gameState.playerKey];
-        const enemy = CHARACTERS[gameState.enemyKey];
+function endBattle(won) {
+    const result = document.getElementById('battle-result');
+    const player = CHARACTERS[gameState.playerKey];
+    const enemy = CHARACTERS[gameState.enemyKey];
+    
+    if (won) {
+        // TRIAL MODE POPUP
+        if (PayToPlay.isTrialMode && !PayToPlay.hasPaid) {
+            RewardSystem.showPopup('💰 Pay 1000 $PALS to earn real tokens!', 'warning');
+        }
         
-        if (won) {
-            // Award tokens via RewardSystem
-            const tokensEarned = RewardSystem.onWin(gameState.enemyShiny);
-            
-            const baseExp = Math.floor(enemy.hp * gameState.enemyLevel / 7);
-            const expGain = Math.floor(baseExp * (gameState.enemyShiny ? 1.5 : 1));
-            
-            document.getElementById('result-title').textContent = 'VICTORY!';
+        const tokensEarned = RewardSystem.onWin(gameState.enemyShiny);
+        
+        const baseExp = Math.floor(enemy.hp * gameState.enemyLevel / 7);
+        const expGain = Math.floor(baseExp * (gameState.enemyShiny ? 1.5 : 1));
+        
+        document.getElementById('result-title').textContent = 'VICTORY!';
+        
+        if (PayToPlay.isTrialMode && !PayToPlay.hasPaid) {
+            document.getElementById('result-subtitle').innerHTML = `
+                ${player.name} gained ${expGain} EXP!<br>
+                <span style="color: #ef4444">⚠️ Trial Mode - No rewards</span><br>
+                <span style="color: var(--primary)">💰 Pay to earn real tokens!</span>
+            `;
+        } else {
             document.getElementById('result-subtitle').innerHTML = `
                 ${player.name} gained ${expGain} EXP!<br>
                 <span style="color: var(--primary)">+${tokensEarned} $PALS</span>
                 ${gameState.enemyShiny ? '<br><span style="color: #ec4899">✨ Shiny bonus!</span>' : ''}
                 ${RewardSystem.state.winStreak >= 3 ? '<br><span style="color: #22c55e">🔥 ' + RewardSystem.state.winStreak + ' Win Streak!</span>' : ''}
             `;
-            
-            const enemySprite = document.getElementById('enemy-sprite');
-            enemySprite.style.transition = 'all 0.5s';
-            enemySprite.style.opacity = '0';
-            enemySprite.style.transform = 'translateY(30px)';
-            
-            AudioSystem.playSound('victory');
-        } else {
-            // Track loss via RewardSystem
-            RewardSystem.onLose();
-            
-            document.getElementById('result-title').textContent = 'DEFEATED';
-            document.getElementById('result-subtitle').textContent = 'Try again!';
-            
-            const playerSpriteBack = document.getElementById('player-sprite-back');
-            playerSpriteBack.style.transition = 'all 0.5s';
-            playerSpriteBack.style.opacity = '0';
-            playerSpriteBack.style.transform = 'translateY(30px) rotate(10deg)';
-            
-            AudioSystem.playSound('defeat');
         }
         
-        setTimeout(() => {
-            result.style.display = 'block';
-            result.classList.add('show');
-        }, 600);
+        // 🆕 SHOW/HIDE UPGRADE BUTTON
+        const upgradeBtn = document.getElementById('upgrade-btn');
+        if (upgradeBtn) {
+            if (PayToPlay.isTrialMode && !PayToPlay.hasPaid) {
+                upgradeBtn.classList.remove('hidden');
+            } else {
+                upgradeBtn.classList.add('hidden');
+            }
+        }
+        
+        const enemySprite = document.getElementById('enemy-sprite');
+        enemySprite.style.transition = 'all 0.5s';
+        enemySprite.style.opacity = '0';
+        enemySprite.style.transform = 'translateY(30px)';
+        
+        AudioSystem.playSound('victory');
+    } else {
+        RewardSystem.onLose();
+        
+        document.getElementById('result-title').textContent = 'DEFEATED';
+        document.getElementById('result-subtitle').textContent = 'Try again!';
+        
+        // 🆕 SHOW UPGRADE BUTTON ON LOSS TOO (in trial mode)
+        const upgradeBtn = document.getElementById('upgrade-btn');
+        if (upgradeBtn) {
+            if (PayToPlay.isTrialMode && !PayToPlay.hasPaid) {
+                upgradeBtn.classList.remove('hidden');
+            } else {
+                upgradeBtn.classList.add('hidden');
+            }
+        }
+        
+        const playerSpriteBack = document.getElementById('player-sprite-back');
+        playerSpriteBack.style.transition = 'all 0.5s';
+        playerSpriteBack.style.opacity = '0';
+        playerSpriteBack.style.transform = 'translateY(30px) rotate(10deg)';
+        
+        AudioSystem.playSound('defeat');
     }
-
+    
+    setTimeout(() => {
+        result.style.display = 'block';
+        result.classList.add('show');
+    }, 600);
+}
     function resetBattle() {
         const result = document.getElementById('battle-result');
         result.style.display = 'none';
@@ -8696,7 +9240,79 @@ const CharacterSelect = {
 document.addEventListener('DOMContentLoaded', () => {
     CharacterSelect.init();
     PayToPlay.init();
+    WelcomePopup.init();
+
 });
+
+function showPayModal() {
+    const result = document.getElementById('battle-result');
+    if (result) {
+        result.style.display = 'none';
+        result.classList.remove('show');
+    }
+    
+    PayToPlay.isTrialMode = false;
+    sessionStorage.removeItem('pumpmon_trial');
+    
+    const overlay = document.getElementById('pay-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+    }
+    
+    CharacterSelect.hide();
+    PayToPlay.updateUI();
+}
+/* ================================
+   WELCOME POPUP
+   ================================ */
+const WelcomePopup = {
+    init() {
+        // Check if user opted out
+        const dontShow = localStorage.getItem('pumpmon_hide_welcome');
+        
+        if (!dontShow) {
+            // Show popup after a short delay
+            setTimeout(() => {
+                this.show();
+            }, 500);
+        }
+    },
+    
+    show() {
+        const popup = document.getElementById('welcome-popup');
+        if (popup) {
+            popup.classList.add('show');
+        }
+    },
+    
+    hide() {
+        const popup = document.getElementById('welcome-popup');
+        if (popup) {
+            popup.classList.remove('show');
+        }
+    }
+};
+
+function closeWelcomePopup() {
+    // Check if "don't show again" is checked
+    const checkbox = document.getElementById('dont-show-checkbox');
+    if (checkbox && checkbox.checked) {
+        localStorage.setItem('pumpmon_hide_welcome', 'true');
+    }
+    
+    WelcomePopup.hide();
+    
+    // Play sound if available
+    if (typeof AudioSystem !== 'undefined') {
+        AudioSystem.playSound('select');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    WelcomePopup.init();
+});
+
 </script>
 </body>
 </html>
