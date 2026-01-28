@@ -17,7 +17,7 @@
 
 <!-- Solana Pay -->
 <script src="https://unpkg.com/@solana/pay@latest/dist/index.iife.js"></script>
-
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 <!-- BigNumber (required for Solana Pay) -->
 <script src="https://unpkg.com/bignumber.js@latest/bignumber.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
@@ -8017,11 +8017,15 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
 // ================================
 
 const PayToPlay = {
-    ENTRY_FEE: 1000, // Amount of tokens (adjust as needed)
+    ENTRY_FEE: 1000,
     TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',
-    TOKEN_DECIMALS: 6, // Most pump.fun tokens are 6 decimals
+    TOKEN_DECIMALS: 6,
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
+
+    // SPL Token Program IDs
+    TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+    ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 
     init() {
         this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
@@ -8054,6 +8058,56 @@ const PayToPlay = {
         }
     },
 
+    // Calculate Associated Token Address manually
+    async getATA(mint, owner) {
+        const [ata] = await solanaWeb3.PublicKey.findProgramAddress(
+            [
+                owner.toBuffer(),
+                new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID).toBuffer(),
+                mint.toBuffer(),
+            ],
+            new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID)
+        );
+        return ata;
+    },
+
+    // Create ATA instruction manually
+    createATAInstruction(payer, ata, owner, mint) {
+        const keys = [
+            { pubkey: payer, isSigner: true, isWritable: true },
+            { pubkey: ata, isSigner: false, isWritable: true },
+            { pubkey: owner, isSigner: false, isWritable: false },
+            { pubkey: mint, isSigner: false, isWritable: false },
+            { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
+            { pubkey: new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID), isSigner: false, isWritable: false },
+        ];
+
+        return new solanaWeb3.TransactionInstruction({
+            keys,
+            programId: new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID),
+            data: Buffer.from([]),
+        });
+    },
+
+    // Create transfer instruction manually
+    createTransferInstruction(source, destination, owner, amount) {
+        const keys = [
+            { pubkey: source, isSigner: false, isWritable: true },
+            { pubkey: destination, isSigner: false, isWritable: true },
+            { pubkey: owner, isSigner: true, isWritable: false },
+        ];
+
+        const data = Buffer.alloc(9);
+        data.writeUInt8(3, 0); // Transfer instruction
+        data.writeBigUInt64LE(BigInt(amount), 1);
+
+        return new solanaWeb3.TransactionInstruction({
+            keys,
+            programId: new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID),
+            data,
+        });
+    },
+
     async payEntryFee() {
         const btn = document.getElementById('pay-overlay-btn');
         btn.classList.add('loading');
@@ -8077,35 +8131,25 @@ const PayToPlay = {
             const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
             const senderPubkey = resp.publicKey;
 
-            // Get token accounts
-            const senderATA = await window.splToken.getAssociatedTokenAddress(mintPubkey, senderPubkey);
-            const treasuryATA = await window.splToken.getAssociatedTokenAddress(mintPubkey, treasuryPubkey);
+            // Get ATAs
+            const senderATA = await this.getATA(mintPubkey, senderPubkey);
+            const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey);
 
             // Build transaction
             const transaction = new solanaWeb3.Transaction();
 
-            // Check if treasury token account exists, if not create it
+            // Check if treasury token account exists
             const treasuryAccount = await connection.getAccountInfo(treasuryATA);
             if (!treasuryAccount) {
                 transaction.add(
-                    window.splToken.createAssociatedTokenAccountInstruction(
-                        senderPubkey,    // payer
-                        treasuryATA,     // ata
-                        treasuryPubkey,  // owner
-                        mintPubkey       // mint
-                    )
+                    this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey)
                 );
             }
 
-            // Add transfer instruction
+            // Add transfer
             const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
             transaction.add(
-                window.splToken.createTransferInstruction(
-                    senderATA,       // from
-                    treasuryATA,     // to
-                    senderPubkey,    // owner
-                    amount           // amount
-                )
+                this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount)
             );
 
             transaction.feePayer = senderPubkey;
