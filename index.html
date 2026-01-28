@@ -8486,7 +8486,6 @@ const CharacterSelect = {
         const section = document.getElementById('character-select');
         if (section) {
             section.classList.add('show');
-            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     },
     
@@ -8510,7 +8509,6 @@ const CharacterSelect = {
             confirmBtn.disabled = false;
         }
         
-        // Play select sound
         if (typeof AudioSystem !== 'undefined') {
             AudioSystem.playSound('select');
         }
@@ -8523,10 +8521,7 @@ const CharacterSelect = {
         
         console.log('Starting battle with:', this.selectedChar);
         
-        // Hide character select
-        this.hide();
-        
-        // Set the player character in gameState
+        // Set player character
         gameState.selectedChar = this.selectedChar;
         gameState.playerKey = this.selectedChar;
         
@@ -8535,13 +8530,13 @@ const CharacterSelect = {
             AudioSystem.playSound('select');
         }
         
-        // Scroll to game section
+        // Scroll to battle
         const gameSection = document.getElementById('game');
         if (gameSection) {
             gameSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
-        // Start the battle after a short delay
+        // Start battle
         setTimeout(() => {
             initBattle();
         }, 500);
