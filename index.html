@@ -1117,6 +1117,16 @@ nav {
 }
 
 .card-fan .char-avatar {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.card-fan .char-avatar:hover {
+    transform: translateY(-20px) scale(1.1);
+    z-index: 100;
+}
+
+.card-fan .char-avatar {
     position: absolute;
     width: 140px;
     height: 200px;
@@ -5240,6 +5250,65 @@ footer {
 </style>
 </head>
 <body>
+
+<!-- Card Preview Modal -->
+<div id="card-preview-modal" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    cursor: pointer;
+" onclick="closeCardPreview()">
+    <div style="position: relative; max-width: 90%; max-height: 90%;">
+        <img id="card-preview-img" src="" alt="Card Preview" style="
+            max-width: 400px;
+            max-height: 85vh;
+            border-radius: 16px;
+            box-shadow: 0 0 60px rgba(255, 217, 61, 0.4);
+            animation: cardZoomIn 0.3s ease;
+        ">
+        <div id="card-preview-name" style="
+            text-align: center;
+            margin-top: 16px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            color: #ffd93d;
+        "></div>
+        <button onclick="closeCardPreview()" style="
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ef4444;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+        ">✕</button>
+    </div>
+</div>
+
+<style>
+@keyframes cardZoomIn {
+    from {
+        transform: scale(0.5) rotateY(180deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotateY(0deg);
+        opacity: 1;
+    }
+}
+</style>
+
     <!-- Welcome Popup -->
 <div class="welcome-popup" id="welcome-popup">
     <div class="welcome-popup-content">
@@ -5431,38 +5500,38 @@ footer {
             Every victory earns you $PALS tokens.
         </p>
 <div class="card-fan">
-    <div class="char-avatar" data-name="pnut" onclick="selectAndPlay('pnut')">
-        <img src="assets/images/characters/pnutcard.png" alt="Pnut">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/panguincard.png', 'PENGUIN')">
+        <img src="assets/images/characters/panguincard.png" alt="Penguin">
     </div>
-    <div class="char-avatar" data-name="smokingchicken" onclick="selectAndPlay('smokingchicken')">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/smokingchickencard.png', 'SMOKING CHICKEN')">
         <img src="assets/images/characters/smokingchickencard.png" alt="Smoking Chicken">
     </div>
-    <div class="char-avatar" data-name="copperinu" onclick="selectAndPlay('copperinu')">
-        <img src="assets/images/characters/copperinucard.png" alt="CopperInu">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/copperinucard.png', 'COPPER INU')">
+        <img src="assets/images/characters/copperinucard.png" alt="Copper Inu">
     </div>
-    <div class="char-avatar" data-name="MOLTY" onclick="selectAndPlay('molty')">
-        <img src="assets/images/characters/labstercard.png" alt="MOLTY">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/labstercard.png', 'MOLTY')">
+        <img src="assets/images/characters/labstercard.png" alt="Molty">
     </div>
-    <div class="char-avatar" data-name="PEPE" onclick="selectAndPlay('pepe')">
-        <img src="assets/images/characters/pepecard.png" alt="PEPE">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/pepecard.png', 'PEPE')">
+        <img src="assets/images/characters/pepecard.png" alt="Pepe">
     </div>
-    <div class="char-avatar" data-name="DICKLET" onclick="selectAndPlay('dicklet')">
-        <img src="assets/images/characters/dickletcard.png" alt="DICKLET">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/dickletcard.png', 'DICKLET')">
+        <img src="assets/images/characters/dickletcard.png" alt="Dicklet">
     </div>
-    <div class="char-avatar" data-name="WHALE" onclick="selectAndPlay('whale')">
-        <img src="assets/images/characters/whalecard.png" alt="WHALE">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/cowcard.png', 'COW')">
+        <img src="assets/images/characters/cowcard.png" alt="Cow">
     </div>
-    <div class="char-avatar" data-name="COW" onclick="selectAndPlay('cow')">
-        <img src="assets/images/characters/cowcard.png" alt="COW">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/moodengcard.png', 'MOODENG')">
+        <img src="assets/images/characters/moodengcard.png" alt="Moodeng">
     </div>
-    <div class="char-avatar" data-name="MOODENG" onclick="selectAndPlay('moodeng')">
-        <img src="assets/images/characters/moodengcard.png" alt="MOODENG">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/pnutcard.png', 'PNUT')">
+        <img src="assets/images/characters/pnutcard.png" alt="Pnut">
     </div>
-    <div class="char-avatar" data-name="PENGUIN" onclick="selectAndPlay('penguin')">
-        <img src="assets/images/characters/panguincard.png" alt="PENGUIN">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/catanacard.png', 'CATANA')">
+        <img src="assets/images/characters/catanacard.png" alt="Catana">
     </div>
-    <div class="char-avatar" data-name="CATANA" onclick="selectAndPlay('catana')">
-        <img src="assets/images/characters/catanacard.png" alt="CATANA">
+    <div class="char-avatar" onclick="openCardPreview('assets/images/characters/whalecard.png', 'WHALE')">
+        <img src="assets/images/characters/whalecard.png" alt="Whale">
     </div>
 </div>
 
@@ -9317,6 +9386,39 @@ function closeWelcomePopup() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     WelcomePopup.init();
+});
+
+/* ================================
+   CARD PREVIEW MODAL
+   ================================ */
+function openCardPreview(cardSrc, cardName) {
+    const modal = document.getElementById('card-preview-modal');
+    const img = document.getElementById('card-preview-img');
+    const name = document.getElementById('card-preview-name');
+    
+    if (modal && img) {
+        img.src = cardSrc;
+        name.textContent = cardName || '';
+        modal.style.display = 'flex';
+    }
+    
+    if (typeof AudioSystem !== 'undefined') {
+        AudioSystem.playSound('select');
+    }
+}
+
+function closeCardPreview() {
+    const modal = document.getElementById('card-preview-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeCardPreview();
+    }
 });
 
 </script>
