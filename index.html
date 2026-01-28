@@ -8275,19 +8275,19 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
 
 const PayToPlay = {
     ENTRY_FEE: 1000,
-    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',  // ✅ Fixed
+    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',
     TOKEN_DECIMALS: 6,
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
 
-    // ✅ Regular SPL Token Program
-    TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+    // Will be set dynamically
+    TOKEN_PROGRAM_ID: null,
     ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+
     init() {
         this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
         this.updateUI();
         
-        // If already paid, show character select
         if (this.hasPaid) {
             CharacterSelect.show();
         }
@@ -8319,11 +8319,11 @@ const PayToPlay = {
         }
     },
 
-    async getATA(mint, owner) {
+    async getATA(mint, owner, tokenProgramId) {
         const [ata] = await solanaWeb3.PublicKey.findProgramAddress(
             [
                 owner.toBytes(),
-                new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID).toBytes(),
+                new solanaWeb3.PublicKey(tokenProgramId).toBytes(),
                 mint.toBytes(),
             ],
             new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID)
@@ -8331,14 +8331,14 @@ const PayToPlay = {
         return ata;
     },
 
-    createATAInstruction(payer, ata, owner, mint) {
+    createATAInstruction(payer, ata, owner, mint, tokenProgramId) {
         const keys = [
             { pubkey: payer, isSigner: true, isWritable: true },
             { pubkey: ata, isSigner: false, isWritable: true },
             { pubkey: owner, isSigner: false, isWritable: false },
             { pubkey: mint, isSigner: false, isWritable: false },
             { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
-            { pubkey: new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID), isSigner: false, isWritable: false },
+            { pubkey: new solanaWeb3.PublicKey(tokenProgramId), isSigner: false, isWritable: false },
         ];
 
         return new solanaWeb3.TransactionInstruction({
@@ -8348,7 +8348,7 @@ const PayToPlay = {
         });
     },
 
-    createTransferInstruction(source, destination, owner, amount) {
+    createTransferInstruction(source, destination, owner, amount, tokenProgramId) {
         const keys = [
             { pubkey: source, isSigner: false, isWritable: true },
             { pubkey: destination, isSigner: false, isWritable: true },
@@ -8365,7 +8365,7 @@ const PayToPlay = {
 
         return new solanaWeb3.TransactionInstruction({
             keys,
-            programId: new solanaWeb3.PublicKey(this.TOKEN_PROGRAM_ID),
+            programId: new solanaWeb3.PublicKey(tokenProgramId),
             data,
         });
     },
@@ -8393,21 +8393,36 @@ const PayToPlay = {
             const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
             const senderPubkey = resp.publicKey;
 
-            const senderATA = await this.getATA(mintPubkey, senderPubkey);
-            const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey);
+            // 🔍 AUTO-DETECT TOKEN PROGRAM FROM MINT ACCOUNT
+            const mintAccount = await connection.getAccountInfo(mintPubkey);
+            if (!mintAccount) {
+                throw new Error('Token mint not found');
+            }
+            const tokenProgramId = mintAccount.owner.toString();
+            console.log('Token Program:', tokenProgramId);
+
+            // Get ATAs using detected program
+            const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
+            const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
+
+            console.log('Sender ATA:', senderATA.toString());
+            console.log('Treasury ATA:', treasuryATA.toString());
 
             const transaction = new solanaWeb3.Transaction();
 
+            // Check if treasury token account exists
             const treasuryAccount = await connection.getAccountInfo(treasuryATA);
             if (!treasuryAccount) {
+                console.log('Creating treasury ATA...');
                 transaction.add(
-                    this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey)
+                    this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
                 );
             }
 
+            // Add transfer
             const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
             transaction.add(
-                this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount)
+                this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
             );
 
             transaction.feePayer = senderPubkey;
@@ -8440,7 +8455,6 @@ const PayToPlay = {
             sessionStorage.setItem('pumpmon_paid', 'true');
             this.updateUI();
 
-            // ✅ SHOW CHARACTER SELECT AFTER PAYMENT
             CharacterSelect.show();
 
             alert('✅ Payment successful! Choose your fighter!');
