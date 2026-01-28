@@ -860,6 +860,207 @@ nav {
 }
 
 /* ================================
+   CHARACTER SELECT SECTION
+   ================================ */
+.character-select-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    background: rgba(18, 18, 30, 0.95);
+    border: 2px solid var(--primary);
+    border-radius: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 40px rgba(255, 217, 61, 0.2);
+}
+
+.character-select-section.show {
+    display: flex;
+}
+
+.select-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+}
+
+.select-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+/* Card Fan for Selection */
+.select-card-fan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 280px;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 30px;
+}
+
+.select-card {
+    position: absolute;
+    width: 120px;
+    height: 170px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    transform-origin: bottom center;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    border: 3px solid transparent;
+}
+
+.select-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+.select-card .card-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.45rem;
+    padding: 6px 4px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Fan Positions - 9 cards */
+.select-card:nth-child(1) { transform: rotate(-24deg) translateX(-200px); z-index: 1; }
+.select-card:nth-child(2) { transform: rotate(-18deg) translateX(-150px); z-index: 2; }
+.select-card:nth-child(3) { transform: rotate(-12deg) translateX(-100px); z-index: 3; }
+.select-card:nth-child(4) { transform: rotate(-6deg) translateX(-50px); z-index: 4; }
+.select-card:nth-child(5) { transform: rotate(0deg) translateX(0px); z-index: 5; }
+.select-card:nth-child(6) { transform: rotate(6deg) translateX(50px); z-index: 6; }
+.select-card:nth-child(7) { transform: rotate(12deg) translateX(100px); z-index: 7; }
+.select-card:nth-child(8) { transform: rotate(18deg) translateX(150px); z-index: 8; }
+.select-card:nth-child(9) { transform: rotate(24deg) translateX(200px); z-index: 9; }
+
+/* Hover - lift card */
+.select-card:hover {
+    transform: translateY(-40px) scale(1.15) rotate(0deg) !important;
+    z-index: 100 !important;
+    box-shadow: 0 20px 50px rgba(255, 217, 61, 0.4);
+    border-color: var(--primary);
+}
+
+.select-card:hover .card-name {
+    opacity: 1;
+}
+
+/* Selected Card */
+.select-card.selected {
+    transform: translateY(-50px) scale(1.2) rotate(0deg) !important;
+    z-index: 200 !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 25px 60px rgba(255, 217, 61, 0.6) !important;
+}
+
+.select-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--primary);
+    color: #000;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.select-card.selected .card-name {
+    opacity: 1;
+    background: var(--primary);
+    color: #000;
+}
+
+/* Confirm Button */
+.btn-confirm-select {
+    padding: 16px 40px;
+    font-size: 0.9rem;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.btn-confirm-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ================================
+   RESPONSIVE - Character Select
+   ================================ */
+@media (max-width: 768px) {
+    .select-card-fan {
+        height: 200px;
+    }
+    
+    .select-card {
+        width: 80px;
+        height: 115px;
+    }
+    
+    .select-card:nth-child(1) { transform: rotate(-20deg) translateX(-130px); }
+    .select-card:nth-child(2) { transform: rotate(-15deg) translateX(-97px); }
+    .select-card:nth-child(3) { transform: rotate(-10deg) translateX(-65px); }
+    .select-card:nth-child(4) { transform: rotate(-5deg) translateX(-32px); }
+    .select-card:nth-child(5) { transform: rotate(0deg) translateX(0px); }
+    .select-card:nth-child(6) { transform: rotate(5deg) translateX(32px); }
+    .select-card:nth-child(7) { transform: rotate(10deg) translateX(65px); }
+    .select-card:nth-child(8) { transform: rotate(15deg) translateX(97px); }
+    .select-card:nth-child(9) { transform: rotate(20deg) translateX(130px); }
+    
+    .select-card .card-name {
+        font-size: 0.35rem;
+        padding: 4px 2px;
+    }
+    
+    .select-title {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .select-card-fan {
+        height: 160px;
+    }
+    
+    .select-card {
+        width: 60px;
+        height: 85px;
+    }
+    
+    .select-card:nth-child(1) { transform: rotate(-20deg) translateX(-95px); }
+    .select-card:nth-child(2) { transform: rotate(-15deg) translateX(-72px); }
+    .select-card:nth-child(3) { transform: rotate(-10deg) translateX(-48px); }
+    .select-card:nth-child(4) { transform: rotate(-5deg) translateX(-24px); }
+    .select-card:nth-child(5) { transform: rotate(0deg) translateX(0px); }
+    .select-card:nth-child(6) { transform: rotate(5deg) translateX(24px); }
+    .select-card:nth-child(7) { transform: rotate(10deg) translateX(48px); }
+    .select-card:nth-child(8) { transform: rotate(15deg) translateX(72px); }
+    .select-card:nth-child(9) { transform: rotate(20deg) translateX(95px); }
+}
+
+/* ================================
    FANNED CARD LAYOUT
    ================================ */
 .card-fan {
@@ -4793,6 +4994,54 @@ footer {
         </div>
     </div>
 </section>
+<!-- Character Selection -->
+<div class="character-select-section" id="character-select">
+    <h3 class="select-title">⚔️ Choose Your Fighter</h3>
+    <p class="select-subtitle">Select a character to enter battle</p>
+    
+    <div class="select-card-fan">
+        <div class="select-card" data-char="copperinu" data-type="Steel">
+            <img src="assets/images/cards/copperinu.png" alt="Copper Inu">
+            <span class="card-name">Copper Inu</span>
+        </div>
+        <div class="select-card" data-char="molty" data-type="Water">
+            <img src="assets/images/cards/molty.png" alt="Molty">
+            <span class="card-name">Molty</span>
+        </div>
+        <div class="select-card" data-char="pepe" data-type="Grass">
+            <img src="assets/images/cards/pepe.png" alt="Pepe">
+            <span class="card-name">Pepe</span>
+        </div>
+        <div class="select-card" data-char="dicklet" data-type="Normal">
+            <img src="assets/images/cards/dicklet.png" alt="Dicklet">
+            <span class="card-name">Dicklet</span>
+        </div>
+        <div class="select-card" data-char="whale" data-type="Water">
+            <img src="assets/images/cards/whale.png" alt="Whale">
+            <span class="card-name">Whale</span>
+        </div>
+        <div class="select-card" data-char="cow" data-type="Normal">
+            <img src="assets/images/cards/cow.png" alt="Cow">
+            <span class="card-name">Cow</span>
+        </div>
+        <div class="select-card" data-char="moodeng" data-type="Normal">
+            <img src="assets/images/cards/moodeng.png" alt="Moodeng">
+            <span class="card-name">Moodeng</span>
+        </div>
+        <div class="select-card" data-char="penguin" data-type="Ice">
+            <img src="assets/images/cards/penguin.png" alt="Penguin">
+            <span class="card-name">Penguin</span>
+        </div>
+        <div class="select-card" data-char="catana" data-type="Dark">
+            <img src="assets/images/cards/catana.png" alt="Catana">
+            <span class="card-name">Catana</span>
+        </div>
+    </div>
+    
+    <button class="btn btn-primary btn-confirm-select" id="confirm-character" disabled>
+        🎮 Confirm Selection
+    </button>
+</div>
 <!-- Pay to Play Modal -->
 <div id="pay-modal">
     <div class="pay-modal-content horizontal">
@@ -4842,13 +5091,10 @@ footer {
     </div>
 </div>
 <div class="game-wrapper">
-
     <section class="game-section" id="game">
         <h2 class="section-title">⚔️ Battle <span class="highlight">Arena</span></h2>
-        
         <!-- New Layout Container -->
         <div class="battle-layout">
-    
     <!-- PAY TO PLAY OVERLAY - Blocks the game -->
     <div class="pay-overlay" id="pay-overlay">
         <div class="pay-overlay-content">
@@ -4857,7 +5103,7 @@ footer {
             
             <div class="pay-overlay-fee">
                 <span class="pay-fee-value">1000</span>
-                <span class="pay-fee-currency">TOKENS</span>
+                <span class="pay-fee-currency">$PALS</span>
             </div>
             
             <div class="pay-overlay-rewards">
@@ -5081,7 +5327,7 @@ footer {
             <span class="demo-badge">🎮 DEMO</span>
             <div class="safari-icon">🎟️</div>
             <div class="safari-info">
-                <div class="safari-tokens">1000 <span class="highlight">$P</span></div>
+                <div class="safari-tokens">1000 <span class="highlight">$PALS</span></div>
                 <div class="safari-equals">=</div>
                 <div class="safari-reward">1 Entry Ticket</div>
             </div>
@@ -8205,6 +8451,79 @@ document.addEventListener('DOMContentLoaded', () => {
     PayToPlay.init();
 });
 
+// Character Selection System
+const CharacterSelect = {
+    selectedChar: null,
+    
+    init() {
+        // Add click events to cards
+        document.querySelectorAll('.select-card').forEach(card => {
+            card.addEventListener('click', () => this.selectCard(card));
+        });
+        
+        // Confirm button
+        const confirmBtn = document.getElementById('confirm-character');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', () => this.confirmSelection());
+        }
+    },
+    
+    show() {
+        const section = document.getElementById('character-select');
+        if (section) {
+            section.classList.add('show');
+            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    },
+    
+    hide() {
+        const section = document.getElementById('character-select');
+        if (section) {
+            section.classList.remove('show');
+        }
+    },
+    
+    selectCard(card) {
+        // Remove selection from all cards
+        document.querySelectorAll('.select-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+        
+        // Select this card
+        card.classList.add('selected');
+        this.selectedChar = card.dataset.char;
+        
+        // Enable confirm button
+        const confirmBtn = document.getElementById('confirm-character');
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+        }
+        
+        console.log('Selected:', this.selectedChar);
+    },
+    
+    confirmSelection() {
+        if (!this.selectedChar) return;
+        
+        // Hide selector
+        this.hide();
+        
+        // Start battle with selected character
+        if (typeof Game !== 'undefined' && Game.selectCharacter) {
+            Game.selectCharacter(this.selectedChar);
+        }
+        
+        // Or if using different function:
+        // startBattleWithCharacter(this.selectedChar);
+        
+        console.log('Starting battle with:', this.selectedChar);
+    }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    CharacterSelect.init();
+});
 </script>
 </body>
 </html>
