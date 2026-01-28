@@ -8095,7 +8095,7 @@ const PayToPlay = {
         ];
 
         const data = new Uint8Array(9);
-        data[0] = 3; // Transfer instruction
+        data[0] = 3;
 
         const bigAmount = BigInt(amount);
         for (let i = 0; i < 8; i++) {
@@ -8124,7 +8124,7 @@ const PayToPlay = {
             this.updateWalletStatus();
 
             const connection = new solanaWeb3.Connection(
-                'https://mainnet.helius-rpc.com/?api-key=f7aaa716-9103-447e-9401-6241dd1bb3f6',
+                'https://mainnet.helius-rpc.com/?api-key=9533f877-98f7-4792-87f5-abf9e41cef24',
                 'confirmed'
             );
 
@@ -8150,18 +8150,37 @@ const PayToPlay = {
             );
 
             transaction.feePayer = senderPubkey;
-            const { blockhash } = await connection.getLatestBlockhash();
+            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
             transaction.recentBlockhash = blockhash;
 
             const signed = await window.solana.signTransaction(transaction);
-            const signature = await connection.sendRawTransaction(signed.serialize());
-            await connection.confirmTransaction(signature);
+            
+            const signature = await connection.sendRawTransaction(signed.serialize(), {
+                skipPreflight: false,
+                maxRetries: 5,
+                preflightCommitment: 'confirmed'
+            });
+
+            console.log('Transaction sent:', signature);
+
+            // Better confirmation with timeout
+            const confirmation = await connection.confirmTransaction({
+                signature,
+                blockhash,
+                lastValidBlockHeight
+            }, 'confirmed');
+
+            if (confirmation.value.err) {
+                throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
+            }
 
             console.log('Payment successful:', signature);
 
             this.hasPaid = true;
             sessionStorage.setItem('pumpmon_paid', 'true');
             this.updateUI();
+
+            alert('✅ Payment successful!');
 
         } catch (error) {
             console.error('Payment failed:', error);
