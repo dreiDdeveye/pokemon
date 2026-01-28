@@ -8264,7 +8264,7 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
 
 const PayToPlay = {
     ENTRY_FEE: 1000,
-    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',
+    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mM7qzvyFLSbDpjeyzwRpump',
     TOKEN_DECIMALS: 6,
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
@@ -8276,6 +8276,11 @@ const PayToPlay = {
     init() {
         this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
         this.updateUI();
+        
+        // If already paid, show character select
+        if (this.hasPaid) {
+            CharacterSelect.show();
+        }
     },
 
     updateUI() {
@@ -8409,7 +8414,6 @@ const PayToPlay = {
 
             console.log('Transaction sent:', signature);
 
-            // Better confirmation with timeout
             const confirmation = await connection.confirmTransaction({
                 signature,
                 blockhash,
@@ -8426,7 +8430,10 @@ const PayToPlay = {
             sessionStorage.setItem('pumpmon_paid', 'true');
             this.updateUI();
 
-            alert('✅ Payment successful!');
+            // ✅ SHOW CHARACTER SELECT AFTER PAYMENT
+            CharacterSelect.show();
+
+            alert('✅ Payment successful! Choose your fighter!');
 
         } catch (error) {
             console.error('Payment failed:', error);
@@ -8440,28 +8447,24 @@ const PayToPlay = {
     reset() {
         this.hasPaid = false;
         sessionStorage.removeItem('pumpmon_paid');
+        CharacterSelect.hide();
         this.updateUI();
     }
 };
+
 function payEntryFee() {
     PayToPlay.payEntryFee();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    PayToPlay.init();
-});
 
 // Character Selection System
 const CharacterSelect = {
     selectedChar: null,
     
     init() {
-        // Add click events to cards
         document.querySelectorAll('.select-card').forEach(card => {
             card.addEventListener('click', () => this.selectCard(card));
         });
         
-        // Confirm button
         const confirmBtn = document.getElementById('confirm-character');
         if (confirmBtn) {
             confirmBtn.addEventListener('click', () => this.confirmSelection());
@@ -8484,16 +8487,13 @@ const CharacterSelect = {
     },
     
     selectCard(card) {
-        // Remove selection from all cards
         document.querySelectorAll('.select-card').forEach(c => {
             c.classList.remove('selected');
         });
         
-        // Select this card
         card.classList.add('selected');
         this.selectedChar = card.dataset.char;
         
-        // Enable confirm button
         const confirmBtn = document.getElementById('confirm-character');
         if (confirmBtn) {
             confirmBtn.disabled = false;
@@ -8505,7 +8505,6 @@ const CharacterSelect = {
     confirmSelection() {
         if (!this.selectedChar) return;
         
-        // Hide selector
         this.hide();
         
         // Start battle with selected character
@@ -8513,16 +8512,14 @@ const CharacterSelect = {
             Game.selectCharacter(this.selectedChar);
         }
         
-        // Or if using different function:
-        // startBattleWithCharacter(this.selectedChar);
-        
         console.log('Starting battle with:', this.selectedChar);
     }
 };
 
-// Initialize
+// Initialize both systems
 document.addEventListener('DOMContentLoaded', () => {
     CharacterSelect.init();
+    PayToPlay.init();
 });
 </script>
 </body>
