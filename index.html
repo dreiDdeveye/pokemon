@@ -4887,7 +4887,7 @@ footer {
             Every victory earns you $PALS tokens.
         </p>
 <div class="card-fan">
-    <div class="char-avatar" data-name="COPPERINU" onclick="selectAndPlay('copperinu')">
+    <div class="char-avatar" data-name="copperinu" onclick="selectAndPlay('copperinu')">
         <img src="assets/images/characters/copperinucard.png" alt="CopperInu">
     </div>
     <div class="char-avatar" data-name="MOLTY" onclick="selectAndPlay('molty')">
@@ -8510,20 +8510,41 @@ const CharacterSelect = {
             confirmBtn.disabled = false;
         }
         
+        // Play select sound
+        if (typeof AudioSystem !== 'undefined') {
+            AudioSystem.playSound('select');
+        }
+        
         console.log('Selected:', this.selectedChar);
     },
     
     confirmSelection() {
         if (!this.selectedChar) return;
         
+        console.log('Starting battle with:', this.selectedChar);
+        
+        // Hide character select
         this.hide();
         
-        // Start battle with selected character
-        if (typeof Game !== 'undefined' && Game.selectCharacter) {
-            Game.selectCharacter(this.selectedChar);
+        // Set the player character in gameState
+        gameState.selectedChar = this.selectedChar;
+        gameState.playerKey = this.selectedChar;
+        
+        // Play sound
+        if (typeof AudioSystem !== 'undefined') {
+            AudioSystem.playSound('select');
         }
         
-        console.log('Starting battle with:', this.selectedChar);
+        // Scroll to game section
+        const gameSection = document.getElementById('game');
+        if (gameSection) {
+            gameSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Start the battle after a short delay
+        setTimeout(() => {
+            initBattle();
+        }, 500);
     }
 };
 
