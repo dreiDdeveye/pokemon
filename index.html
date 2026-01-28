@@ -12,6 +12,9 @@
 <!-- Solana Web3 -->
 <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 
+<!-- SPL Token - Use this CDN -->
+<script src="https://unpkg.com/@solana/spl-token@0.3.7/lib/index.iife.js"></script>
+
 <!-- Solana Pay -->
 <script src="https://unpkg.com/@solana/pay@latest/dist/index.iife.js"></script>
 
@@ -4854,7 +4857,7 @@ footer {
             
             <div class="pay-overlay-fee">
                 <span class="pay-fee-value">1000</span>
-<span class="pay-fee-currency">TOKENS</span>
+                <span class="pay-fee-currency">TOKENS</span>
             </div>
             
             <div class="pay-overlay-rewards">
@@ -8075,8 +8078,8 @@ const PayToPlay = {
             const senderPubkey = resp.publicKey;
 
             // Get token accounts
-            const senderATA = await splToken.getAssociatedTokenAddress(mintPubkey, senderPubkey);
-            const treasuryATA = await splToken.getAssociatedTokenAddress(mintPubkey, treasuryPubkey);
+            const senderATA = await window.splToken.getAssociatedTokenAddress(mintPubkey, senderPubkey);
+            const treasuryATA = await window.splToken.getAssociatedTokenAddress(mintPubkey, treasuryPubkey);
 
             // Build transaction
             const transaction = new solanaWeb3.Transaction();
@@ -8085,7 +8088,7 @@ const PayToPlay = {
             const treasuryAccount = await connection.getAccountInfo(treasuryATA);
             if (!treasuryAccount) {
                 transaction.add(
-                    splToken.createAssociatedTokenAccountInstruction(
+                    window.splToken.createAssociatedTokenAccountInstruction(
                         senderPubkey,    // payer
                         treasuryATA,     // ata
                         treasuryPubkey,  // owner
@@ -8097,7 +8100,7 @@ const PayToPlay = {
             // Add transfer instruction
             const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
             transaction.add(
-                splToken.createTransferInstruction(
+                window.splToken.createTransferInstruction(
                     senderATA,       // from
                     treasuryATA,     // to
                     senderPubkey,    // owner
@@ -8134,7 +8137,6 @@ const PayToPlay = {
         this.updateUI();
     }
 };
-
 function payEntryFee() {
     PayToPlay.payEntryFee();
 }
