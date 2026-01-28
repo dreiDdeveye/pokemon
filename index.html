@@ -8023,7 +8023,8 @@ const PayToPlay = {
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
 
-    TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+    // Token 2022 Program (for pump.fun tokens)
+    TOKEN_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
     ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 
     init() {
@@ -8093,11 +8094,9 @@ const PayToPlay = {
             { pubkey: owner, isSigner: true, isWritable: false },
         ];
 
-        // Create data array for transfer instruction
         const data = new Uint8Array(9);
         data[0] = 3; // Transfer instruction
 
-        // Write amount as little-endian 64-bit
         const bigAmount = BigInt(amount);
         for (let i = 0; i < 8; i++) {
             data[1 + i] = Number((bigAmount >> BigInt(i * 8)) & BigInt(0xff));
@@ -8125,22 +8124,19 @@ const PayToPlay = {
             this.updateWalletStatus();
 
             const connection = new solanaWeb3.Connection(
-    'https://mainnet.helius-rpc.com/?api-key=c092f56b-5d0d-4ea9-8389-dd8b64d2276f',
-    'confirmed'
-);
+                'https://api.mainnet-beta.solana.com',
+                'confirmed'
+            );
 
             const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
             const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
             const senderPubkey = resp.publicKey;
 
-            // Get ATAs
             const senderATA = await this.getATA(mintPubkey, senderPubkey);
             const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey);
 
-            // Build transaction
             const transaction = new solanaWeb3.Transaction();
 
-            // Check if treasury token account exists
             const treasuryAccount = await connection.getAccountInfo(treasuryATA);
             if (!treasuryAccount) {
                 transaction.add(
@@ -8148,7 +8144,6 @@ const PayToPlay = {
                 );
             }
 
-            // Add transfer
             const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
             transaction.add(
                 this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount)
