@@ -10,7 +10,7 @@
 <script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
 
 <style>
-    /* ================================
+/* ================================
    CSS VARIABLES & RESET
    ================================ */
 * { 
@@ -669,7 +669,7 @@ nav {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 100px 24px 60px;
+    padding: 100px 24px 30px;
     position: relative;
     z-index: 1;
     overflow: hidden;
@@ -743,7 +743,7 @@ nav {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Character Preview */
+/* Character Preview - Old Style (kept for compatibility) */
 .character-preview {
     display: flex;
     gap: 20px;
@@ -752,8 +752,8 @@ nav {
     justify-content: center;
 }
 
-.char-avatar {
-    width: 140px;
+.character-preview .char-avatar {
+    width: 130px;
     border-radius: 0px;
     background: transparent;
     border: none;
@@ -764,7 +764,7 @@ nav {
     padding: 0;
 }
 
-.char-avatar .char-name {
+.character-preview .char-avatar .char-name {
     display: none;
     font-family: 'Press Start 2P', cursive;
     font-size: 0.55rem;
@@ -773,12 +773,12 @@ nav {
     text-shadow: 0 0 10px rgba(255, 217, 61, 0.3);
 }
 
-.char-avatar:hover {
+.character-preview .char-avatar:hover {
     transform: scale(1.1) translateY(-10px);
     filter: drop-shadow(0 10px 30px rgba(255, 217, 61, 0.5));
 }
 
-.char-avatar img {
+.character-preview .char-avatar img {
     width: 100%;
     height: 200px;
     object-fit: contain;
@@ -846,6 +846,209 @@ nav {
 .ca-copy:hover {
     transform: scale(1.2);
 }
+
+/* ================================
+   FANNED CARD LAYOUT
+   ================================ */
+.card-fan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 320px;
+    margin: -60px auto 60px;
+    perspective: 1000px;
+}
+
+.card-fan .char-avatar {
+    position: absolute;
+    width: 140px;
+    height: 200px;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    transform-origin: bottom center;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.card-fan .char-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Fanned positions - stacked by default */
+.card-fan .char-avatar:nth-child(1) { transform: rotate(-24deg) translateX(-220px); z-index: 1; }
+.card-fan .char-avatar:nth-child(2) { transform: rotate(-18deg) translateX(-165px); z-index: 2; }
+.card-fan .char-avatar:nth-child(3) { transform: rotate(-12deg) translateX(-110px); z-index: 3; }
+.card-fan .char-avatar:nth-child(4) { transform: rotate(-6deg) translateX(-55px); z-index: 4; }
+.card-fan .char-avatar:nth-child(5) { transform: rotate(0deg) translateX(0px); z-index: 5; }
+.card-fan .char-avatar:nth-child(6) { transform: rotate(6deg) translateX(55px); z-index: 6; }
+.card-fan .char-avatar:nth-child(7) { transform: rotate(12deg) translateX(110px); z-index: 7; }
+.card-fan .char-avatar:nth-child(8) { transform: rotate(18deg) translateX(165px); z-index: 8; }
+.card-fan .char-avatar:nth-child(9) { transform: rotate(24deg) translateX(220px); z-index: 9; }
+
+/* Hover on container - spread cards */
+.card-fan:hover .char-avatar:nth-child(1) { transform: rotate(-28deg) translateX(-280px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(2) { transform: rotate(-21deg) translateX(-210px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(3) { transform: rotate(-14deg) translateX(-140px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(4) { transform: rotate(-7deg) translateX(-70px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(5) { transform: rotate(0deg) translateX(0px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(6) { transform: rotate(7deg) translateX(70px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(7) { transform: rotate(14deg) translateX(140px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(8) { transform: rotate(21deg) translateX(210px) translateY(-10px); }
+.card-fan:hover .char-avatar:nth-child(9) { transform: rotate(28deg) translateX(280px) translateY(-10px); }
+
+/* Individual card hover - lift up */
+.card-fan .char-avatar:hover {
+    transform: translateY(-50px) scale(1.2) rotate(0deg) !important;
+    z-index: 100 !important;
+    box-shadow: 0 25px 60px rgba(255, 217, 61, 0.5);
+}
+
+/* Card name tooltip */
+.card-fan .char-avatar::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.95);
+    color: var(--primary);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    border: 1px solid var(--primary);
+}
+
+.card-fan .char-avatar:hover::after {
+    opacity: 1;
+}
+
+/* Glow border on hover */
+.card-fan .char-avatar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.card-fan .char-avatar:hover::before {
+    border-color: var(--primary);
+    box-shadow: 0 0 25px rgba(255, 217, 61, 0.6);
+}
+
+/* ================================
+   AUTO SHUFFLE ANIMATION
+   ================================ */
+.card-fan .char-avatar {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Shuffle keyframes */
+@keyframes cardShuffle {
+    0% { transform: var(--start-transform); }
+    25% { transform: translateY(-80px) rotate(0deg) scale(0.9); opacity: 0.7; }
+    50% { transform: translateY(-40px) rotate(360deg) scale(0.85); opacity: 0.5; }
+    75% { transform: translateY(-60px) rotate(180deg) scale(0.9); opacity: 0.7; }
+    100% { transform: var(--end-transform); }
+}
+
+.card-fan.shuffling .char-avatar {
+    animation: cardShuffle 1.2s ease-in-out forwards;
+}
+
+/* Staggered delays for each card */
+.card-fan.shuffling .char-avatar:nth-child(1) { animation-delay: 0s; }
+.card-fan.shuffling .char-avatar:nth-child(2) { animation-delay: 0.08s; }
+.card-fan.shuffling .char-avatar:nth-child(3) { animation-delay: 0.16s; }
+.card-fan.shuffling .char-avatar:nth-child(4) { animation-delay: 0.24s; }
+.card-fan.shuffling .char-avatar:nth-child(5) { animation-delay: 0.32s; }
+.card-fan.shuffling .char-avatar:nth-child(6) { animation-delay: 0.40s; }
+.card-fan.shuffling .char-avatar:nth-child(7) { animation-delay: 0.48s; }
+.card-fan.shuffling .char-avatar:nth-child(8) { animation-delay: 0.56s; }
+.card-fan.shuffling .char-avatar:nth-child(9) { animation-delay: 0.64s; }
+
+/* Wave shuffle effect */
+@keyframes cardWaveShuffle {
+    0% { transform: var(--original-transform); }
+    20% { transform: translateY(-100px) translateX(0) rotate(0deg) scale(0.8); }
+    40% { transform: translateY(-50px) translateX(20px) rotate(180deg) scale(0.9); }
+    60% { transform: translateY(-80px) translateX(-20px) rotate(270deg) scale(0.85); }
+    80% { transform: translateY(-30px) translateX(0) rotate(350deg) scale(0.95); }
+    100% { transform: var(--original-transform); }
+}
+
+.card-fan.wave-shuffle .char-avatar {
+    animation: cardWaveShuffle 1.5s ease-in-out forwards;
+}
+
+.card-fan.wave-shuffle .char-avatar:nth-child(1) { animation-delay: 0s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(2) { animation-delay: 0.1s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(3) { animation-delay: 0.2s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(4) { animation-delay: 0.3s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(5) { animation-delay: 0.4s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(6) { animation-delay: 0.5s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(7) { animation-delay: 0.6s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(8) { animation-delay: 0.7s; }
+.card-fan.wave-shuffle .char-avatar:nth-child(9) { animation-delay: 0.8s; }
+
+/* Flip shuffle effect */
+@keyframes cardFlipShuffle {
+    0% { transform: var(--original-transform) rotateY(0deg); }
+    50% { transform: translateY(-60px) rotateY(180deg) scale(0.9); }
+    100% { transform: var(--original-transform) rotateY(360deg); }
+}
+
+.card-fan.flip-shuffle .char-avatar {
+    animation: cardFlipShuffle 1s ease-in-out forwards;
+}
+
+.card-fan.flip-shuffle .char-avatar:nth-child(1) { animation-delay: 0.4s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(2) { animation-delay: 0.35s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(3) { animation-delay: 0.3s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(4) { animation-delay: 0.25s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(5) { animation-delay: 0.2s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(6) { animation-delay: 0.25s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(7) { animation-delay: 0.3s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(8) { animation-delay: 0.35s; }
+.card-fan.flip-shuffle .char-avatar:nth-child(9) { animation-delay: 0.4s; }
+
+/* Scatter shuffle effect */
+@keyframes cardScatterShuffle {
+    0% { transform: var(--original-transform); opacity: 1; }
+    30% { transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-rot)) scale(0.7); opacity: 0.6; }
+    60% { transform: translateY(-50px) rotate(180deg) scale(0.8); opacity: 0.8; }
+    100% { transform: var(--original-transform); opacity: 1; }
+}
+
+.card-fan.scatter-shuffle .char-avatar {
+    animation: cardScatterShuffle 1.3s ease-in-out forwards;
+}
+
+.card-fan.scatter-shuffle .char-avatar:nth-child(1) { --scatter-x: -150px; --scatter-y: -80px; --scatter-rot: -45deg; animation-delay: 0s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(2) { --scatter-x: -100px; --scatter-y: -120px; --scatter-rot: 30deg; animation-delay: 0.05s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(3) { --scatter-x: -50px; --scatter-y: -100px; --scatter-rot: -60deg; animation-delay: 0.1s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(4) { --scatter-x: 20px; --scatter-y: -130px; --scatter-rot: 45deg; animation-delay: 0.15s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(5) { --scatter-x: 0px; --scatter-y: -150px; --scatter-rot: 0deg; animation-delay: 0.2s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(6) { --scatter-x: -20px; --scatter-y: -130px; --scatter-rot: -45deg; animation-delay: 0.15s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(7) { --scatter-x: 50px; --scatter-y: -100px; --scatter-rot: 60deg; animation-delay: 0.1s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(8) { --scatter-x: 100px; --scatter-y: -120px; --scatter-rot: -30deg; animation-delay: 0.05s; }
+.card-fan.scatter-shuffle .char-avatar:nth-child(9) { --scatter-x: 150px; --scatter-y: -80px; --scatter-rot: 45deg; animation-delay: 0s; }
 
 /* ================================
    GAME SECTION
@@ -2677,6 +2880,7 @@ nav {
 .type-badge.dark { background: #374151; color: #fff; }
 .type-badge.rock { background: #a8a29e; color: #000; }
 .type-badge.normal { background: #a3a3a3; color: #000; }
+.type-badge.steel { background: #9ca3af; color: #000; }
 
 /* Tips Box */
 .tips-box {
@@ -3128,6 +3332,38 @@ footer {
    RESPONSIVE STYLES
    ================================ */
 
+/* Card Fan - Tablet */
+@media (max-width: 1100px) {
+    .card-fan {
+        height: 260px;
+    }
+    
+    .card-fan .char-avatar {
+        width: 100px;
+        height: 145px;
+    }
+    
+    .card-fan .char-avatar:nth-child(1) { transform: rotate(-24deg) translateX(-160px); }
+    .card-fan .char-avatar:nth-child(2) { transform: rotate(-18deg) translateX(-120px); }
+    .card-fan .char-avatar:nth-child(3) { transform: rotate(-12deg) translateX(-80px); }
+    .card-fan .char-avatar:nth-child(4) { transform: rotate(-6deg) translateX(-40px); }
+    .card-fan .char-avatar:nth-child(5) { transform: rotate(0deg) translateX(0px); }
+    .card-fan .char-avatar:nth-child(6) { transform: rotate(6deg) translateX(40px); }
+    .card-fan .char-avatar:nth-child(7) { transform: rotate(12deg) translateX(80px); }
+    .card-fan .char-avatar:nth-child(8) { transform: rotate(18deg) translateX(120px); }
+    .card-fan .char-avatar:nth-child(9) { transform: rotate(24deg) translateX(160px); }
+    
+    .card-fan:hover .char-avatar:nth-child(1) { transform: rotate(-28deg) translateX(-200px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(2) { transform: rotate(-21deg) translateX(-150px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(3) { transform: rotate(-14deg) translateX(-100px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(4) { transform: rotate(-7deg) translateX(-50px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(5) { transform: rotate(0deg) translateX(0px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(6) { transform: rotate(7deg) translateX(50px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(7) { transform: rotate(14deg) translateX(100px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(8) { transform: rotate(21deg) translateX(150px) translateY(-5px); }
+    .card-fan:hover .char-avatar:nth-child(9) { transform: rotate(28deg) translateX(200px) translateY(-5px); }
+}
+
 /* Tablet */
 @media (max-width: 1024px) {
     .battle-layout {
@@ -3158,8 +3394,47 @@ footer {
     }
 }
 
-/* Mobile */
+/* Make sure cards are clickable */
+.card-fan .char-avatar {
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.card-fan .char-avatar img {
+    pointer-events: none; /* Let clicks pass through to parent */
+}
+
+/* Visual feedback on click */
+.card-fan .char-avatar:active {
+    transform: translateY(-30px) scale(1.1) rotate(0deg) !important;
+    box-shadow: 0 30px 70px rgba(255, 217, 61, 0.7) !important;
+}
+/* Card Fan - Mobile */
 @media (max-width: 768px) {
+    .card-fan {
+        height: 200px;
+    }
+    
+    .card-fan .char-avatar {
+        width: 70px;
+        height: 100px;
+    }
+    
+    .card-fan .char-avatar:nth-child(1) { transform: rotate(-20deg) translateX(-110px); }
+    .card-fan .char-avatar:nth-child(2) { transform: rotate(-15deg) translateX(-82px); }
+    .card-fan .char-avatar:nth-child(3) { transform: rotate(-10deg) translateX(-55px); }
+    .card-fan .char-avatar:nth-child(4) { transform: rotate(-5deg) translateX(-27px); }
+    .card-fan .char-avatar:nth-child(5) { transform: rotate(0deg) translateX(0px); }
+    .card-fan .char-avatar:nth-child(6) { transform: rotate(5deg) translateX(27px); }
+    .card-fan .char-avatar:nth-child(7) { transform: rotate(10deg) translateX(55px); }
+    .card-fan .char-avatar:nth-child(8) { transform: rotate(15deg) translateX(82px); }
+    .card-fan .char-avatar:nth-child(9) { transform: rotate(20deg) translateX(110px); }
+    
+    .card-fan .char-avatar::after {
+        font-size: 0.4rem;
+        padding: 4px 8px;
+    }
+    
     .encounter-creature img {
         width: 110px;
         height: 110px;
@@ -3249,9 +3524,12 @@ footer {
         padding: 0 10px;
     }
 
-    .char-avatar {
+    .character-preview .char-avatar {
         width: 60px;
-        height: 60px;
+    }
+    
+    .character-preview .char-avatar img {
+        height: 80px;
     }
 
     .ca-container {
@@ -3720,8 +3998,27 @@ footer {
     }
 }
 
-/* Extra small phones */
+/* Card Fan - Small Mobile */
 @media (max-width: 480px) {
+    .card-fan {
+        height: 160px;
+    }
+    
+    .card-fan .char-avatar {
+        width: 55px;
+        height: 80px;
+    }
+    
+    .card-fan .char-avatar:nth-child(1) { transform: rotate(-20deg) translateX(-85px); }
+    .card-fan .char-avatar:nth-child(2) { transform: rotate(-15deg) translateX(-63px); }
+    .card-fan .char-avatar:nth-child(3) { transform: rotate(-10deg) translateX(-42px); }
+    .card-fan .char-avatar:nth-child(4) { transform: rotate(-5deg) translateX(-21px); }
+    .card-fan .char-avatar:nth-child(5) { transform: rotate(0deg) translateX(0px); }
+    .card-fan .char-avatar:nth-child(6) { transform: rotate(5deg) translateX(21px); }
+    .card-fan .char-avatar:nth-child(7) { transform: rotate(10deg) translateX(42px); }
+    .card-fan .char-avatar:nth-child(8) { transform: rotate(15deg) translateX(63px); }
+    .card-fan .char-avatar:nth-child(9) { transform: rotate(20deg) translateX(85px); }
+    
     .biome-grid {
         grid-template-columns: 1fr;
         max-width: 280px;
@@ -3764,9 +4061,12 @@ footer {
         font-size: 0.85rem;
     }
 
-    .char-avatar {
+    .character-preview .char-avatar {
         width: 50px;
-        height: 50px;
+    }
+    
+    .character-preview .char-avatar img {
+        height: 70px;
     }
 
     .battle-arena {
@@ -3949,30 +4249,32 @@ footer {
             Choose your favorite memecoin character and battle in Pokemon-style combat. 
             Every victory earns you $PALS tokens.
         </p>
-
-  <div class="character-preview">
-    <div class="char-avatar" onclick="selectAndPlay('molty')">
-    <img src="assets/images/characters/labstercard.png" alt="MOLTY">
-</div>
-    <div class="char-avatar" onclick="selectAndPlay('pepe')">
+<div class="card-fan">
+    <div class="char-avatar" data-name="COPPERINU" onclick="selectAndPlay('copperinu')">
+        <img src="assets/images/characters/copperinucard.png" alt="CopperInu">
+    </div>
+    <div class="char-avatar" data-name="MOLTY" onclick="selectAndPlay('molty')">
+        <img src="assets/images/characters/labstercard.png" alt="MOLTY">
+    </div>
+    <div class="char-avatar" data-name="PEPE" onclick="selectAndPlay('pepe')">
         <img src="assets/images/characters/pepecard.png" alt="PEPE">
     </div>
-        <div class="char-avatar" onclick="selectAndPlay('dicklet')">
+    <div class="char-avatar" data-name="DICKLET" onclick="selectAndPlay('dicklet')">
         <img src="assets/images/characters/dickletcard.png" alt="DICKLET">
     </div>
-    <div class="char-avatar" onclick="selectAndPlay('whale')">
+    <div class="char-avatar" data-name="WHALE" onclick="selectAndPlay('whale')">
         <img src="assets/images/characters/whalecard.png" alt="WHALE">
     </div>
-    <div class="char-avatar" onclick="selectAndPlay('cow')">
+    <div class="char-avatar" data-name="COW" onclick="selectAndPlay('cow')">
         <img src="assets/images/characters/cowcard.png" alt="COW">
     </div>
-    <div class="char-avatar" onclick="selectAndPlay('moodeng')">
+    <div class="char-avatar" data-name="MOODENG" onclick="selectAndPlay('moodeng')">
         <img src="assets/images/characters/moodengcard.png" alt="MOODENG">
     </div>
-    <div class="char-avatar" onclick="selectAndPlay('penguin')">
-        <img src="assets/images/characters/panguincard.png" alt="PENG">
+    <div class="char-avatar" data-name="PENGUIN" onclick="selectAndPlay('penguin')">
+        <img src="assets/images/characters/panguincard.png" alt="PENGUIN">
     </div>
-    <div class="char-avatar" onclick="selectAndPlay('catana')">
+    <div class="char-avatar" data-name="CATANA" onclick="selectAndPlay('catana')">
         <img src="assets/images/characters/catanacard.png" alt="CATANA">
     </div>
 </div>
@@ -6084,6 +6386,17 @@ onLose() {
     };
 
     const CHARACTERS = {
+        copperinu: {
+    name: 'COPPERINU',
+    type: 'steel',
+    hp: 95,
+    attack: 110,
+    defense: 85,
+    speed: 115,
+    image: 'copperinu.png',
+    description: 'A speedy copper dog with a fierce bite!',
+    role: 'Speedster'
+},
         molty: {
     name: 'MOLTY',
     type: 'water',
@@ -6175,6 +6488,12 @@ onLose() {
     };
 
     const MOVES = {
+copperinu: [
+    { name: 'METAL CLAW', type: 'steel', power: 85, accuracy: 80, pp: 15 },
+    { name: 'BULLET PUNCH', type: 'steel', power: 40, accuracy: 100, pp: 30, priority: true },
+    { name: 'IRON HEAD', type: 'steel', power: 80, accuracy: 80, pp: 10 },
+    { name: 'METAL SOUND', type: 'steel', power: 50, accuracy: 100, pp: 20, boost: { attack: 1, defense: 1 } }
+],
         molty: [
     { name: 'CRABHAMMER', type: 'water', power: 90, accuracy: 85, pp: 10, highCrit: true },
     { name: 'GUILLOTINE', type: 'normal', power: 80, accuracy: 70, pp: 5 },
@@ -6326,14 +6645,57 @@ onLose() {
         document.querySelector(`.char-card:nth-child(${Object.keys(CHARACTERS).indexOf(key) + 1})`).classList.add('selected');
     }
 
-    function selectAndPlay(key) {
-        gameState.selectedChar = key;
-        gameState.playerKey = key;
-        AudioSystem.playSound('select');
-        initBattle();
-        scrollToGame();
+/* ================================
+   SELECT AND PLAY - Direct to Battle
+   ================================ */
+function selectAndPlay(key) {
+    // Convert to lowercase to match CHARACTERS object
+    const charKey = key.toLowerCase();
+    
+    // Check if character exists
+    if (!CHARACTERS[charKey]) {
+        console.error('Character not found:', charKey);
+        alert('Character not found: ' + charKey);
+        return;
     }
-
+    
+    // Check if moves exist
+    if (!MOVES[charKey]) {
+        console.error('Moves not found for:', charKey);
+        alert('Moves not found for: ' + charKey);
+        return;
+    }
+    
+    // Set selected character
+    gameState.selectedChar = charKey;
+    gameState.playerKey = charKey;
+    
+    console.log('✅ Selected character:', charKey);
+    
+    // Play sound
+    if (typeof AudioSystem !== 'undefined' && AudioSystem.playSound) {
+        AudioSystem.playSound('select');
+    }
+    
+    // Scroll to game and start battle
+    scrollToGame();
+    
+    setTimeout(() => {
+        initBattle();
+    }, 500);
+}
+function scrollToGame() {
+    const gameSection = document.getElementById('game') || 
+                        document.querySelector('.game-section') || 
+                        document.querySelector('.battle-arena');
+    
+    if (gameSection) {
+        gameSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
 function initBattle() {
     // Difficulty scaling - more wins = harder enemies
     const difficultyBonus = Math.min(10, Math.floor(RewardSystem.state.totalWins / 3)); // +1 level per 3 wins, max +10
@@ -6650,6 +7012,103 @@ function initBattle() {
             return;
         }
     }
+
+    /* ================================
+   AUTO CARD SHUFFLE SYSTEM
+   ================================ */
+const CardShuffler = {
+    cardFan: null,
+    shuffleInterval: null,
+    shuffleTypes: ['wave-shuffle', 'flip-shuffle', 'scatter-shuffle'],
+    currentIndex: 0,
+    intervalTime: 5000, // Shuffle every 5 seconds
+    isEnabled: true,
+    
+    init() {
+        this.cardFan = document.querySelector('.card-fan');
+        if (!this.cardFan) return;
+        
+        // Store original transforms for each card
+        this.storeOriginalTransforms();
+        
+        // Start auto shuffle
+        this.startAutoShuffle();
+        
+        // Pause on hover
+        this.cardFan.addEventListener('mouseenter', () => this.pause());
+        this.cardFan.addEventListener('mouseleave', () => this.resume());
+        
+        console.log('🎴 Card Shuffler initialized');
+    },
+    
+    storeOriginalTransforms() {
+        const cards = this.cardFan.querySelectorAll('.char-avatar');
+        cards.forEach((card, index) => {
+            const style = window.getComputedStyle(card);
+            card.style.setProperty('--original-transform', style.transform);
+        });
+    },
+    
+    shuffle(type = null) {
+        if (!this.cardFan || !this.isEnabled) return;
+        
+        // Remove any existing shuffle class
+        this.shuffleTypes.forEach(t => this.cardFan.classList.remove(t));
+        
+        // Pick shuffle type (random or specified)
+        const shuffleType = type || this.shuffleTypes[Math.floor(Math.random() * this.shuffleTypes.length)];
+        
+        // Add shuffle class
+        this.cardFan.classList.add(shuffleType);
+        
+        // Play sound if available
+        if (typeof AudioSystem !== 'undefined' && AudioSystem.playSound) {
+            AudioSystem.playSound('select');
+        }
+        
+        // Remove class after animation
+        setTimeout(() => {
+            this.cardFan.classList.remove(shuffleType);
+        }, 2000);
+    },
+    
+    startAutoShuffle() {
+        if (this.shuffleInterval) clearInterval(this.shuffleInterval);
+        
+        // Initial shuffle after 2 seconds
+        setTimeout(() => this.shuffle(), 2000);
+        
+        // Then shuffle at regular intervals
+        this.shuffleInterval = setInterval(() => {
+            this.shuffle();
+        }, this.intervalTime);
+    },
+    
+    stopAutoShuffle() {
+        if (this.shuffleInterval) {
+            clearInterval(this.shuffleInterval);
+            this.shuffleInterval = null;
+        }
+    },
+    
+    pause() {
+        this.isEnabled = false;
+    },
+    
+    resume() {
+        this.isEnabled = true;
+    },
+    
+    setInterval(ms) {
+        this.intervalTime = ms;
+        this.startAutoShuffle();
+    }
+};
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    CardShuffler.init();
+});
     
     // ========== SMART AI ==========
     let move;
