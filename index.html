@@ -9,6 +9,14 @@
      <link rel="stylesheet" href="pay-modal.css"> 
 <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
+<!-- Solana Web3 -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+<!-- Solana Pay -->
+<script src="https://unpkg.com/@solana/pay@latest/dist/index.iife.js"></script>
+
+<!-- BigNumber (required for Solana Pay) -->
+<script src="https://unpkg.com/bignumber.js@latest/bignumber.min.js"></script>
 <style>
 /* ================================
    CSS VARIABLES & RESET
@@ -8005,7 +8013,7 @@ const critChance = move.highCrit ? 0.25 : baseCrit;
 // ================================
 
 const PayToPlay = {
-    ENTRY_FEE: 0.001,
+    ENTRY_FEE: 0.01,
     TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
 
@@ -8055,27 +8063,34 @@ const PayToPlay = {
             this.updateWalletStatus();
 
             const connection = new solanaWeb3.Connection(
-                'https://api.devnet.solana.com',
+                'https://mainnet.helius-rpc.com/?api-key=728b1810-b6e2-4150-8d49-e04e0d36ba02',
                 'confirmed'
             );
 
-            const transaction = new solanaWeb3.Transaction().add(
-                solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: resp.publicKey,
-                    toPubkey: new solanaWeb3.PublicKey(this.TREASURY_WALLET),
-                    lamports: this.ENTRY_FEE * solanaWeb3.LAMPORTS_PER_SOL
-                })
-            );
+            // Create unique reference for tracking
+            const reference = new solanaWeb3.Keypair().publicKey;
 
-            transaction.feePayer = resp.publicKey;
-            const { blockhash } = await connection.getLatestBlockhash();
-            transaction.recentBlockhash = blockhash;
+            // Build Solana Pay transfer
+            const recipient = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
+            const amount = new BigNumber(this.ENTRY_FEE);
 
+            const { transaction } = await createTransfer(connection, resp.publicKey, {
+                recipient,
+                amount,
+                reference,
+                memo: 'PumpPals Entry Fee'
+            });
+
+            // Sign and send
             const signed = await window.solana.signTransaction(transaction);
             const signature = await connection.sendRawTransaction(signed.serialize());
-            await connection.confirmTransaction(signature);
+            
+            // Wait for confirmation
+            await connection.confirmTransaction(signature, 'confirmed');
 
-            // Success - hide overlay
+            console.log('Payment successful:', signature);
+
+            // Success
             this.hasPaid = true;
             sessionStorage.setItem('pumpmon_paid', 'true');
             this.updateUI();
@@ -8093,7 +8108,6 @@ const PayToPlay = {
         this.hasPaid = false;
         sessionStorage.removeItem('pumpmon_paid');
         this.updateUI();
-        console.log('Payment reset - overlay shown');
     }
 };
 
