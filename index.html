@@ -3951,6 +3951,9 @@ footer {
         </p>
 
   <div class="character-preview">
+    <div class="char-avatar" onclick="selectAndPlay('molty')">
+    <img src="assets/images/characters/labstercard.png" alt="MOLTY">
+</div>
     <div class="char-avatar" onclick="selectAndPlay('pepe')">
         <img src="assets/images/characters/pepecard.png" alt="PEPE">
     </div>
@@ -3980,7 +3983,7 @@ footer {
         
         <div class="ca-container">
             <span class="ca-label">CA:</span>
-            <span class="ca-address" id="ca-address">BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump</span>
+            <span class="ca-address" id="ca-address"></span>
             <button class="ca-copy" onclick="copyCA()">📋</button>
         </div>
     </section>
@@ -6081,6 +6084,17 @@ onLose() {
     };
 
     const CHARACTERS = {
+        molty: {
+    name: 'MOLTY',
+    type: 'water',
+    hp: 115,
+    attack: 120,
+    defense: 110,
+    speed: 55,
+    image: 'labster.png',
+    description: 'A fierce lobster with crushing claws!',
+    role: 'Tank'
+},
         pepe: { 
             name: 'PEPE', 
             image: 'pepe.png', 
@@ -6096,8 +6110,8 @@ onLose() {
             name: 'WHALE', 
             image: 'whale.png', 
             hp: 130, 
-            attack: 28, 
-            defense: 50, 
+            attack: 26, 
+            defense: 40, 
             speed: 20, 
             type: 'water',
             description: 'Massive HP pool and crushing defense. Slow but unstoppable.',
@@ -6161,6 +6175,12 @@ onLose() {
     };
 
     const MOVES = {
+        molty: [
+    { name: 'CRABHAMMER', type: 'water', power: 100, accuracy: 90, pp: 10, highCrit: true },
+    { name: 'GUILLOTINE', type: 'normal', power: 120, accuracy: 70, pp: 5 },
+    { name: 'IRON DEFENSE', type: 'normal', power: 0, accuracy: 100, pp: 15, boost: { defense: 2 } },
+    { name: 'AQUA JET', type: 'water', power: 40, accuracy: 100, pp: 20, priority: true }
+],
         pepe: [
             { name: 'WATER GUN', type: 'water', power: 40, accuracy: 100, pp: 25 },
             { name: 'BUBBLE BEAM', type: 'water', power: 65, accuracy: 100, pp: 15, effect: 'speed-down', effectChance: 10 },
@@ -6168,7 +6188,7 @@ onLose() {
             { name: 'RECOVER', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 50 }
         ],
         whale: [
-            { name: 'SURF', type: 'water', power: 90, accuracy: 100, pp: 15 },
+            { name: 'SURF', type: 'water', power: 90, accuracy: 80, pp: 15 },
             { name: 'BODY SLAM', type: 'normal', power: 85, accuracy: 100, pp: 15, effect: 'paralyze', effectChance: 30 },
             { name: 'MARKET CRASH', type: 'dark', power: 120, accuracy: 85, pp: 5 },
             { name: 'REST', type: 'normal', power: 0, accuracy: 100, pp: 10, heal: 100, selfSleep: true }
@@ -6210,7 +6230,7 @@ onLose() {
        ================================ */
     let gameState = {
         playerKey: 'pepe',
-        enemyKey: 'whale',
+        enemyKey: 'molty',
         playerHP: 100,
         playerMaxHP: 100,
         enemyHP: 130,
