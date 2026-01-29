@@ -5607,7 +5607,7 @@ footer {
             <div class="guide-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <h4>Choose Your PAL</h4>
+                    <h4>Choose Your Fighter</h4>
                     <p>Pick from 11 unique memecoin characters, each with special moves and stats</p>
                 </div>
             </div>
@@ -5692,7 +5692,7 @@ footer {
     </div>
 </section>
 <div class="character-select-section" id="character-select">
-    <h3 class="select-title">⚔️ Choose Your PAL</h3>
+    <h3 class="select-title">⚔️ Choose Your Fighter</h3>
     <p class="select-subtitle">Select a character to enter battle</p>
     
     <div class="select-card-fan">
@@ -9146,107 +9146,104 @@ startFreeTrial() {
             data,
         });
     },
-async payEntryFee() {
-    const btn = document.getElementById('pay-overlay-btn');
-    btn.classList.add('loading');
-    btn.disabled = true;
 
-    try {
-        if (!window.solana || !window.solana.isPhantom) {
-            alert('Please install Phantom wallet!');
-            throw new Error('Phantom not found');
-        }
+    async payEntryFee() {
+        const btn = document.getElementById('pay-overlay-btn');
+        btn.classList.add('loading');
+        btn.disabled = true;
 
-        const resp = await window.solana.connect();
-        this.updateWalletStatus();
-
-        const connection = new solanaWeb3.Connection(
-            'https://mainnet.helius-rpc.com/?api-key=bc9291ae-849d-403f-a07d-6f4ad0b3ed80',
-            'confirmed'
-        );
-
-        const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
-        const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
-        const senderPubkey = resp.publicKey;
-
-        const mintAccount = await connection.getAccountInfo(mintPubkey);
-        if (!mintAccount) {
-            throw new Error('Token mint not found');
-        }
-        const tokenProgramId = mintAccount.owner.toString();
-
-        const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
-        const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
-
-        const transaction = new solanaWeb3.Transaction();
-
-        const treasuryAccount = await connection.getAccountInfo(treasuryATA);
-        if (!treasuryAccount) {
-            transaction.add(
-                this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
-            );
-        }
-
-        const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
-        transaction.add(
-            this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
-        );
-
-        // Get blockhash
-        let blockhash, lastValidBlockHeight;
-        for (let i = 0; i < 3; i++) {
-            try {
-                const result = await connection.getLatestBlockhash('finalized');
-                blockhash = result.blockhash;
-                lastValidBlockHeight = result.lastValidBlockHeight;
-                break;
-            } catch (e) {
-                await new Promise(r => setTimeout(r, 1000));
+        try {
+            if (!window.solana || !window.solana.isPhantom) {
+                alert('Please install Phantom wallet!');
+                throw new Error('Phantom not found');
             }
+
+            const resp = await window.solana.connect();
+            this.updateWalletStatus();
+
+            const connection = new solanaWeb3.Connection(
+                'https://mainnet.helius-rpc.com/?api-key=ce44879d-2d2b-45bb-9e24-d83b16d4eb1f',
+                'confirmed'
+            );
+
+            const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
+            const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
+            const senderPubkey = resp.publicKey;
+
+            // 🔍 AUTO-DETECT TOKEN PROGRAM FROM MINT ACCOUNT
+            const mintAccount = await connection.getAccountInfo(mintPubkey);
+            if (!mintAccount) {
+                throw new Error('Token mint not found');
+            }
+            const tokenProgramId = mintAccount.owner.toString();
+            console.log('Token Program:', tokenProgramId);
+
+            // Get ATAs using detected program
+            const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
+            const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
+
+            console.log('Sender ATA:', senderATA.toString());
+            console.log('Treasury ATA:', treasuryATA.toString());
+
+            const transaction = new solanaWeb3.Transaction();
+
+            // Check if treasury token account exists
+            const treasuryAccount = await connection.getAccountInfo(treasuryATA);
+            if (!treasuryAccount) {
+                console.log('Creating treasury ATA...');
+                transaction.add(
+                    this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
+                );
+            }
+
+            // Add transfer
+            const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
+            transaction.add(
+                this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
+            );
+
+            transaction.feePayer = senderPubkey;
+            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
+            transaction.recentBlockhash = blockhash;
+
+            const signed = await window.solana.signTransaction(transaction);
+            
+            const signature = await connection.sendRawTransaction(signed.serialize(), {
+                skipPreflight: false,
+                maxRetries: 5,
+                preflightCommitment: 'confirmed'
+            });
+
+            console.log('Transaction sent:', signature);
+
+            const confirmation = await connection.confirmTransaction({
+                signature,
+                blockhash,
+                lastValidBlockHeight
+            }, 'confirmed');
+
+            if (confirmation.value.err) {
+                throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
+            }
+
+            console.log('Payment successful:', signature);
+
+            this.hasPaid = true;
+            sessionStorage.setItem('pumpmon_paid', 'true');
+            this.updateUI();
+
+            CharacterSelect.show();
+
+            alert('✅ Payment successful! Choose your fighter!');
+
+        } catch (error) {
+            console.error('Payment failed:', error);
+            alert('Payment failed: ' + error.message);
+        } finally {
+            btn.classList.remove('loading');
+            btn.disabled = false;
         }
-
-        if (!blockhash) {
-            throw new Error('Network busy. Please try again.');
-        }
-
-        transaction.recentBlockhash = blockhash;
-        transaction.feePayer = senderPubkey;
-
-        // 🔧 USE signAndSendTransaction INSTEAD
-        const { signature } = await window.solana.signAndSendTransaction(transaction);
-
-        console.log('Transaction sent:', signature);
-
-        // Wait for confirmation
-        const confirmation = await connection.confirmTransaction({
-            signature,
-            blockhash,
-            lastValidBlockHeight
-        }, 'confirmed');
-
-        if (confirmation.value.err) {
-            throw new Error('Transaction failed');
-        }
-
-        console.log('Payment successful:', signature);
-
-        this.hasPaid = true;
-        this.isTrialMode = false;
-        sessionStorage.setItem('pumpmon_paid', 'true');
-        sessionStorage.removeItem('pumpmon_trial');
-        this.updateUI();
-
-        CharacterSelect.show();
-        alert('✅ Payment successful! Choose your fighter!');
-
-    } catch (error) {
-        console.error('Payment failed:', error);
-        alert('Payment failed: ' + error.message);
-    } finally {
-        btn.classList.remove('loading');
-        btn.disabled = false;
-    }
-},
+    },
 
 reset() {
     this.hasPaid = false;
