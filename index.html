@@ -9027,7 +9027,7 @@ const PayToPlay = {
     hasPaid: false,
     isTrialMode: false,
     // Will be set dynamically
-    TOKEN_PROGRAM_ID: null,
+    TOKEN_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
     ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 
 init() {
@@ -9162,13 +9162,9 @@ startFreeTrial() {
             const senderPubkey = resp.publicKey;
 
             // 🔍 AUTO-DETECT TOKEN PROGRAM FROM MINT ACCOUNT
-            const mintAccount = await connection.getAccountInfo(mintPubkey);
-            if (!mintAccount) {
-                throw new Error('Token mint not found');
-            }
-            const tokenProgramId = mintAccount.owner.toString();
-            console.log('Token Program:', tokenProgramId);
-
+// Use hardcoded Token 2022 program (skip network call)
+const tokenProgramId = this.TOKEN_PROGRAM_ID;
+console.log('Token Program:', tokenProgramId);
             // Get ATAs using detected program
             const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
             const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
