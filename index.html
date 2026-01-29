@@ -9174,19 +9174,14 @@ async payEntryFee() {
             throw new Error('Token mint not found');
         }
         const tokenProgramId = mintAccount.owner.toString();
-        console.log('Token Program:', tokenProgramId);
 
         const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
         const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
-
-        console.log('Sender ATA:', senderATA.toString());
-        console.log('Treasury ATA:', treasuryATA.toString());
 
         const transaction = new solanaWeb3.Transaction();
 
         const treasuryAccount = await connection.getAccountInfo(treasuryATA);
         if (!treasuryAccount) {
-            console.log('Creating treasury ATA...');
             transaction.add(
                 this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
             );
@@ -9197,17 +9192,15 @@ async payEntryFee() {
             this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
         );
 
-        // 🔧 BLOCKHASH WITH RETRY
+        // Get blockhash
         let blockhash, lastValidBlockHeight;
         for (let i = 0; i < 3; i++) {
             try {
                 const result = await connection.getLatestBlockhash('finalized');
                 blockhash = result.blockhash;
                 lastValidBlockHeight = result.lastValidBlockHeight;
-                console.log('Got blockhash:', blockhash);
                 break;
             } catch (e) {
-                console.log('Retry blockhash...', i + 1);
                 await new Promise(r => setTimeout(r, 1000));
             }
         }
@@ -9219,16 +9212,12 @@ async payEntryFee() {
         transaction.recentBlockhash = blockhash;
         transaction.feePayer = senderPubkey;
 
-        const signed = await window.solana.signTransaction(transaction);
-        
-        // 🔧 SKIP PREFLIGHT TO AVOID BLOCKHASH ERROR
-        const signature = await connection.sendRawTransaction(signed.serialize(), {
-            skipPreflight: true,
-            maxRetries: 5
-        });
+        // 🔧 USE signAndSendTransaction INSTEAD
+        const { signature } = await window.solana.signAndSendTransaction(transaction);
 
         console.log('Transaction sent:', signature);
 
+        // Wait for confirmation
         const confirmation = await connection.confirmTransaction({
             signature,
             blockhash,
@@ -9236,7 +9225,7 @@ async payEntryFee() {
         }, 'confirmed');
 
         if (confirmation.value.err) {
-            throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
+            throw new Error('Transaction failed');
         }
 
         console.log('Payment successful:', signature);
@@ -9248,7 +9237,6 @@ async payEntryFee() {
         this.updateUI();
 
         CharacterSelect.show();
-
         alert('✅ Payment successful! Choose your fighter!');
 
     } catch (error) {
