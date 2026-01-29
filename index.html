@@ -9146,104 +9146,119 @@ startFreeTrial() {
             data,
         });
     },
+async payEntryFee() {
+    const btn = document.getElementById('pay-overlay-btn');
+    btn.classList.add('loading');
+    btn.disabled = true;
 
-    async payEntryFee() {
-        const btn = document.getElementById('pay-overlay-btn');
-        btn.classList.add('loading');
-        btn.disabled = true;
-
-        try {
-            if (!window.solana || !window.solana.isPhantom) {
-                alert('Please install Phantom wallet!');
-                throw new Error('Phantom not found');
-            }
-
-            const resp = await window.solana.connect();
-            this.updateWalletStatus();
-
-            const connection = new solanaWeb3.Connection(
-                'https://api.mainnet-beta.solana.com',
-                'confirmed'
-            );
-
-            const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
-            const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
-            const senderPubkey = resp.publicKey;
-
-            // 🔍 AUTO-DETECT TOKEN PROGRAM FROM MINT ACCOUNT
-            const mintAccount = await connection.getAccountInfo(mintPubkey);
-            if (!mintAccount) {
-                throw new Error('Token mint not found');
-            }
-            const tokenProgramId = mintAccount.owner.toString();
-            console.log('Token Program:', tokenProgramId);
-
-            // Get ATAs using detected program
-            const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
-            const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
-
-            console.log('Sender ATA:', senderATA.toString());
-            console.log('Treasury ATA:', treasuryATA.toString());
-
-            const transaction = new solanaWeb3.Transaction();
-
-            // Check if treasury token account exists
-            const treasuryAccount = await connection.getAccountInfo(treasuryATA);
-            if (!treasuryAccount) {
-                console.log('Creating treasury ATA...');
-                transaction.add(
-                    this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
-                );
-            }
-
-            // Add transfer
-            const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
-            transaction.add(
-                this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
-            );
-
-            transaction.feePayer = senderPubkey;
-            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
-            transaction.recentBlockhash = blockhash;
-
-            const signed = await window.solana.signTransaction(transaction);
-            
-            const signature = await connection.sendRawTransaction(signed.serialize(), {
-                skipPreflight: false,
-                maxRetries: 5,
-                preflightCommitment: 'confirmed'
-            });
-
-            console.log('Transaction sent:', signature);
-
-            const confirmation = await connection.confirmTransaction({
-                signature,
-                blockhash,
-                lastValidBlockHeight
-            }, 'confirmed');
-
-            if (confirmation.value.err) {
-                throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
-            }
-
-            console.log('Payment successful:', signature);
-
-            this.hasPaid = true;
-            sessionStorage.setItem('pumpmon_paid', 'true');
-            this.updateUI();
-
-            CharacterSelect.show();
-
-            alert('✅ Payment successful! Choose your fighter!');
-
-        } catch (error) {
-            console.error('Payment failed:', error);
-            alert('Payment failed: ' + error.message);
-        } finally {
-            btn.classList.remove('loading');
-            btn.disabled = false;
+    try {
+        if (!window.solana || !window.solana.isPhantom) {
+            alert('Please install Phantom wallet!');
+            throw new Error('Phantom not found');
         }
-    },
+
+        const resp = await window.solana.connect();
+        this.updateWalletStatus();
+
+        const connection = new solanaWeb3.Connection(
+            'https://mainnet.helius-rpc.com/?api-key=bc9291ae-849d-403f-a07d-6f4ad0b3ed80',
+            'confirmed'
+        );
+
+        const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
+        const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
+        const senderPubkey = resp.publicKey;
+
+        const mintAccount = await connection.getAccountInfo(mintPubkey);
+        if (!mintAccount) {
+            throw new Error('Token mint not found');
+        }
+        const tokenProgramId = mintAccount.owner.toString();
+        console.log('Token Program:', tokenProgramId);
+
+        const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
+        const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
+
+        console.log('Sender ATA:', senderATA.toString());
+        console.log('Treasury ATA:', treasuryATA.toString());
+
+        const transaction = new solanaWeb3.Transaction();
+
+        const treasuryAccount = await connection.getAccountInfo(treasuryATA);
+        if (!treasuryAccount) {
+            console.log('Creating treasury ATA...');
+            transaction.add(
+                this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
+            );
+        }
+
+        const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
+        transaction.add(
+            this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
+        );
+
+        // 🔧 BLOCKHASH WITH RETRY
+        let blockhash, lastValidBlockHeight;
+        for (let i = 0; i < 3; i++) {
+            try {
+                const result = await connection.getLatestBlockhash('finalized');
+                blockhash = result.blockhash;
+                lastValidBlockHeight = result.lastValidBlockHeight;
+                console.log('Got blockhash:', blockhash);
+                break;
+            } catch (e) {
+                console.log('Retry blockhash...', i + 1);
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+
+        if (!blockhash) {
+            throw new Error('Network busy. Please try again.');
+        }
+
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = senderPubkey;
+
+        const signed = await window.solana.signTransaction(transaction);
+        
+        // 🔧 SKIP PREFLIGHT TO AVOID BLOCKHASH ERROR
+        const signature = await connection.sendRawTransaction(signed.serialize(), {
+            skipPreflight: true,
+            maxRetries: 5
+        });
+
+        console.log('Transaction sent:', signature);
+
+        const confirmation = await connection.confirmTransaction({
+            signature,
+            blockhash,
+            lastValidBlockHeight
+        }, 'confirmed');
+
+        if (confirmation.value.err) {
+            throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
+        }
+
+        console.log('Payment successful:', signature);
+
+        this.hasPaid = true;
+        this.isTrialMode = false;
+        sessionStorage.setItem('pumpmon_paid', 'true');
+        sessionStorage.removeItem('pumpmon_trial');
+        this.updateUI();
+
+        CharacterSelect.show();
+
+        alert('✅ Payment successful! Choose your fighter!');
+
+    } catch (error) {
+        console.error('Payment failed:', error);
+        alert('Payment failed: ' + error.message);
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+},
 
 reset() {
     this.hasPaid = false;
