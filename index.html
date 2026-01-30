@@ -6290,7 +6290,7 @@ footer {
                 <div class="welcome-feature">
                     <span class="feature-icon"><i class="fa-solid fa-coins"></i></span>
                     <span class="feature-text">Earn</span>
-                    <span class="feature-desc">Win real $PUMP tokens</span>
+                    <span class="feature-desc">Win real $PALS tokens</span>
                 </div>
                 <div class="welcome-feature">
                     <span class="feature-icon"><i class="fa-solid fa-trophy"></i></span>
@@ -6307,7 +6307,7 @@ footer {
                 </div>
                 <div class="welcome-stat">
                     <span class="stat-num">100+</span>
-                    <span class="stat-label">$PUMP per Win</span>
+                    <span class="stat-label">$PALS per Win</span>
                 </div>
                 <div class="welcome-stat">
                     <span class="stat-num">FREE</span>
@@ -6319,7 +6319,7 @@ footer {
             <div class="welcome-notice">
                 <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
                 <div class="notice-text">
-                    <p><strong>Entry Fee:</strong> <span class="highlight">1000 $PUMP</span> to earn rewards</p>
+                    <p><strong>Entry Fee:</strong> <span class="highlight">1000 $PALS</span> to earn rewards</p>
                 </div>
             </div>
         </div>
@@ -6626,6 +6626,7 @@ footer {
 </section>
 
 <!-- Leaderboard Coming Soon - Horizontal -->
+<!-- Leaderboard Coming Soon - Horizontal -->
 <section class="leaderboard-section" id="leaderboard">
     <div class="leaderboard-container">
         
@@ -6651,7 +6652,7 @@ footer {
                 <div class="lb-stat">
                     <span class="stat-icon"><i data-lucide="gem"></i></span>
                     <span class="stat-value">50,000</span>
-                    <span class="stat-label">$PUMP Prize Pool</span>
+                    <span class="stat-label">$PALS Prize Pool</span>
                 </div>
                 <div class="lb-stat">
                     <span class="stat-icon"><i data-lucide="calendar"></i></span>
@@ -6685,7 +6686,7 @@ footer {
                     <div class="feature-icon"><i data-lucide="coins"></i></div>
                     <div class="feature-info">
                         <h4>Top Earners</h4>
-                        <p>Track total $PUMP earned</p>
+                        <p>Track total $PALS earned</p>
                     </div>
                 </div>
                 <div class="lb-feature">
@@ -6712,23 +6713,6 @@ footer {
                     </a>
                 </div>
                 
-                <div class="lb-countdown">
-                    <p>Estimated Launch</p>
-                    <div class="countdown-display">
-                        <div class="countdown-item">
-                            <span class="countdown-num">1</span>
-                            <span class="countdown-label">Days</span>
-                        </div>
-                        <div class="countdown-item">
-                            <span class="countdown-num">06</span>
-                            <span class="countdown-label">Hours</span>
-                        </div>
-                        <div class="countdown-item">
-                            <span class="countdown-num">32</span>
-                            <span class="countdown-label">Mins</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -6862,7 +6846,7 @@ footer {
     <div class="pay-column-left">
         <div class="pay-overlay-fee">
             <span class="pay-fee-value">1000</span>
-            <span class="pay-fee-currency">$PUMP</span>
+            <span class="pay-fee-currency">$PALS</span>
         </div>
         
         <div class="token-info-box">
@@ -9054,7 +9038,6 @@ onLose() {
             role: 'Speedster'
         }
     };
-
     const MOVES = {
         pnut: [
         { name: 'SEED BOMB', type: 'grass', power: 80, accuracy: 100, pp: 15 },
@@ -10070,6 +10053,7 @@ function endBattle(won) {
     document.addEventListener('DOMContentLoaded', () => {
         WalletSystem.init();
         AudioSystem.init();
+        lucide.createIcons();
         SafariGame.init();
         RewardSystem.init();
         AdminPanel.init();
@@ -10404,6 +10388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CharacterSelect.init();
     PayToPlay.init();
     WelcomePopup.init();
+    lucide.createIcons();
 
 });
 
@@ -10474,6 +10459,7 @@ function closeWelcomePopup() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     WelcomePopup.init();
+    lucide.createIcons();
 });
 
 /* ================================
