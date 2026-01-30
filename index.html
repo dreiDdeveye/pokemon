@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$PALS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Add these CDN scripts to your HTML head -->
+     <script src="https://unpkg.com/lucide@latest"></script>
      <link rel="stylesheet" href="pay-modal.css"> 
 <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
@@ -22,6 +24,358 @@
 <script src="https://unpkg.com/bignumber.js@latest/bignumber.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
 <style>
+
+/* Section Title Icon */
+.section-title i,
+.section-title svg {
+    width: 28px;
+    height: 28px;
+    color: var(--primary);
+    stroke: var(--primary);
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Card Header Icon */
+.card-header .card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.2), rgba(249, 115, 22, 0.2));
+    border-radius: 10px;
+}
+
+.card-header .card-icon i,
+.card-header .card-icon svg {
+    width: 22px;
+    height: 22px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+/* Rewards Label Icons */
+.reward-label i,
+.reward-label svg {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.reward-item.bonus .reward-label i,
+.reward-item.bonus .reward-label svg {
+    color: #22c55e;
+    stroke: #22c55e;
+}
+
+/* Pro Tips Header Icon */
+.pro-tips h3 i,
+.pro-tips h3 svg {
+    width: 22px;
+    height: 22px;
+    color: var(--primary);
+    stroke: var(--primary);
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Tips Grid Icons */
+.tip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.tip i,
+.tip svg {
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+    stroke: var(--primary);
+    flex-shrink: 0;
+}
+
+/* Step Icon Styling */
+.step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.2), rgba(249, 115, 22, 0.2));
+    border: 2px solid rgba(255, 217, 61, 0.3);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+}
+
+.step:hover .step-icon {
+    transform: scale(1.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 30px rgba(255, 217, 61, 0.3);
+}
+
+.step-icon i,
+.step-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+/* Pay Overlay Rewards Icons */
+.pay-overlay-rewards span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 10px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #fff;
+}
+
+.pay-overlay-rewards span i,
+.pay-overlay-rewards span svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+/* Wallet Warning */
+.wallet-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.warning-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.warning-icon i,
+.warning-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #f97316;
+    stroke: #f97316;
+}
+
+.wallet-warning p {
+    font-size: 0.75rem;
+    color: #f97316;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Verify Link */
+.verify-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: var(--primary);
+    text-decoration: none;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.verify-link:hover {
+    text-decoration: underline;
+}
+
+.verify-link i,
+.verify-link svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+/* Wallet Status */
+#wallet-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #888;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 12px 20px;
+    border-radius: 10px;
+}
+
+#wallet-status i,
+#wallet-status svg {
+    width: 16px;
+    height: 16px;
+    color: #888;
+    stroke: #888;
+}
+
+#wallet-status.connected {
+    color: #22c55e;
+}
+
+#wallet-status.connected i,
+#wallet-status.connected svg {
+    color: #22c55e;
+    stroke: #22c55e;
+}
+
+
+/* Leaderboard Icon Styling */
+.lb-trophy i,
+.lb-trophy svg {
+    width: 32px;
+    height: 32px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+.lb-stat .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 217, 61, 0.1);
+    border-radius: 10px;
+}
+
+.lb-stat .stat-icon i,
+.lb-stat .stat-icon svg {
+    width: 22px;
+    height: 22px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+.lb-rocket {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.2), rgba(249, 115, 22, 0.2));
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: bounce 2s infinite;
+}
+
+.lb-rocket i,
+.lb-rocket svg {
+    width: 36px;
+    height: 36px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+.lb-feature .feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.lb-feature .feature-icon i,
+.lb-feature .feature-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+.notify-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 217, 61, 0.15);
+    border-radius: 50%;
+    margin: 0 auto 16px;
+}
+
+.notify-icon i,
+.notify-icon svg {
+    width: 30px;
+    height: 30px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+.social-btn i,
+.social-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Icon Styling */
+.feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.2), rgba(249, 115, 22, 0.2));
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.feature-icon i,
+.feature-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--primary);
+    stroke: var(--primary);
+}
+
+.notice-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notice-icon i,
+.notice-icon svg {
+    width: 32px;
+    height: 32px;
+    color: #f97316;
+    stroke: #f97316;
+}
+
+.welcome-btn i,
+.welcome-btn svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+
 /* ================================
    CSS VARIABLES & RESET
    ================================ */
@@ -501,19 +855,34 @@ nav {
     left: 0;
     right: 0;
     padding: 16px 24px;
-    background: rgba(10, 10, 15, 0.8);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+/* Faded/Hidden State */
+nav.nav-hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+/* Show on hover at top of page */
+nav.nav-hidden:hover {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: -10;
     z-index: 1001;
 }
 
@@ -564,14 +933,15 @@ nav {
 
 .nav-links {
     display: flex;
-    gap: 24px;
+    gap: 16px;              /* Reduced from 24px */
     align-items: center;
 }
 
 .nav-links a {
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.75rem;     /* Reduced from 0.9rem */
+    padding: 6px 12px;      /* Reduced from 8px 16px */
     transition: color 0.2s;
 }
 
@@ -1338,6 +1708,362 @@ nav {
 .section-title .highlight { 
     color: var(--primary); 
 }
+
+
+/* ================================
+   LEADERBOARD - HORIZONTAL LAYOUT
+   ================================ */
+.leaderboard-section {
+    padding: 60px 24px;
+    background: linear-gradient(180deg, rgba(10, 10, 20, 0.95) 0%, rgba(15, 15, 30, 0.98) 100%);
+}
+
+.leaderboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    background: linear-gradient(145deg, rgba(20, 20, 35, 0.9), rgba(10, 10, 20, 0.95));
+    border: 2px solid rgba(255, 217, 61, 0.3);
+    border-radius: 24px;
+    padding: 40px;
+}
+
+/* Left Side */
+.lb-left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.lb-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lb-trophy {
+    font-size: 2rem;
+}
+
+.lb-title-row h2 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    color: #ffd93d;
+    margin: 0;
+}
+
+.lb-badge {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+.lb-description {
+    font-size: 0.9rem;
+    color: #aaa;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.lb-stats-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.lb-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.lb-stat .stat-icon {
+    font-size: 1.5rem;
+}
+
+.lb-stat .stat-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    color: #ffd93d;
+}
+
+.lb-stat .stat-label {
+    font-size: 0.75rem;
+    color: #888;
+    margin-left: auto;
+}
+
+/* Center */
+.lb-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lb-rocket {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.lb-center h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    color: #fff;
+    margin: 0 0 20px 0;
+}
+
+.lb-features {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.lb-feature {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.lb-feature:hover {
+    border-color: rgba(255, 217, 61, 0.4);
+    transform: translateX(5px);
+}
+
+.feature-icon {
+    font-size: 1.8rem;
+    min-width: 40px;
+}
+
+.feature-info h4 {
+    font-size: 0.8rem;
+    color: #fff;
+    margin: 0 0 4px 0;
+}
+
+.feature-info p {
+    font-size: 0.7rem;
+    color: #888;
+    margin: 0;
+}
+
+/* Right Side */
+.lb-right {
+    display: flex;
+    flex-direction: column;
+}
+
+.lb-notify-box {
+    background: rgba(255, 217, 61, 0.05);
+    border: 1px solid rgba(255, 217, 61, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.notify-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.lb-notify-box h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.85rem;
+    color: #ffd93d;
+    margin: 0 0 10px 0;
+}
+
+.lb-notify-box > p {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+}
+
+.lb-social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-btn.twitter {
+    background: rgba(29, 161, 242, 0.2);
+    border: 1px solid rgba(29, 161, 242, 0.4);
+}
+
+.social-btn.twitter:hover {
+    background: rgba(29, 161, 242, 0.3);
+}
+
+.social-btn.telegram {
+    background: rgba(0, 136, 204, 0.2);
+    border: 1px solid rgba(0, 136, 204, 0.4);
+}
+
+.social-btn.telegram:hover {
+    background: rgba(0, 136, 204, 0.3);
+}
+
+.social-btn span:first-child {
+    font-size: 1.1rem;
+}
+
+/* Countdown */
+.lb-countdown {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lb-countdown > p {
+    font-size: 0.7rem;
+    color: #888;
+    margin: 0 0 12px 0;
+}
+
+.countdown-display {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.countdown-item {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-width: 60px;
+}
+
+.countdown-num {
+    display: block;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    color: #ffd93d;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 0.55rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+    .leaderboard-container {
+        grid-template-columns: 1fr;
+        padding: 30px 20px;
+    }
+    
+    .lb-center {
+        border-left: none;
+        border-right: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px 0;
+    }
+    
+    .lb-stats-preview {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .lb-stat {
+        flex: 1;
+        min-width: 140px;
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+    }
+    
+    .lb-stat .stat-label {
+        margin-left: 0;
+    }
+    
+    .countdown-display {
+        gap: 8px;
+    }
+    
+    .countdown-item {
+        min-width: 50px;
+        padding: 10px 12px;
+    }
+    
+    .countdown-num {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .leaderboard-section {
+        padding: 40px 16px;
+    }
+    
+    .leaderboard-container {
+        padding: 24px 16px;
+    }
+    
+    .lb-title-row h2 {
+        font-size: 0.9rem;
+    }
+    
+    .lb-stats-preview {
+        flex-direction: column;
+    }
+    
+    .lb-stat {
+        flex-direction: row;
+    }
+    
+    .lb-stat .stat-label {
+        margin-left: auto;
+    }
+}
+
 
 /* ================================
    BATTLE LAYOUT - Side by Side
@@ -4145,7 +4871,7 @@ footer {
     }
 }
 /* ================================
-   WELCOME POPUP
+   WELCOME POPUP - IMPROVED
    ================================ */
 .welcome-popup {
     position: fixed;
@@ -4153,7 +4879,7 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4161,6 +4887,8 @@ footer {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+        overflow-y: auto;          /* ADD THIS */
+    padding: 20px; 
 }
 
 .welcome-popup.show {
@@ -4169,128 +4897,203 @@ footer {
 }
 
 .welcome-popup-content {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 2px solid var(--primary);
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%),
+                url('assets/images/welcome-bg.png');
+    background-size: cover;
+    background-position: center;
+    border: 3px solid var(--primary);
     border-radius: 24px;
-    padding: 40px;
-    max-width: 480px;
-    width: 90%;
+    padding: 50px 60px;
+    max-width: 850px;
+    width: 95%;
     text-align: center;
     transform: scale(0.9);
     transition: transform 0.3s ease;
-    box-shadow: 0 20px 60px rgba(255, 217, 61, 0.2);
+    box-shadow: 0 0 80px rgba(255, 217, 61, 0.3);
+    padding: 35px 45px;
+    margin: auto;              /* ADD THIS */
+    max-height: 95vh;          /* ADD THIS */
+    overflow-y: auto;          /* ADD THIS */
 }
 
 .welcome-popup.show .welcome-popup-content {
     transform: scale(1);
 }
 
+/* Header */
 .welcome-popup-header {
-    margin-bottom: 24px;
-}
-
-.welcome-icon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 16px;
-    animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    margin-bottom: 25px;
 }
 
 .welcome-popup-header h2 {
     font-family: 'Press Start 2P', cursive;
-    font-size: 1.1rem;
+    font-size: 1.8rem;
     color: var(--primary);
-    text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+    margin: 0 0 16px 0;
+    text-shadow: 0 0 30px rgba(255, 217, 61, 0.6);
 }
 
-.welcome-popup-body {
-    margin-bottom: 28px;
-}
-
-.welcome-message {
+.welcome-tagline {
+    font-family: 'Press Start 2P', cursive;
     font-size: 1rem;
     color: #fff;
-    margin-bottom: 24px;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
+/* Body */
+.welcome-popup-body {
+    margin-bottom: 30px;
+}
+
+/* Features */
 .welcome-features {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 28px;
 }
 
 .welcome-feature {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 20px;
+    gap: 8px;
+    padding: 20px 28px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    min-width: 140px;
+    transition: all 0.3s ease;
+}
+
+.welcome-feature:hover {
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    background: rgba(255, 217, 61, 0.1);
+}
+
+.feature-icon {
+    font-size: 2.2rem;
+}
+
+.feature-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.85rem;
     color: #fff;
 }
 
-.welcome-feature span:first-child {
-    font-size: 1.2rem;
+.feature-desc {
+    font-size: 0.75rem;
+    color: #aaa;
 }
 
-.welcome-notice {
+/* Stats */
+.welcome-stats {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: rgba(255, 217, 61, 0.1);
-    border: 1px solid rgba(255, 217, 61, 0.3);
-    border-radius: 12px;
-    text-align: left;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 28px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.notice-icon {
-    font-size: 1.5rem;
-}
-
-.welcome-notice p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin: 0;
-}
-
-.welcome-notice strong {
-    color: var(--primary);
-}
-
-.welcome-popup-actions {
+.welcome-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 6px;
+}
+
+.stat-num {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.3rem;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Notice */
+.welcome-notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 16px;
+    padding: 10px 20px;
+    background: rgba(255, 217, 61, 0.1);
+    border: 1px solid rgba(255, 217, 61, 0.3);
+    border-radius: 14px;
+}
+
+.notice-icon {
+    font-size: 2rem;
+}
+
+.notice-text {
+    text-align: left;
+}
+
+.notice-text p {
+    margin: 0;
+    font-size: 1rem;
+    color: #ddd;
+}
+
+.notice-text .highlight {
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.notice-text .notice-sub {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Actions */
+.welcome-popup-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
 }
 
 .welcome-btn {
-    width: 100%;
-    padding: 16px 32px;
-    font-size: 0.8rem;
+    padding: 12px 40px;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #ffd93d, #f97316);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Press Start 2P', cursive;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(255, 217, 61, 0.3);
+}
+
+.welcome-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(255, 217, 61, 0.5);
 }
 
 .dont-show-again {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
-    font-size: 0.75rem;
-    color: var(--text-muted);
+    font-size: 0.85rem;
+    color: #888;
+    transition: color 0.3s ease;
 }
 
 .dont-show-again input {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     cursor: pointer;
 }
 
@@ -4299,29 +5102,84 @@ footer {
 }
 
 /* Mobile */
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     .welcome-popup-content {
-        padding: 28px 20px;
+        padding: 35px 25px;
+    }
+    
+    .welcome-logo {
+        width: 100px;
     }
     
     .welcome-popup-header h2 {
-        font-size: 0.85rem;
+        font-size: 1rem;
     }
     
-    .welcome-icon {
-        font-size: 2.5rem;
+    .welcome-tagline {
+        font-size: 0.9rem;
+    }
+    
+    .welcome-features {
+        flex-direction: column;
+        gap: 12px;
     }
     
     .welcome-feature {
-        font-size: 0.8rem;
-        padding: 10px 16px;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 14px 20px;
+        min-width: auto;
     }
     
-    .welcome-notice p {
+    .feature-icon {
+        font-size: 1.6rem;
+    }
+    
+    .feature-text {
         font-size: 0.75rem;
     }
+    
+    .feature-desc {
+        display: none;
+    }
+    
+    .welcome-stats {
+        gap: 20px;
+    }
+    
+    .stat-num {
+        font-size: 1rem;
+    }
+    
+    .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .welcome-notice {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .notice-text {
+        text-align: center;
+    }
+    
+    .notice-text p {
+        font-size: 0.85rem;
+    }
+    
+    .welcome-popup-actions {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .welcome-btn {
+        width: 100%;
+        padding: 16px 30px;
+        font-size: 0.8rem;
+    }
 }
-
 /* ================================
    PAY TO PLAY MODAL - HORIZONTAL
    ================================ */
@@ -5409,55 +6267,80 @@ footer {
 </style>
 
     <!-- Welcome Popup -->
+<!-- Welcome Popup -->
 <div class="welcome-popup" id="welcome-popup">
     <div class="welcome-popup-content">
+        
+        <!-- Header -->
         <div class="welcome-popup-header">
-            <img src="assets/images/logo.png" alt="PumpPals" style="
-    width: 250px;
-    height: auto;
-    display: block;
-    margin: 0 auto -16px;
-    filter: drop-shadow(0 0 20px rgba(242, 255, 58, 0.6));
-">
             <h2>Welcome to PumpPals!</h2>
+            <p class="welcome-tagline">The Ultimate Memecoin Battle Arena</p>
         </div>
         
+        <!-- Body -->
         <div class="welcome-popup-body">
-            <p class="welcome-message">Battle memecoins. Win $PALS tokens!</p>
             
+            <!-- Features - Horizontal -->
             <div class="welcome-features">
                 <div class="welcome-feature">
-                    <span>⚔️</span>
-                    <span>Pokemon-style battles</span>
+                    <span class="feature-icon"><i class="fa-solid fa-khanda"></i></span>
+                    <span class="feature-text">Battle</span>
+                    <span class="feature-desc">Pokemon-style combat</span>
                 </div>
                 <div class="welcome-feature">
-                    <span>💰</span>
-                    <span>Earn real $PALS tokens</span>
+                    <span class="feature-icon"><i class="fa-solid fa-coins"></i></span>
+                    <span class="feature-text">Earn</span>
+                    <span class="feature-desc">Win real $PUMP tokens</span>
                 </div>
                 <div class="welcome-feature">
-                    <span>🎮</span>
-                    <span>Free trial available</span>
+                    <span class="feature-icon"><i class="fa-solid fa-trophy"></i></span>
+                    <span class="feature-text">Compete</span>
+                    <span class="feature-desc">Climb the leaderboard</span>
                 </div>
             </div>
             
+            <!-- Stats Preview -->
+            <div class="welcome-stats">
+                <div class="welcome-stat">
+                    <span class="stat-num">11</span>
+                    <span class="stat-label">Fighters</span>
+                </div>
+                <div class="welcome-stat">
+                    <span class="stat-num">100+</span>
+                    <span class="stat-label">$PUMP per Win</span>
+                </div>
+                <div class="welcome-stat">
+                    <span class="stat-num">FREE</span>
+                    <span class="stat-label">Trial Mode</span>
+                </div>
+            </div>
+            
+            <!-- Notice -->
             <div class="welcome-notice">
-                <span class="notice-icon">⚠️</span>
-                <p>Entry fee: <strong>1000 $PALS</strong> to earn rewards. Try free trial first!</p>
+                <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                <div class="notice-text">
+                    <p><strong>Entry Fee:</strong> <span class="highlight">1000 $PUMP</span> to earn rewards</p>
+                </div>
             </div>
         </div>
         
+        <!-- Actions -->
         <div class="welcome-popup-actions">
-            <button class="btn btn-primary welcome-btn" onclick="closeWelcomePopup()">
-                🚀 Let's Go!
+            <button class="welcome-btn primary" onclick="closeWelcomePopup()">
+                <i class="fa-solid fa-rocket"></i> Let's Go!
             </button>
             <label class="dont-show-again">
                 <input type="checkbox" id="dont-show-checkbox">
                 <span>Don't show again</span>
             </label>
         </div>
+        
     </div>
 </div>
-    <div class="trial-badge hidden" id="trial-badge">⚠️ FREE TRIAL - No Rewards</div>
+    
+        
+    </div>
+</div>
     <!-- Pokemon Style Animated Background -->
     <div class="bg-animation">
         <div class="orb orb-1"></div>
@@ -5649,7 +6532,7 @@ footer {
 <div class="game-wrapper">
         <!-- Game Mechanics Section -->
 <section class="how-to-play" id="how-to-play">
-    <h2 class="section-title">📖 How To <span class="highlight">Play</span></h2>
+    <h2 class="section-title"><i data-lucide="book-open"></i> How To <span class="highlight">Play</span></h2>
     
     <div class="guide-container">
         <!-- Step by Step -->
@@ -5689,7 +6572,7 @@ footer {
             <!-- Type Advantages -->
             <div class="guide-card">
                 <div class="card-header">
-                    <span class="card-icon">🔥</span>
+                    <span class="card-icon"><i data-lucide="flame"></i></span>
                     <h3>Type Advantages</h3>
                 </div>
                 <div class="type-matchups">
@@ -5705,7 +6588,7 @@ footer {
             <!-- Rewards -->
             <div class="guide-card rewards-card">
                 <div class="card-header">
-                    <span class="card-icon">💰</span>
+                    <span class="card-icon"><i data-lucide="coins"></i></span>
                     <h3>Rewards</h3>
                 </div>
                 <div class="rewards-list">
@@ -5715,11 +6598,11 @@ footer {
                     </div>
                     <div class="reward-item bonus">
                         <span class="reward-value">x2</span>
-                        <span class="reward-label">Shiny enemy bonus ✨</span>
+                        <span class="reward-label">Shiny enemy bonus <i data-lucide="sparkles"></i></span>
                     </div>
                     <div class="reward-item bonus">
                         <span class="reward-value">x1.5</span>
-                        <span class="reward-label">5+ win streak 🔥</span>
+                        <span class="reward-label">5+ win streak <i data-lucide="flame"></i></span>
                     </div>
                     <div class="reward-item danger">
                         <span class="reward-value">-10%</span>
@@ -5731,18 +6614,130 @@ footer {
         
         <!-- Pro Tips -->
         <div class="pro-tips">
-            <h3>⚡ Pro Tips</h3>
+            <h3><i data-lucide="zap"></i> Pro Tips</h3>
             <div class="tips-grid">
-                <div class="tip">💎 Use super effective moves for 2x damage</div>
-                <div class="tip">⚡ Speedsters attack first - great for finishing enemies</div>
-                <div class="tip">🛡️ Tanks survive longer but deal less damage</div>
-                <div class="tip">✨ Shiny enemies are rare - worth double rewards!</div>
+                <div class="tip"><i data-lucide="gem"></i> Use super effective moves for 2x damage</div>
+                <div class="tip"><i data-lucide="zap"></i> Speedsters attack first - great for finishing enemies</div>
+                <div class="tip"><i data-lucide="shield"></i> Tanks survive longer but deal less damage</div>
+                <div class="tip"><i data-lucide="sparkles"></i> Shiny enemies are rare - worth double rewards!</div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Leaderboard Coming Soon - Horizontal -->
+<section class="leaderboard-section" id="leaderboard">
+    <div class="leaderboard-container">
+        
+        <!-- Left Side - Main Info -->
+        <div class="lb-left">
+            <div class="lb-title-row">
+                <span class="lb-trophy"><i data-lucide="trophy"></i></span>
+                <h2>Leaderboard</h2>
+                <span class="lb-badge">Coming Soon</span>
+            </div>
+            
+            <p class="lb-description">
+                Compete with players worldwide! Track your wins, build streaks, 
+                and climb to the top. The best players earn exclusive rewards.
+            </p>
+            
+            <div class="lb-stats-preview">
+                <div class="lb-stat">
+                    <span class="stat-icon"><i data-lucide="users"></i></span>
+                    <span class="stat-value">1,000+</span>
+                    <span class="stat-label">Players Expected</span>
+                </div>
+                <div class="lb-stat">
+                    <span class="stat-icon"><i data-lucide="gem"></i></span>
+                    <span class="stat-value">50,000</span>
+                    <span class="stat-label">$PUMP Prize Pool</span>
+                </div>
+                <div class="lb-stat">
+                    <span class="stat-icon"><i data-lucide="calendar"></i></span>
+                    <span class="stat-value">Weekly</span>
+                    <span class="stat-label">Rewards Reset</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Center - Features -->
+        <div class="lb-center">
+            <div class="lb-rocket"><i data-lucide="rocket"></i></div>
+            <h3>Features</h3>
+            
+            <div class="lb-features">
+                <div class="lb-feature">
+                    <div class="feature-icon"><i data-lucide="medal"></i></div>
+                    <div class="feature-info">
+                        <h4>Top Players</h4>
+                        <p>See who dominates the arena</p>
+                    </div>
+                </div>
+                <div class="lb-feature">
+                    <div class="feature-icon"><i data-lucide="flame"></i></div>
+                    <div class="feature-info">
+                        <h4>Win Streaks</h4>
+                        <p>Longest streaks get bonus rewards</p>
+                    </div>
+                </div>
+                <div class="lb-feature">
+                    <div class="feature-icon"><i data-lucide="coins"></i></div>
+                    <div class="feature-info">
+                        <h4>Top Earners</h4>
+                        <p>Track total $PUMP earned</p>
+                    </div>
+                </div>
+                <div class="lb-feature">
+                    <div class="feature-icon"><i data-lucide="swords"></i></div>
+                    <div class="feature-info">
+                        <h4>Battle Stats</h4>
+                        <p>Win rate, favorite fighters</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side - CTA -->
+        <div class="lb-right">
+            <div class="lb-notify-box">
+                <div class="notify-icon"><i data-lucide="bell"></i></div>
+                <h3>Get Notified</h3>
+                <p>Be the first to know when leaderboard launches!</p>
+                
+                <div class="lb-social-buttons">
+                    <a href="https://x.com/i/communities/2015567621471789205" target="_blank" class="social-btn twitter">
+                        <span><i data-lucide="twitter"></i></span>
+                        <span>Follow on Twitter</span>
+                    </a>
+                </div>
+                
+                <div class="lb-countdown">
+                    <p>Estimated Launch</p>
+                    <div class="countdown-display">
+                        <div class="countdown-item">
+                            <span class="countdown-num">1</span>
+                            <span class="countdown-label">Days</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-num">06</span>
+                            <span class="countdown-label">Hours</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-num">32</span>
+                            <span class="countdown-label">Mins</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
 <div class="character-select-section" id="character-select">
-    <h3 class="select-title">⚔️ Choose Your Fighter</h3>
+    <h3 class="select-title">⚔️ Choose Your PAL</h3>
     <p class="select-subtitle">Select a character to enter battle</p>
     
     <div class="select-card-fan">
@@ -5793,7 +6788,7 @@ footer {
     </div>
     
     <button class="btn btn-primary btn-confirm-select" id="confirm-character" disabled>
-        🎮 Confirm Selection
+         Confirm Selection
     </button>
 </div>
 <!-- Pay to Play Modal -->
@@ -5862,42 +6857,43 @@ footer {
         <h3 class="pay-overlay-title">Pay to Play</h3>
         
         <!-- Two Columns -->
-        <div class="pay-columns">
-            <!-- Left Column -->
-            <div class="pay-column-left">
-                <div class="pay-overlay-fee">
-                    <span class="pay-fee-value">1000</span>
-                    <span class="pay-fee-currency">$PUMP</span>
-                </div>
-                
-                <div class="token-info-box">
-                    <p class="token-name">Token: <strong>Pumpmon (PUMP)</strong></p>
-                    <p class="token-fee">+ ~0.002 SOL network fee</p>
-                </div>
-                
-                <div class="pay-overlay-rewards">
-                    <span>🏆 Earn $PALS</span>
-                    <span>🔥 Win Streaks</span>
-                    <span>✨ Shiny Encounters</span>
-                </div>
-            </div>
-            
-            <!-- Right Column -->
-            <div class="pay-column-right">
-                <div class="wallet-warning">
-                    <p>⚠️ New wallets: Phantom may show "Unknown token"<br>
-                    This is normal - you are sending 1,000 PALS</p>
-                </div>
-                
-                <a href="https://solscan.io/token/BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump" 
-                   target="_blank" 
-                   class="verify-link">
-                    🔍 Click to Verify Token on Solscan
-                </a>
-                
-                <span id="wallet-status">Wallet not connected</span>
-            </div>
+<div class="pay-columns">
+    <!-- Left Column -->
+    <div class="pay-column-left">
+        <div class="pay-overlay-fee">
+            <span class="pay-fee-value">1000</span>
+            <span class="pay-fee-currency">$PUMP</span>
         </div>
+        
+        <div class="token-info-box">
+            <p class="token-name">Token: <strong>Pumpmon (PUMP)</strong></p>
+            <p class="token-fee">+ ~0.002 SOL network fee</p>
+        </div>
+        
+        <div class="pay-overlay-rewards">
+            <span><i data-lucide="trophy"></i> Earn $PALS</span>
+            <span><i data-lucide="flame"></i> Win Streaks</span>
+            <span><i data-lucide="sparkles"></i> Shiny Encounters</span>
+        </div>
+    </div>
+    
+    <!-- Right Column -->
+    <div class="pay-column-right">
+        <div class="wallet-warning">
+            <span class="warning-icon"><i data-lucide="alert-triangle"></i></span>
+            <p>New wallets: Phantom may show "Unknown token"<br>
+            This is normal - you are sending 1,000 PUMP</p>
+        </div>
+        
+        <a href="https://solscan.io/token/BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump" 
+           target="_blank" 
+           class="verify-link">
+            <i data-lucide="search"></i> Click to Verify Token on Solscan
+        </a>
+        
+        <span id="wallet-status"><i data-lucide="wallet"></i> Wallet not connected</span>
+    </div>
+</div>
         
         <!-- Buttons at Bottom -->
         <div class="pay-buttons">
@@ -6034,30 +7030,33 @@ footer {
     </section>
 </div>
 
-    <!-- How It Works -->
-    <section class="how-it-works" id="how">
-        <div class="how-container">
-            <h2 class="section-title">How It <span class="highlight">Works</span></h2>
-            
-            <div class="steps">
-                <div class="step">
-                    <img src="assets/images/logo.png" alt="PumpPals" class="pay-overlay-logo">
-                    <h3 class="step-title">1. Choose Your Fighter</h3>
-                    <p class="step-desc">Pick from 6 iconic memecoin characters, each with unique stats and moves.</p>
-                </div>
-                <div class="step">
-                    <span class="step-icon">⚔️</span>
-                    <h3 class="step-title">2. Battle Opponents</h3>
-                    <p class="step-desc">Fight in turn-based Pokemon-style combat. Use strategy to defeat enemies.</p>
-                </div>
-                <div class="step">
-                    <span class="step-icon">💰</span>
-                    <h3 class="step-title">3. Earn $PALS</h3>
-                    <p class="step-desc">Win battles to earn $PALS tokens. The more you win, the more you earn.</p>
-                </div>
+<!-- How It Works -->
+<section class="how-it-works" id="how">
+    <div class="how-container">
+        <h2 class="section-title">How It <span class="highlight">Works</span></h2>
+        
+        <div class="steps">
+            <div class="step">
+                <span class="step-icon"><i data-lucide="users"></i></span>
+                <h3 class="step-title">1. Choose Your PALS</h3>
+                <p class="step-desc">Pick from 11 iconic memecoin characters, each with unique stats and moves.</p>
+            </div>
+            <div class="step">
+                <span class="step-icon"><i data-lucide="swords"></i></span>
+                <h3 class="step-title">2. Battle Opponents</h3>
+                <p class="step-desc">Fight in turn-based Pokemon-style combat. Use strategy to defeat enemies.</p>
+            </div>
+            <div class="step">
+                <span class="step-icon"><i data-lucide="coins"></i></span>
+                <h3 class="step-title">3. Earn $PALS</h3>
+                <p class="step-desc">Win battles to earn $PALS tokens. The more you win, the more you earn.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+
+    
 
 <!-- Admin Panel -->
 <section id="admin-panel" style="display: none; padding: 40px 20px; background: rgba(0,0,0,0.95); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999; overflow-y: auto;">
@@ -8679,6 +9678,7 @@ const CardShuffler = {
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     CardShuffler.init();
+    lucide.createIcons();
 });
     
     // ========== SMART AI ==========
@@ -9510,7 +10510,46 @@ document.addEventListener('keydown', (e) => {
         closeCardPreview();
     }
 });
+// Initialize Lucide icons
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+});
+/* ================================
+   NAVIGATION FADE ON SCROLL
+   ================================ */
+const NavScroll = {
+    nav: null,
+    lastScrollY: 0,
+    scrollThreshold: 100, // Start fading after 100px scroll
+    
+    init() {
+        this.nav = document.querySelector('nav');
+        if (!this.nav) return;
+        
+        window.addEventListener('scroll', () => this.onScroll());
+        console.log('📜 Nav scroll initialized');
+    },
+    
+    onScroll() {
+        const currentScrollY = window.scrollY;
+        
+        // Scrolling down & past threshold = hide
+        if (currentScrollY > this.lastScrollY && currentScrollY > this.scrollThreshold) {
+            this.nav.classList.add('nav-hidden');
+        } 
+        // Scrolling up = show
+        else {
+            this.nav.classList.remove('nav-hidden');
+        }
+        
+        this.lastScrollY = currentScrollY;
+    }
+};
 
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    NavScroll.init();
+});
 </script>
 </body>
 </html>
