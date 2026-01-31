@@ -10088,42 +10088,44 @@ const PayToPlay = {
     TREASURY_WALLET: '6noD4mwg8kzpVsJ4X2DaZz4yEvEGUCKpzx1o6NZARGAS',
     hasPaid: false,
     isTrialMode: false,
-    // Will be set dynamically
-    TOKEN_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
+    
+    // Both program IDs
+    TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', // Regular SPL
+    TOKEN_2022_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb', // Token 2022
     ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 
-init() {
-    this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
-    this.isTrialMode = sessionStorage.getItem('pumpmon_trial') === 'true';
-    this.updateUI();
-    
-    if (this.hasPaid || this.isTrialMode) {
-        CharacterSelect.show();
-    }
-},
-
-updateUI() {
-    const overlay = document.getElementById('pay-overlay');
-    const trialBadge = document.getElementById('trial-badge');
-    
-    if (overlay) {
+    init() {
+        this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
+        this.isTrialMode = sessionStorage.getItem('pumpmon_trial') === 'true';
+        this.updateUI();
+        
         if (this.hasPaid || this.isTrialMode) {
-            overlay.classList.add('hidden');
-        } else {
-            overlay.classList.remove('hidden');
+            CharacterSelect.show();
         }
-    }
-    
-    if (trialBadge) {
-        if (this.isTrialMode && !this.hasPaid) {
-            trialBadge.classList.remove('hidden');
-        } else {
-            trialBadge.classList.add('hidden');
+    },
+
+    updateUI() {
+        const overlay = document.getElementById('pay-overlay');
+        const trialBadge = document.getElementById('trial-badge');
+        
+        if (overlay) {
+            if (this.hasPaid || this.isTrialMode) {
+                overlay.classList.add('hidden');
+            } else {
+                overlay.classList.remove('hidden');
+            }
         }
-    }
-    
-    this.updateWalletStatus();
-},
+        
+        if (trialBadge) {
+            if (this.isTrialMode && !this.hasPaid) {
+                trialBadge.classList.remove('hidden');
+            } else {
+                trialBadge.classList.add('hidden');
+            }
+        }
+        
+        this.updateWalletStatus();
+    },
 
     updateWalletStatus() {
         const statusEl = document.getElementById('wallet-status');
@@ -10138,17 +10140,19 @@ updateUI() {
             statusEl.classList.remove('connected');
         }
     },
-startFreeTrial() {
-    this.isTrialMode = true;
-    this.hasPaid = false;
-    sessionStorage.setItem('pumpmon_trial', 'true');
-    sessionStorage.removeItem('pumpmon_paid');
-    
-    this.updateUI();
-    CharacterSelect.show();
-    
-    alert('🎮 FREE TRIAL MODE\n\nYou can play and practice, but you won\'t earn any $PALS rewards.\n\nPay 1000 $PALS to unlock full rewards!');
-},
+
+    startFreeTrial() {
+        this.isTrialMode = true;
+        this.hasPaid = false;
+        sessionStorage.setItem('pumpmon_trial', 'true');
+        sessionStorage.removeItem('pumpmon_paid');
+        
+        this.updateUI();
+        CharacterSelect.show();
+        
+        alert('🎮 FREE TRIAL MODE\n\nYou can play and practice, but you won\'t earn any $PALS rewards.\n\nPay 1000 $PALS to unlock full rewards!');
+    },
+
     async getATA(mint, owner, tokenProgramId) {
         const [ata] = await solanaWeb3.PublicKey.findProgramAddress(
             [
@@ -10174,7 +10178,7 @@ startFreeTrial() {
         return new solanaWeb3.TransactionInstruction({
             keys,
             programId: new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID),
-            data: new Uint8Array([]),
+            data: new Uint8Array([1]), // Use CreateIdempotent (1) instead of Create (0)
         });
     },
 
@@ -10186,7 +10190,7 @@ startFreeTrial() {
         ];
 
         const data = new Uint8Array(9);
-        data[0] = 3;
+        data[0] = 3; // Transfer instruction
 
         const bigAmount = BigInt(amount);
         for (let i = 0; i < 8; i++) {
@@ -10202,8 +10206,10 @@ startFreeTrial() {
 
     async payEntryFee() {
         const btn = document.getElementById('pay-overlay-btn');
-        btn.classList.add('loading');
-        btn.disabled = true;
+        if (btn) {
+            btn.classList.add('loading');
+            btn.disabled = true;
+        }
 
         try {
             if (!window.solana || !window.solana.isPhantom) {
@@ -10215,7 +10221,7 @@ startFreeTrial() {
             this.updateWalletStatus();
 
             const connection = new solanaWeb3.Connection(
-                'https://mainnet.helius-rpc.com/?api-key=0ea2da5a-4e36-4ade-ab94-23e0c4b171e9',
+                'https://mainnet.helius-rpc.com/?api-key=82dfe3db-e941-4299-b074-732540b89751',
                 'confirmed'
             );
 
@@ -10224,9 +10230,27 @@ startFreeTrial() {
             const senderPubkey = resp.publicKey;
 
             // 🔍 AUTO-DETECT TOKEN PROGRAM FROM MINT ACCOUNT
-// Use hardcoded Token 2022 program (skip network call)
-const tokenProgramId = this.TOKEN_PROGRAM_ID;
-console.log('Token Program:', tokenProgramId);
+            console.log('Fetching mint account to detect token program...');
+            const mintAccount = await connection.getAccountInfo(mintPubkey);
+            
+            if (!mintAccount) {
+                throw new Error('Token mint not found! Check TOKEN_MINT address.');
+            }
+            
+            const mintOwner = mintAccount.owner.toBase58();
+            console.log('Mint owner (token program):', mintOwner);
+            
+            let tokenProgramId;
+            if (mintOwner === this.TOKEN_2022_PROGRAM_ID) {
+                tokenProgramId = this.TOKEN_2022_PROGRAM_ID;
+                console.log('✅ Using Token 2022 Program');
+            } else if (mintOwner === this.TOKEN_PROGRAM_ID) {
+                tokenProgramId = this.TOKEN_PROGRAM_ID;
+                console.log('✅ Using Regular SPL Token Program');
+            } else {
+                throw new Error('Unknown token program: ' + mintOwner);
+            }
+
             // Get ATAs using detected program
             const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
             const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
@@ -10234,7 +10258,28 @@ console.log('Token Program:', tokenProgramId);
             console.log('Sender ATA:', senderATA.toString());
             console.log('Treasury ATA:', treasuryATA.toString());
 
+            // Check if sender has token account
+            const senderAccount = await connection.getAccountInfo(senderATA);
+            if (!senderAccount) {
+                throw new Error('You don\'t have any of this token. Please buy some first!');
+            }
+
+            // Check balance
+            const balanceInfo = await connection.getTokenAccountBalance(senderATA);
+            const balance = balanceInfo.value.uiAmount;
+            console.log('Your balance:', balance);
+            
+            if (balance < this.ENTRY_FEE) {
+                throw new Error(`Insufficient balance. You have ${balance} but need ${this.ENTRY_FEE}`);
+            }
+
             const transaction = new solanaWeb3.Transaction();
+
+            // Add compute budget for better success rate
+            transaction.add(
+                solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({ units: 200000 }),
+                solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 50000 })
+            );
 
             // Check if treasury token account exists
             const treasuryAccount = await connection.getAccountInfo(treasuryATA);
@@ -10247,23 +10292,40 @@ console.log('Token Program:', tokenProgramId);
 
             // Add transfer
             const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
+            console.log('Transfer amount (raw):', amount);
+            
             transaction.add(
                 this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
             );
 
             transaction.feePayer = senderPubkey;
-            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
+            
+            // Get blockhash with retry
+            let blockhash, lastValidBlockHeight;
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const result = await connection.getLatestBlockhash('confirmed');
+                    blockhash = result.blockhash;
+                    lastValidBlockHeight = result.lastValidBlockHeight;
+                    break;
+                } catch (e) {
+                    console.log(`Blockhash attempt ${i + 1} failed, retrying...`);
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+            
             transaction.recentBlockhash = blockhash;
 
             const signed = await window.solana.signTransaction(transaction);
             
             const signature = await connection.sendRawTransaction(signed.serialize(), {
-                skipPreflight: false,
+                skipPreflight: true, // Skip preflight to avoid simulation errors
                 maxRetries: 5,
                 preflightCommitment: 'confirmed'
             });
 
             console.log('Transaction sent:', signature);
+            console.log('View on Solscan: https://solscan.io/tx/' + signature);
 
             const confirmation = await connection.confirmTransaction({
                 signature,
@@ -10275,10 +10337,12 @@ console.log('Token Program:', tokenProgramId);
                 throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
             }
 
-            console.log('Payment successful:', signature);
+            console.log('✅ Payment successful:', signature);
 
             this.hasPaid = true;
+            this.isTrialMode = false;
             sessionStorage.setItem('pumpmon_paid', 'true');
+            sessionStorage.removeItem('pumpmon_trial');
             this.updateUI();
 
             CharacterSelect.show();
@@ -10289,21 +10353,22 @@ console.log('Token Program:', tokenProgramId);
             console.error('Payment failed:', error);
             alert('Payment failed: ' + error.message);
         } finally {
-            btn.classList.remove('loading');
-            btn.disabled = false;
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
         }
     },
 
-reset() {
-    this.hasPaid = false;
-    this.isTrialMode = false;
-    sessionStorage.removeItem('pumpmon_paid');
-    sessionStorage.removeItem('pumpmon_trial');
-    CharacterSelect.hide();
-    this.updateUI();
-}
+    reset() {
+        this.hasPaid = false;
+        this.isTrialMode = false;
+        sessionStorage.removeItem('pumpmon_paid');
+        sessionStorage.removeItem('pumpmon_trial');
+        CharacterSelect.hide();
+        this.updateUI();
+    }
 };
-
 function payEntryFee() {
     PayToPlay.payEntryFee();
 }
