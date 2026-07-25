@@ -6466,6 +6466,12 @@ footer {
                 Join The Adventure <img class="rh-icon" src="assets/images/rh.png" alt="Robinhood Chain">
             </a>
         </div>
+    
+        <div class="hero-ca-container" aria-label="Contract address">
+            <span class="ca-label">CA</span>
+            <span class="ca-address" id="ca-address">0x0000000000000000000000000000000000000000</span>
+            <button type="button" class="ca-copy" onclick="copyCA()" aria-label="Copy contract address"><i data-lucide="copy"></i></button>
+        </div>
     </section>
 
     <section class="cards-page" id="pals-cards">
@@ -8378,12 +8384,20 @@ onLose() {
     }
 
     function copyCA() {
-        const ca = document.getElementById('ca-address').textContent;
-        navigator.clipboard.writeText(ca);
-        
+        const caEl = document.getElementById('ca-address');
         const btn = document.querySelector('.ca-copy');
-        btn.textContent = '✅';
-        setTimeout(() => btn.textContent = '📋', 1500);
+        if (!caEl) return;
+
+        navigator.clipboard.writeText(caEl.textContent.trim());
+
+        if (btn) {
+            const original = btn.innerHTML;
+            btn.textContent = 'Copied';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                if (window.lucide) lucide.createIcons();
+            }, 1500);
+        }
     }
 
     function closeWalletModal() {
@@ -10081,6 +10095,62 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <style id="robinhood-chain-colors">
+.hero-ca-container {
+    position: absolute;
+    right: clamp(24px, 8vw, 150px);
+    bottom: 92px;
+    width: min(56vw, 720px);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(0, 19, 20, 0.72);
+    border: 1px solid rgba(199, 255, 0, 0.42);
+    border-radius: 8px;
+    box-shadow: 0 0 24px rgba(199, 255, 0, 0.16);
+    backdrop-filter: blur(8px);
+}
+.hero-ca-container .ca-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.72rem;
+    color: var(--primary);
+}
+.hero-ca-container .ca-address {
+    color: #f5ffe8;
+    font-family: monospace;
+    font-size: clamp(0.78rem, 1.2vw, 1rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.hero-ca-container .ca-copy {
+    min-width: 42px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--primary);
+    color: #001314;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.hero-ca-container .ca-copy svg {
+    width: 17px;
+    height: 17px;
+}
+.hero-ca-container .ca-copy:hover {
+    box-shadow: 0 0 16px rgba(199, 255, 0, 0.38);
+}
+@media (max-width: 900px) {
+    .hero-ca-container {
+        position: static;
+        width: min(100%, 720px);
+        margin-top: 22px;
+    }
+}
 .nav-wallet {
     display: inline-flex !important;
     align-items: center;
