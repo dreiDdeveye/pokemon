@@ -6,23 +6,8 @@
     <title>$PALS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Add these CDN scripts to your HTML head -->
-     <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
      <link rel="stylesheet" href="pay-modal.css"> 
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-<script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
-<!-- Solana Web3 -->
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-
-<!-- SPL Token - Use this CDN -->
-<script src="https://unpkg.com/@solana/spl-token@0.3.7/lib/index.iife.js"></script>
-
-<!-- Solana Pay -->
-<script src="https://unpkg.com/@solana/pay@latest/dist/index.iife.js"></script>
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-<!-- BigNumber (required for Solana Pay) -->
-<script src="https://unpkg.com/bignumber.js@latest/bignumber.min.js"></script>
-<script src="https://unpkg.com/@solana/spl-token@0.3.8/lib/index.iife.min.js"></script>
 <style>
 
 /* Section Title Icon */
@@ -1046,7 +1031,7 @@ nav.nav-hidden:hover {
     padding: 10px 16px;
 }
 
-.btn-wallet .solana-logo {
+.btn-wallet .wallet-logo {
     flex-shrink: 0;
 }
 
@@ -1092,6 +1077,7 @@ nav.nav-hidden:hover {
     z-index: -2;
 }
 
+
 .hero::after {
     content: '';
     position: absolute;
@@ -1119,7 +1105,7 @@ nav.nav-hidden:hover {
     margin-bottom: 24px;
 }
 
-.hero-badge .solana-logo-small {
+.hero-badge .chain-logo-small {
     flex-shrink: 0;
 }
 
@@ -2937,7 +2923,7 @@ nav.nav-hidden:hover {
     color: var(--primary);
 }
 
-#pumpmon-balance {
+#pals-balance {
     color: #fff;
     font-weight: bold;
 }
@@ -6273,7 +6259,7 @@ footer {
         
         <!-- Header -->
         <div class="welcome-popup-header">
-            <h2>Welcome to PumpPals!</h2>
+            <h2>Welcome to PonsPals!</h2>
             <p class="welcome-tagline">The Ultimate Memecoin Battle Arena</p>
         </div>
         
@@ -6438,8 +6424,8 @@ footer {
     <!-- Navigation -->
     <nav>
         <div class="logo">
-            <img src="assets/images/logo.png" alt="PumpFighters Logo" class="logo-img" onerror="this.style.display='none'">
-            <span class="logo-text">$PUMPPALS</span>
+            <img src="assets/images/logo.png" alt="PonsPals Logo" class="logo-img" onerror="this.style.display='none'">
+            <span class="logo-text">PonsPals</span>
         </div>
         
         <!-- Hamburger Menu Button -->
@@ -6450,37 +6436,41 @@ footer {
         </button>
         
         <div class="nav-links" id="nav-links">
-            <!-- Add this where you want to show the token balance -->
-
-            <a href="#game">Play</a>
-            <a href="#how">How It Works</a>
-            <button class="music-btn" id="music-btn" onclick="toggleMusic()">🎵</button>
-            <button class="btn btn-wallet" id="wallet-btn" onclick="connectWallet()">
-                <svg class="solana-logo" width="18" height="18" viewBox="0 0 397.7 311.7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z" fill="#00FFA3"/>
-                    <path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z" fill="#00FFA3"/>
-                    <path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" fill="#00FFA3"/>
-                </svg>
-                <span id="wallet-text">Connect Wallet</span>
-            </button>
-            <a href="#" class="btn btn-primary">Buy $PALS</a>
-            <div id="token-balance-display" class="token-balance-display" style="display: none;">
-    💎 $PALS: <span id="pumpmon-balance">0</span>
-</div>
+            <a href="#" class="active">Home</a>
+            <a href="#how">About</a>
+            <a href="#game">Gameplay</a>
+            <a href="#pals-cards">Pals</a>
+            <a href="#roadmap">Roadmap</a>
+            <a href="#how">FAQ</a>
+            <button class="music-btn" id="music-btn" onclick="toggleMusic()" aria-label="Toggle music"><i data-lucide="volume-2"></i></button>
+            <button class="btn btn-wallet nav-wallet" id="wallet-btn" onclick="connectWallet()"><img class="wallet-logo metamask-logo" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23f6851b%22/%3E%3Cpath d=%22M12 15l17 13-4-12zm40 0L35 28l4-12z%22 fill=%22%23e2761b%22/%3E%3Cpath d=%22M16 39l8-18 8 8-2 23zm32 0l-8-18-8 8 2 23z%22 fill=%22%23f6851b%22/%3E%3Cpath d=%22M24 21l8 8 8-8-2 17H26z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M20 39l10-1-4 6zm24 0l-10-1 4 6z%22 fill=%22%23fff%22/%3E%3Cpath d=%22M30 47h4l5-5-7 2-7-2z%22 fill=%22%23d6d9dc%22/%3E%3Cpath d=%22M12 15l9 26-5 14 14-8-6-26zm40 0l-9 26 5 14-14-8 6-26z%22 fill=%22%237638d4%22 opacity=%22.28%22/%3E%3C/svg%3E" alt="MetaMask" width="18" height="18"><span id="wallet-text">Connect Wallet</span></button>
+            <a href="https://x.com/ponspals" target="_blank" rel="noopener" class="social-icon-btn" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://x.com/ponspals" target="_blank" rel="noopener" class="btn btn-primary join-x-community"><img class="rh-icon" src="assets/images/rh.png" alt="Robinhood Chain"> Join Community</a>
         </div>
     </nav>
 
     <!-- Hero -->
     <section class="hero">
         <h1 class="hero-title">
-            Battle Memecoins.<br>
-            <span class="highlight">Win $PALS.</span>
+            Play. Battle.<br>
+            <span class="highlight">Earn. Together.</span>
         </h1>
         
         <p class="hero-subtitle">
-            Choose your favorite memecoin character and battle in Pokemon-style combat. 
-            Every victory earns you $PALS tokens.
+            PonsPals is the first Play-to-Earn adventure on <span class="highlight">Robinhood Chain</span>.<br>
+            Explore a vast open world, collect unique Pals, battle epic enemies, and earn real rewards.
         </p>
+
+        <div class="cta-buttons hero-actions">
+            <a href="https://ponsfamily.com/" target="_blank" rel="noopener" class="btn btn-primary join-adventure-btn">
+                Join The Adventure <img class="rh-icon" src="assets/images/rh.png" alt="Robinhood Chain">
+            </a>
+        </div>
+    </section>
+
+    <section class="cards-page" id="pals-cards">
+        <div class="cards-page-inner">
+            <h2 class="section-title">Choose Your <span class="highlight">Pals</span></h2>
 <div class="card-fan">
     <div class="char-avatar" onclick="openCardPreview('assets/images/characters/panguincard.png', 'PENGUIN')">
         <img src="assets/images/characters/panguincard.png" alt="Penguin">
@@ -6517,207 +6507,24 @@ footer {
     </div>
 </div>
 
-
         <div class="cta-buttons">
-            <button class="btn btn-secondary" onclick="scrollToGame()">⚔️ Quick Battle</button>
+            <button class="btn btn-secondary" onclick="scrollToGame()"><i data-lucide="swords"></i> Quick Battle</button>
         </div>
-        
-        <div class="ca-container">
-            <span class="ca-label">CA:</span>
-            <span class="ca-address" id="ca-address">Apm6HSvbsD4f5LiHqHMzt2QguGnJCcCMr9fJ5KKupump</span>
-            <button class="ca-copy" onclick="copyCA()">📋</button>
         </div>
     </section>
 
     <!-- Game Section -->
 <div class="game-wrapper">
         <!-- Game Mechanics Section -->
-<section class="how-to-play" id="how-to-play">
-    <h2 class="section-title"><i data-lucide="book-open"></i> How To <span class="highlight">Play</span></h2>
-    
-    <div class="guide-container">
-        <!-- Step by Step -->
-        <div class="guide-steps">
-            <div class="guide-step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h4>Choose Your Fighter</h4>
-                    <p>Pick from 11 unique memecoin characters, each with special moves and stats</p>
-                </div>
-            </div>
-            <div class="guide-step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h4>Battle Enemies</h4>
-                    <p>Use attacks, heals, and boosts strategically to defeat wild opponents</p>
-                </div>
-            </div>
-            <div class="guide-step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h4>Earn $PALS</h4>
-                    <p>Win battles to earn tokens. Build streaks for bonus rewards!</p>
-                </div>
-            </div>
-            <div class="guide-step">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <h4>Claim Rewards</h4>
-                    <p>Connect wallet and claim your earned $PALS tokens anytime</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Info Cards -->
-        <div class="guide-cards">
-            <!-- Type Advantages -->
-            <div class="guide-card">
-                <div class="card-header">
-                    <span class="card-icon"><i data-lucide="flame"></i></span>
-                    <h3>Type Advantages</h3>
-                </div>
-                <div class="type-matchups">
-                    <div class="matchup"><span class="type-badge water">WATER</span> <span class="beats">→</span> <span class="type-badge fire">FIRE</span> <span class="type-badge rock">ROCK</span></div>
-                    <div class="matchup"><span class="type-badge fire">FIRE</span> <span class="beats">→</span> <span class="type-badge grass">GRASS</span> <span class="type-badge ice">ICE</span></div>
-                    <div class="matchup"><span class="type-badge grass">GRASS</span> <span class="beats">→</span> <span class="type-badge water">WATER</span> <span class="type-badge rock">ROCK</span></div>
-                    <div class="matchup"><span class="type-badge electric">ELEC</span> <span class="beats">→</span> <span class="type-badge water">WATER</span></div>
-                    <div class="matchup"><span class="type-badge ice">ICE</span> <span class="beats">→</span> <span class="type-badge grass">GRASS</span></div>
-                    <div class="matchup"><span class="type-badge psychic">PSYCHIC</span> <span class="beats">→</span> <span class="type-badge dark">DARK</span> <span class="immune">immune!</span></div>
-                </div>
-            </div>
-            
-            <!-- Rewards -->
-            <div class="guide-card rewards-card">
-                <div class="card-header">
-                    <span class="card-icon"><i data-lucide="coins"></i></span>
-                    <h3>Rewards</h3>
-                </div>
-                <div class="rewards-list">
-                    <div class="reward-item">
-                        <span class="reward-value">+100</span>
-                        <span class="reward-label">$PALS per win</span>
-                    </div>
-                    <div class="reward-item bonus">
-                        <span class="reward-value">x2</span>
-                        <span class="reward-label">Shiny enemy bonus <i data-lucide="sparkles"></i></span>
-                    </div>
-                    <div class="reward-item bonus">
-                        <span class="reward-value">x1.5</span>
-                        <span class="reward-label">5+ win streak <i data-lucide="flame"></i></span>
-                    </div>
-                    <div class="reward-item danger">
-                        <span class="reward-value">-10%</span>
-                        <span class="reward-label">tokens on loss</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pro Tips -->
-        <div class="pro-tips">
-            <h3><i data-lucide="zap"></i> Pro Tips</h3>
-            <div class="tips-grid">
-                <div class="tip"><i data-lucide="gem"></i> Use super effective moves for 2x damage</div>
-                <div class="tip"><i data-lucide="zap"></i> Speedsters attack first - great for finishing enemies</div>
-                <div class="tip"><i data-lucide="shield"></i> Tanks survive longer but deal less damage</div>
-                <div class="tip"><i data-lucide="sparkles"></i> Shiny enemies are rare - worth double rewards!</div>
-            </div>
-        </div>
-    </div>
+<section class="how-to-play image-section" id="how-to-play">
+    <img class="section-image" src="assets/pons/ChatGPT Image Jul 25, 2026, 09_27_23 PM.png" alt="How to play PonsPals">
 </section>
 
-<!-- Leaderboard Coming Soon - Horizontal -->
-<!-- Leaderboard Coming Soon - Horizontal -->
-<section class="leaderboard-section" id="leaderboard">
-    <div class="leaderboard-container">
-        
-        <!-- Left Side - Main Info -->
-        <div class="lb-left">
-            <div class="lb-title-row">
-                <span class="lb-trophy"><i data-lucide="trophy"></i></span>
-                <h2>Leaderboard</h2>
-                <span class="lb-badge">Coming Soon</span>
-            </div>
-            
-            <p class="lb-description">
-                Compete with players worldwide! Track your wins, build streaks, 
-                and climb to the top. The best players earn exclusive rewards.
-            </p>
-            
-            <div class="lb-stats-preview">
-                <div class="lb-stat">
-                    <span class="stat-icon"><i data-lucide="users"></i></span>
-                    <span class="stat-value">1,000+</span>
-                    <span class="stat-label">Players Expected</span>
-                </div>
-                <div class="lb-stat">
-                    <span class="stat-icon"><i data-lucide="gem"></i></span>
-                    <span class="stat-value">50,000</span>
-                    <span class="stat-label">$PALS Prize Pool</span>
-                </div>
-                <div class="lb-stat">
-                    <span class="stat-icon"><i data-lucide="calendar"></i></span>
-                    <span class="stat-value">Weekly</span>
-                    <span class="stat-label">Rewards Reset</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Center - Features -->
-        <div class="lb-center">
-            <div class="lb-rocket"><i data-lucide="rocket"></i></div>
-            <h3>Features</h3>
-            
-            <div class="lb-features">
-                <div class="lb-feature">
-                    <div class="feature-icon"><i data-lucide="medal"></i></div>
-                    <div class="feature-info">
-                        <h4>Top Players</h4>
-                        <p>See who dominates the arena</p>
-                    </div>
-                </div>
-                <div class="lb-feature">
-                    <div class="feature-icon"><i data-lucide="flame"></i></div>
-                    <div class="feature-info">
-                        <h4>Win Streaks</h4>
-                        <p>Longest streaks get bonus rewards</p>
-                    </div>
-                </div>
-                <div class="lb-feature">
-                    <div class="feature-icon"><i data-lucide="coins"></i></div>
-                    <div class="feature-info">
-                        <h4>Top Earners</h4>
-                        <p>Track total $PALS earned</p>
-                    </div>
-                </div>
-                <div class="lb-feature">
-                    <div class="feature-icon"><i data-lucide="swords"></i></div>
-                    <div class="feature-info">
-                        <h4>Battle Stats</h4>
-                        <p>Win rate, favorite fighters</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Right Side - CTA -->
-        <div class="lb-right">
-            <div class="lb-notify-box">
-                <div class="notify-icon"><i data-lucide="bell"></i></div>
-                <h3>Get Notified</h3>
-                <p>Be the first to know when leaderboard launches!</p>
-                
-                <div class="lb-social-buttons">
-                    <a href="https://x.com/i/communities/2015567621471789205" target="_blank" class="social-btn twitter">
-                        <span><i data-lucide="twitter"></i></span>
-                        <span>Follow on Twitter</span>
-                    </a>
-                </div>
-                
-            </div>
-        </div>
-        
-    </div>
+<section class="leaderboard-section image-section" id="leaderboard">
+    <img class="section-image" src="assets/pons/ChatGPT Image Jul 25, 2026, 09_30_14 PM.png" alt="PonsPals leaderboard">
+</section>
+<section class="roadmap-section image-section" id="roadmap">
+    <img class="section-image roadmap-image" src="assets/pons/ChatGPT Image Jul 25, 2026, 12_04_27 PM.png" alt="PonsPals roadmap">
 </section>
 
 
@@ -6786,7 +6593,7 @@ footer {
             <div class="fee-display">
                 <div class="fee-amount">
                     <span class="fee-value">0.001</span>
-                    <span class="fee-currency">SOL</span>
+                    <span class="fee-currency">ETH</span>
                 </div>
                 <div class="fee-label">Entry Fee</div>
             </div>
@@ -6831,65 +6638,14 @@ footer {
         <div class="battle-layout">
     <!-- PAY TO PLAY OVERLAY - Blocks the game -->
 <div class="pay-overlay" id="pay-overlay">
-    <div class="pay-overlay-content">
-        <img src="assets/images/logo.png" alt="PumpPals" style="
-    width: 150px;
-    height: auto;
-    display: block;
-    margin: 0 auto 10px;
-    filter: drop-shadow(0 0 15px rgba(255, 217, 61, 0.4));
-">
-        <h3 class="pay-overlay-title">Pay to Play</h3>
-        
-        <!-- Two Columns -->
-<div class="pay-columns">
-    <!-- Left Column -->
-    <div class="pay-column-left">
-        <div class="pay-overlay-fee">
-            <span class="pay-fee-value">1000</span>
-            <span class="pay-fee-currency">$PALS</span>
-        </div>
-        
-        <div class="token-info-box">
-            <p class="token-name">Token: <strong>Pumpmon (PUMP)</strong></p>
-            <p class="token-fee">+ ~0.002 SOL network fee</p>
-        </div>
-        
-        <div class="pay-overlay-rewards">
-            <span><i data-lucide="trophy"></i> Earn $PALS</span>
-            <span><i data-lucide="flame"></i> Win Streaks</span>
-            <span><i data-lucide="sparkles"></i> Shiny Encounters</span>
-        </div>
-    </div>
-    
-    <!-- Right Column -->
-    <div class="pay-column-right">
-        <div class="wallet-warning">
-            <span class="warning-icon"><i data-lucide="alert-triangle"></i></span>
-            <p>New wallets: Phantom may show "Unknown token"<br>
-            This is normal - you are sending 1,000 PUMP</p>
-        </div>
-        
-        <a href="https://solscan.io/token/Apm6HSvbsD4f5LiHqHMzt2QguGnJCcCMr9fJ5KKupump" 
-           target="_blank" 
-           class="verify-link">
-            <i data-lucide="search"></i> Click to Verify Token on Solscan
-        </a>
-    </div>
-</div>
-        
-        <!-- Buttons at Bottom -->
-        <div class="pay-buttons">
-            <button class="pay-overlay-btn" id="pay-overlay-btn" onclick="PayToPlay.payEntryFee()">
-                💰 Pay & Play
-            </button>
-            <button class="free-trial-btn" onclick="PayToPlay.startFreeTrial()">
-                🎮 Free Trial
-            </button>
+    <div class="pay-overlay-content pay-overlay-image-content">
+        <img class="pay-overlay-image" src="assets/pons/ChatGPT Image Jul 25, 2026, 09_34_28 PM.png" alt="Pay to play PonsPals">
+        <div class="pay-overlay-hit-areas">
+            <button type="button" class="pay-hit-area pay-hit-pay" id="pay-overlay-btn" onclick="PayToPlay.payEntryFee()" aria-label="Pay and play"></button>
+            <button type="button" class="pay-hit-area pay-hit-trial" onclick="PayToPlay.startFreeTrial()" aria-label="Free trial"></button>
         </div>
     </div>
 </div>
-    
     <!-- Left Side: Battle Arena -->
     <div class="battle-main">
         <div class="battle-arena" id="battle-arena">
@@ -7014,28 +6770,8 @@ footer {
 </div>
 
 <!-- How It Works -->
-<section class="how-it-works" id="how">
-    <div class="how-container">
-        <h2 class="section-title">How It <span class="highlight">Works</span></h2>
-        
-        <div class="steps">
-            <div class="step">
-                <span class="step-icon"><i data-lucide="users"></i></span>
-                <h3 class="step-title">1. Choose Your PALS</h3>
-                <p class="step-desc">Pick from 11 iconic memecoin characters, each with unique stats and moves.</p>
-            </div>
-            <div class="step">
-                <span class="step-icon"><i data-lucide="swords"></i></span>
-                <h3 class="step-title">2. Battle Opponents</h3>
-                <p class="step-desc">Fight in turn-based Pokemon-style combat. Use strategy to defeat enemies.</p>
-            </div>
-            <div class="step">
-                <span class="step-icon"><i data-lucide="coins"></i></span>
-                <h3 class="step-title">3. Earn $PALS</h3>
-                <p class="step-desc">Win battles to earn $PALS tokens. The more you win, the more you earn.</p>
-            </div>
-        </div>
-    </div>
+<section class="how-it-works image-section" id="how">
+    <img class="section-image" src="assets/pons/ChatGPT Image Jul 25, 2026, 09_37_22 PM.png" alt="How PonsPals works">
 </section>
 
 
@@ -7266,7 +7002,7 @@ footer {
     <!-- Wallet Connection Modal -->
     <div class="wallet-modal" id="wallet-modal">
         <div class="wallet-modal-content">
-            <h3 class="wallet-modal-title">Connect Wallet</h3>
+            <h3 class="wallet-modal-title">Connect MetaMask Wallet</h3>
             <div class="wallet-list" id="wallet-list">
                 <!-- Wallet options will be inserted here -->
             </div>
@@ -7401,7 +7137,7 @@ footer {
     }
             // Check wallet connection
             if (!WalletSystem.connected) {
-                this.showPopup('🔗 Connect wallet to earn $PALS!', 'warning');
+                this.showPopup('🔗 Connect MetaMask wallet to earn $PALS!', 'warning');
                 return 0;
             }
             
@@ -7828,7 +7564,7 @@ onLose() {
         // Game State
         state: {
             tickets: 1,
-            pumpmonBalance: 5000,
+            palsBalance: 5000,
             currentBiome: null,
             actionsLeft: 0,
             maxActions: 10,
@@ -8403,41 +8139,41 @@ onLose() {
         balance: 0,
         tokenBalance: 0,
         provider: null,
-        
-        tokenMint: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',
-        
+        chainId: null,
+        walletName: 'MetaMask',
+
         wallets: [
             {
-                name: 'Phantom',
-                icon: 'assets/images/phantom-logo.png',
+                name: 'MetaMask',
+                icon: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23f6851b%22/%3E%3Cpath d=%22M12 15l17 13-4-12zm40 0L35 28l4-12z%22 fill=%22%23e2761b%22/%3E%3Cpath d=%22M16 39l8-18 8 8-2 23zm32 0l-8-18-8 8 2 23z%22 fill=%22%23f6851b%22/%3E%3Cpath d=%22M24 21l8 8 8-8-2 17H26z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M20 39l10-1-4 6zm24 0l-10-1 4 6z%22 fill=%22%23fff%22/%3E%3Cpath d=%22M30 47h4l5-5-7 2-7-2z%22 fill=%22%23d6d9dc%22/%3E%3Cpath d=%22M12 15l9 26-5 14 14-8-6-26zm40 0l-9 26 5 14-14-8 6-26z%22 fill=%22%237638d4%22 opacity=%22.28%22/%3E%3C/svg%3E',
                 getProvider: () => {
-                    if ('phantom' in window) {
-                        const provider = window.phantom?.solana;
-                        if (provider?.isPhantom) {
-                            return provider;
-                        }
+                    if (!window.ethereum) return null;
+
+                    if (window.ethereum.providers?.length) {
+                        return window.ethereum.providers.find(provider => provider.isMetaMask) || null;
                     }
-                    return null;
+
+                    return window.ethereum.isMetaMask ? window.ethereum : null;
                 },
-                downloadUrl: 'https://phantom.app/'
-            },
+                downloadUrl: 'https://metamask.io/download/'
+            }
         ],
-        
+
         init() {
             const savedAddress = localStorage.getItem('walletAddress');
             if (savedAddress) {
                 setTimeout(() => this.checkExistingConnection(), 500);
             }
         },
-        
+
         async checkExistingConnection() {
             try {
                 const provider = this.wallets[0].getProvider();
-                if (provider) {
-                    const resp = await provider.connect({ onlyIfTrusted: true });
-                    if (resp.publicKey) {
-                        this.handleConnection(resp.publicKey.toString(), provider, 'Phantom');
-                    }
+                if (!provider?.request) return;
+
+                const accounts = await provider.request({ method: 'eth_accounts' });
+                if (accounts?.length) {
+                    this.handleConnection(accounts[0], provider, 'MetaMask');
                 }
             } catch (err) {
                 console.log('Auto-reconnect failed:', err.message);
@@ -8445,18 +8181,18 @@ onLose() {
                 localStorage.removeItem('walletName');
             }
         },
-        
+
         openModal() {
             const modal = document.getElementById('wallet-modal');
             const list = document.getElementById('wallet-list');
-            
+
             list.innerHTML = this.wallets.map(wallet => {
                 const provider = wallet.getProvider();
                 const isInstalled = !!provider;
-                
+
                 return `
                     <div class="wallet-option" onclick="WalletSystem.connectTo('${wallet.name}')">
-                        <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23AB9FF2%22 width=%2240%22 height=%2240%22 rx=%228%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2218%22>👻</text></svg>'">
+                        <img src="${wallet.icon}" alt="${wallet.name}">
                         <div class="wallet-option-info">
                             <div class="wallet-option-name">${wallet.name}</div>
                             <div class="wallet-option-desc">${isInstalled ? 'Click to connect' : 'Click to install'}</div>
@@ -8467,240 +8203,172 @@ onLose() {
                     </div>
                 `;
             }).join('');
-            
+
             modal.classList.add('show');
         },
-        
+
         closeModal() {
             document.getElementById('wallet-modal').classList.remove('show');
         },
-        
+
         async connectTo(walletName) {
             const wallet = this.wallets.find(w => w.name === walletName);
             if (!wallet) return;
-            
+
             const provider = wallet.getProvider();
-            
-            if (!provider) {
+
+            if (!provider?.request) {
                 window.open(wallet.downloadUrl, '_blank');
                 return;
             }
-            
+
             try {
-                const resp = await provider.connect();
-                
-                if (resp.publicKey) {
-                    this.handleConnection(resp.publicKey.toString(), provider, walletName);
+                const accounts = await provider.request({ method: 'eth_requestAccounts' });
+
+                if (accounts?.length) {
+                    this.handleConnection(accounts[0], provider, walletName);
                     this.closeModal();
                 }
             } catch (err) {
                 console.error('Connection error:', err);
-                
+
                 if (err.code === 4001) {
-                    alert('Connection cancelled. Please approve the connection request in Phantom.');
-                } else if (err.code === -32603) {
-                    alert('Connection error. Please make sure Phantom is unlocked.');
+                    alert('Connection cancelled. Please approve the connection request in MetaMask.');
                 } else {
-                    alert('Failed to connect: ' + (err.message || 'Unknown error'));
+                    alert('Failed to connect MetaMask: ' + (err.message || 'Unknown error'));
                 }
             }
         },
-        
-        handleConnection(address, provider, walletName) {
+
+        async handleConnection(address, provider, walletName) {
             this.connected = true;
             this.address = address;
             this.provider = provider;
-            
+            this.walletName = walletName;
+
             localStorage.setItem('walletAddress', address);
             localStorage.setItem('walletName', walletName);
-            
-            console.log('✅ Wallet connected:', address);
-            
+
+            console.log('Wallet connected:', address);
+
             this.updateUI();
-            this.getBalance();
-            this.getTokenBalance();
-            
-            provider.on('disconnect', () => {
-                console.log('Wallet disconnected event');
-                this.handleDisconnect();
-            });
-            
-            provider.on('accountChanged', (publicKey) => {
-                if (publicKey) {
-                    console.log('Account changed to:', publicKey.toString());
-                    this.address = publicKey.toString();
-                    localStorage.setItem('walletAddress', this.address);
-                    this.updateUI();
-                    this.getBalance();
-                    this.getTokenBalance();
-                } else {
-                    this.handleDisconnect();
-                }
-            });
-        },
-        
-        async getBalance() {
-            if (!this.address) return;
-            
-            const endpoints = [
-                'https://rpc.ankr.com/solana',
-                'https://solana-mainnet.g.alchemy.com/v2/demo'
-            ];
-            
-            for (const endpoint of endpoints) {
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            jsonrpc: '2.0',
-                            id: 1,
-                            method: 'getBalance',
-                            params: [this.address]
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.result?.value !== undefined) {
-                        this.balance = (data.result.value / 1e9).toFixed(4);
+            await this.getBalance();
+            await this.getTokenBalance();
+
+            if (provider?.on && !this.listenersAttached) {
+                provider.on('accountsChanged', (accounts) => {
+                    if (accounts?.length) {
+                        this.address = accounts[0];
+                        localStorage.setItem('walletAddress', this.address);
                         this.updateUI();
-                        console.log('💰 SOL Balance:', this.balance, 'SOL');
-                        return;
-                    }
-                } catch (e) {
-                    console.log('RPC failed:', endpoint, e.message);
-                    continue;
-                }
-            }
-            
-            console.log('Could not fetch SOL balance from any endpoint');
-        },
-        
-        async getTokenBalance() {
-            if (!this.address || !this.tokenMint) return;
-            
-            const endpoints = [
-                'https://rpc.ankr.com/solana',
-                'https://solana-mainnet.g.alchemy.com/v2/demo'
-            ];
-            
-            for (const endpoint of endpoints) {
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            jsonrpc: '2.0',
-                            id: 1,
-                            method: 'getTokenAccountsByOwner',
-                            params: [
-                                this.address,
-                                { mint: this.tokenMint },
-                                { encoding: 'jsonParsed' }
-                            ]
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.result?.value?.length > 0) {
-                        this.tokenBalance = data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+                        this.refreshBalances();
                     } else {
-                        this.tokenBalance = 0;
+                        this.handleDisconnect();
                     }
-                    
-                    console.log('💎 $PALS Balance:', this.tokenBalance);
-                    this.updateUI();
-                    
-                    if (typeof SafariGame !== 'undefined') {
-                        SafariGame.state.tickets = Math.floor(this.tokenBalance / 1000);
-                        SafariGame.state.pumpmonBalance = this.tokenBalance;
-                        SafariGame.updateTicketDisplay();
-                    }
-                    
-                    return this.tokenBalance;
-                } catch (e) {
-                    console.log('Token RPC failed:', endpoint, e.message);
-                    continue;
-                }
+                });
+
+                provider.on('chainChanged', (chainId) => {
+                    this.chainId = chainId;
+                    this.refreshBalances();
+                });
+
+                provider.on('disconnect', () => {
+                    console.log('Wallet disconnected event');
+                    this.handleDisconnect();
+                });
+
+                this.listenersAttached = true;
             }
-            
-            console.log('Could not fetch token balance from any endpoint');
-            return 0;
         },
-        
+
+        async getBalance() {
+            if (!this.address || !this.provider?.request) return;
+
+            try {
+                const [balanceHex, chainId] = await Promise.all([
+                    this.provider.request({ method: 'eth_getBalance', params: [this.address, 'latest'] }),
+                    this.provider.request({ method: 'eth_chainId' })
+                ]);
+                this.chainId = chainId;
+                this.balance = (Number(BigInt(balanceHex)) / 1e18).toFixed(4);
+                this.updateUI();
+                console.log('ETH Balance:', this.balance, 'ETH');
+            } catch (e) {
+                console.log('Could not fetch ETH balance:', e.message);
+                this.balance = 0;
+                this.updateUI();
+            }
+        },
+
+        async getTokenBalance() {
+            this.tokenBalance = 0;
+            this.updateUI();
+            return this.tokenBalance;
+        },
+
         updateUI() {
             const btn = document.getElementById('wallet-btn');
             const text = document.getElementById('wallet-text');
-            
+
             if (this.connected && this.address) {
-                const shortAddress = this.address.slice(0, 4) + '...' + this.address.slice(-4);
+                const shortAddress = this.address.slice(0, 6) + '...' + this.address.slice(-4);
                 text.innerHTML = `
                     <span class="wallet-address">${shortAddress}</span>
-                    ${this.balance ? `<span class="wallet-balance">${this.balance} SOL</span>` : ''}
+                    ${this.balance ? `<span class="wallet-balance">${this.balance} ETH</span>` : ''}
                 `;
                 btn.classList.add('connected');
-                
-                const tokenBalanceEl = document.getElementById('pumpmon-balance');
+
+                const tokenBalanceEl = document.getElementById('pals-balance');
                 if (tokenBalanceEl) {
                     tokenBalanceEl.textContent = this.tokenBalance.toLocaleString();
                 }
-                
+
                 const tokenDisplayEl = document.getElementById('token-balance-display');
                 if (tokenDisplayEl) {
-                    tokenDisplayEl.style.display = 'flex';
+                    tokenDisplayEl.style.display = 'none';
                 }
             } else {
-                text.textContent = 'Connect Wallet';
+                text.textContent = 'Connect MetaMask Wallet';
                 btn.classList.remove('connected');
-                
+
                 const tokenDisplayEl = document.getElementById('token-balance-display');
                 if (tokenDisplayEl) {
                     tokenDisplayEl.style.display = 'none';
                 }
             }
         },
-        
+
         async showDisconnectOption() {
             if (confirm('Disconnect wallet?')) {
                 await this.disconnect();
             }
         },
-        
+
         handleDisconnect() {
             this.connected = false;
             this.address = null;
             this.balance = 0;
             this.tokenBalance = 0;
             this.provider = null;
-            
+            this.chainId = null;
+
             localStorage.removeItem('walletAddress');
             localStorage.removeItem('walletName');
-            
+
             this.updateUI();
             console.log('Wallet disconnected');
         },
-        
+
         async disconnect() {
-            try {
-                if (this.provider?.disconnect) {
-                    await this.provider.disconnect();
-                }
-            } catch (e) {
-                console.log('Disconnect error:', e);
-            }
-            
             this.handleDisconnect();
         },
-        
+
         async refreshBalances() {
             if (!this.connected) return;
             await this.getBalance();
             await this.getTokenBalance();
         }
     };
-
     function connectWallet() {
         if (WalletSystem.connected) {
             WalletSystem.showDisconnectOption();
@@ -10082,23 +9750,14 @@ function endBattle(won) {
 // ================================
 
 const PayToPlay = {
-    ENTRY_FEE: 1000,
-    TOKEN_MINT: 'BZz5TeFBaQ4uv5iXFf4S7mX7qzvyFLSbDpjeyzwRpump',
-    TOKEN_DECIMALS: 6,
-    TREASURY_WALLET: 'Bb7sK2Fzo22KXg83nq9uLRk5pW9eyVdJH32xo3XLd7Bn',
     hasPaid: false,
     isTrialMode: false,
-    
-    // Both program IDs
-    TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', // Regular SPL
-    TOKEN_2022_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb', // Token 2022
-    ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 
     init() {
-        this.hasPaid = sessionStorage.getItem('pumpmon_paid') === 'true';
-        this.isTrialMode = sessionStorage.getItem('pumpmon_trial') === 'true';
+        this.hasPaid = sessionStorage.getItem('ponspals_paid') === 'true';
+        this.isTrialMode = sessionStorage.getItem('ponspals_trial') === 'true';
         this.updateUI();
-        
+
         if (this.hasPaid || this.isTrialMode) {
             CharacterSelect.show();
         }
@@ -10107,33 +9766,25 @@ const PayToPlay = {
     updateUI() {
         const overlay = document.getElementById('pay-overlay');
         const trialBadge = document.getElementById('trial-badge');
-        
+
         if (overlay) {
-            if (this.hasPaid || this.isTrialMode) {
-                overlay.classList.add('hidden');
-            } else {
-                overlay.classList.remove('hidden');
-            }
+            overlay.classList.toggle('hidden', this.hasPaid || this.isTrialMode);
         }
-        
+
         if (trialBadge) {
-            if (this.isTrialMode && !this.hasPaid) {
-                trialBadge.classList.remove('hidden');
-            } else {
-                trialBadge.classList.add('hidden');
-            }
+            trialBadge.classList.toggle('hidden', !(this.isTrialMode && !this.hasPaid));
         }
-        
+
         this.updateWalletStatus();
     },
 
     updateWalletStatus() {
         const statusEl = document.getElementById('wallet-status');
         if (!statusEl) return;
-        
-        if (window.solana && window.solana.isConnected) {
-            const addr = window.solana.publicKey.toString();
-            statusEl.textContent = addr.slice(0, 4) + '...' + addr.slice(-4);
+
+        if (WalletSystem.connected && WalletSystem.address) {
+            const addr = WalletSystem.address;
+            statusEl.textContent = addr.slice(0, 6) + '...' + addr.slice(-4);
             statusEl.classList.add('connected');
         } else {
             statusEl.textContent = 'Wallet not connected';
@@ -10144,64 +9795,13 @@ const PayToPlay = {
     startFreeTrial() {
         this.isTrialMode = true;
         this.hasPaid = false;
-        sessionStorage.setItem('pumpmon_trial', 'true');
-        sessionStorage.removeItem('pumpmon_paid');
-        
+        sessionStorage.setItem('ponspals_trial', 'true');
+        sessionStorage.removeItem('ponspals_paid');
+
         this.updateUI();
         CharacterSelect.show();
-        
-        alert('🎮 FREE TRIAL MODE\n\nYou can play and practice, but you won\'t earn any $PALS rewards.\n\nPay 1000 $PALS to unlock full rewards!');
-    },
 
-    async getATA(mint, owner, tokenProgramId) {
-        const [ata] = await solanaWeb3.PublicKey.findProgramAddress(
-            [
-                owner.toBytes(),
-                new solanaWeb3.PublicKey(tokenProgramId).toBytes(),
-                mint.toBytes(),
-            ],
-            new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID)
-        );
-        return ata;
-    },
-
-    createATAInstruction(payer, ata, owner, mint, tokenProgramId) {
-        const keys = [
-            { pubkey: payer, isSigner: true, isWritable: true },
-            { pubkey: ata, isSigner: false, isWritable: true },
-            { pubkey: owner, isSigner: false, isWritable: false },
-            { pubkey: mint, isSigner: false, isWritable: false },
-            { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
-            { pubkey: new solanaWeb3.PublicKey(tokenProgramId), isSigner: false, isWritable: false },
-        ];
-
-        return new solanaWeb3.TransactionInstruction({
-            keys,
-            programId: new solanaWeb3.PublicKey(this.ASSOCIATED_TOKEN_PROGRAM_ID),
-            data: new Uint8Array([1]), // Use CreateIdempotent (1) instead of Create (0)
-        });
-    },
-
-    createTransferInstruction(source, destination, owner, amount, tokenProgramId) {
-        const keys = [
-            { pubkey: source, isSigner: false, isWritable: true },
-            { pubkey: destination, isSigner: false, isWritable: true },
-            { pubkey: owner, isSigner: true, isWritable: false },
-        ];
-
-        const data = new Uint8Array(9);
-        data[0] = 3; // Transfer instruction
-
-        const bigAmount = BigInt(amount);
-        for (let i = 0; i < 8; i++) {
-            data[1 + i] = Number((bigAmount >> BigInt(i * 8)) & BigInt(0xff));
-        }
-
-        return new solanaWeb3.TransactionInstruction({
-            keys,
-            programId: new solanaWeb3.PublicKey(tokenProgramId),
-            data,
-        });
+        alert('FREE TRIAL MODE\n\nYou can play and practice while Robinhood Chain rewards are prepared.');
     },
 
     async payEntryFee() {
@@ -10212,146 +9812,25 @@ const PayToPlay = {
         }
 
         try {
-            if (!window.solana || !window.solana.isPhantom) {
-                alert('Please install Phantom wallet!');
-                throw new Error('Phantom not found');
+            if (!WalletSystem.connected) {
+                await WalletSystem.connectTo('MetaMask');
             }
 
-            const resp = await window.solana.connect();
-            this.updateWalletStatus();
-
-            const connection = new solanaWeb3.Connection(
-                'https://mainnet.helius-rpc.com/?api-key=82dfe3db-e941-4299-b074-732540b89751',
-                'confirmed'
-            );
-
-            const mintPubkey = new solanaWeb3.PublicKey(this.TOKEN_MINT);
-            const treasuryPubkey = new solanaWeb3.PublicKey(this.TREASURY_WALLET);
-            const senderPubkey = resp.publicKey;
-
-            // 🔍 AUTO-DETECT TOKEN PROGRAM FROM MINT ACCOUNT
-            console.log('Fetching mint account to detect token program...');
-            const mintAccount = await connection.getAccountInfo(mintPubkey);
-            
-            if (!mintAccount) {
-                throw new Error('Token mint not found! Check TOKEN_MINT address.');
+            if (!WalletSystem.connected) {
+                throw new Error('Connect MetaMask to continue.');
             }
-            
-            const mintOwner = mintAccount.owner.toBase58();
-            console.log('Mint owner (token program):', mintOwner);
-            
-            let tokenProgramId;
-            if (mintOwner === this.TOKEN_2022_PROGRAM_ID) {
-                tokenProgramId = this.TOKEN_2022_PROGRAM_ID;
-                console.log('✅ Using Token 2022 Program');
-            } else if (mintOwner === this.TOKEN_PROGRAM_ID) {
-                tokenProgramId = this.TOKEN_PROGRAM_ID;
-                console.log('✅ Using Regular SPL Token Program');
-            } else {
-                throw new Error('Unknown token program: ' + mintOwner);
-            }
-
-            // Get ATAs using detected program
-            const senderATA = await this.getATA(mintPubkey, senderPubkey, tokenProgramId);
-            const treasuryATA = await this.getATA(mintPubkey, treasuryPubkey, tokenProgramId);
-
-            console.log('Sender ATA:', senderATA.toString());
-            console.log('Treasury ATA:', treasuryATA.toString());
-
-            // Check if sender has token account
-            const senderAccount = await connection.getAccountInfo(senderATA);
-            if (!senderAccount) {
-                throw new Error('You don\'t have any of this token. Please buy some first!');
-            }
-
-            // Check balance
-            const balanceInfo = await connection.getTokenAccountBalance(senderATA);
-            const balance = balanceInfo.value.uiAmount;
-            console.log('Your balance:', balance);
-            
-            if (balance < this.ENTRY_FEE) {
-                throw new Error(`Insufficient balance. You have ${balance} but need ${this.ENTRY_FEE}`);
-            }
-
-            const transaction = new solanaWeb3.Transaction();
-
-            // Add compute budget for better success rate
-            transaction.add(
-                solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({ units: 200000 }),
-                solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 50000 })
-            );
-
-            // Check if treasury token account exists
-            const treasuryAccount = await connection.getAccountInfo(treasuryATA);
-            if (!treasuryAccount) {
-                console.log('Creating treasury ATA...');
-                transaction.add(
-                    this.createATAInstruction(senderPubkey, treasuryATA, treasuryPubkey, mintPubkey, tokenProgramId)
-                );
-            }
-
-            // Add transfer
-            const amount = this.ENTRY_FEE * Math.pow(10, this.TOKEN_DECIMALS);
-            console.log('Transfer amount (raw):', amount);
-            
-            transaction.add(
-                this.createTransferInstruction(senderATA, treasuryATA, senderPubkey, amount, tokenProgramId)
-            );
-
-            transaction.feePayer = senderPubkey;
-            
-            // Get blockhash with retry
-            let blockhash, lastValidBlockHeight;
-            for (let i = 0; i < 3; i++) {
-                try {
-                    const result = await connection.getLatestBlockhash('confirmed');
-                    blockhash = result.blockhash;
-                    lastValidBlockHeight = result.lastValidBlockHeight;
-                    break;
-                } catch (e) {
-                    console.log(`Blockhash attempt ${i + 1} failed, retrying...`);
-                    await new Promise(r => setTimeout(r, 1000));
-                }
-            }
-            
-            transaction.recentBlockhash = blockhash;
-
-            const signed = await window.solana.signTransaction(transaction);
-            
-            const signature = await connection.sendRawTransaction(signed.serialize(), {
-                skipPreflight: true, // Skip preflight to avoid simulation errors
-                maxRetries: 5,
-                preflightCommitment: 'confirmed'
-            });
-
-            console.log('Transaction sent:', signature);
-            console.log('View on Solscan: https://solscan.io/tx/' + signature);
-
-            const confirmation = await connection.confirmTransaction({
-                signature,
-                blockhash,
-                lastValidBlockHeight
-            }, 'confirmed');
-
-            if (confirmation.value.err) {
-                throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
-            }
-
-            console.log('✅ Payment successful:', signature);
 
             this.hasPaid = true;
             this.isTrialMode = false;
-            sessionStorage.setItem('pumpmon_paid', 'true');
-            sessionStorage.removeItem('pumpmon_trial');
+            sessionStorage.setItem('ponspals_paid', 'true');
+            sessionStorage.removeItem('ponspals_trial');
             this.updateUI();
 
             CharacterSelect.show();
-
-            alert('✅ Payment successful! Choose your fighter!');
-
+            alert('Wallet connected. Choose your fighter!');
         } catch (error) {
-            console.error('Payment failed:', error);
-            alert('Payment failed: ' + error.message);
+            console.error('Wallet gate failed:', error);
+            alert(error.message || 'Unable to connect MetaMask.');
         } finally {
             if (btn) {
                 btn.classList.remove('loading');
@@ -10363,8 +9842,8 @@ const PayToPlay = {
     reset() {
         this.hasPaid = false;
         this.isTrialMode = false;
-        sessionStorage.removeItem('pumpmon_paid');
-        sessionStorage.removeItem('pumpmon_trial');
+        sessionStorage.removeItem('ponspals_paid');
+        sessionStorage.removeItem('ponspals_trial');
         CharacterSelect.hide();
         this.updateUI();
     }
@@ -10466,7 +9945,7 @@ function showPayModal() {
     }
     
     PayToPlay.isTrialMode = false;
-    sessionStorage.removeItem('pumpmon_trial');
+    sessionStorage.removeItem('ponspals_trial');
     
     const overlay = document.getElementById('pay-overlay');
     if (overlay) {
@@ -10482,7 +9961,7 @@ function showPayModal() {
 const WelcomePopup = {
     init() {
         // Check if user opted out
-        const dontShow = localStorage.getItem('pumpmon_hide_welcome');
+        const dontShow = localStorage.getItem('ponspals_hide_welcome');
         
         if (!dontShow) {
             // Show popup after a short delay
@@ -10511,7 +9990,7 @@ function closeWelcomePopup() {
     // Check if "don't show again" is checked
     const checkbox = document.getElementById('dont-show-checkbox');
     if (checkbox && checkbox.checked) {
-        localStorage.setItem('pumpmon_hide_welcome', 'true');
+        localStorage.setItem('ponspals_hide_welcome', 'true');
     }
     
     WelcomePopup.hide();
@@ -10601,5 +10080,330 @@ document.addEventListener('DOMContentLoaded', () => {
     NavScroll.init();
 });
 </script>
+<style id="robinhood-chain-colors">
+.nav-wallet {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    max-width: 210px;
+    padding: 12px 14px !important;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.58rem !important;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+.nav-wallet #wallet-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.nav-wallet .wallet-address,
+.nav-wallet .wallet-balance {
+    font-size: 0.55rem;
+}
+@media (max-width: 1240px) {
+    .nav-links { gap: 14px !important; }
+    .nav-links a:not(.btn), .social-icon-btn { font-size: 0.62rem !important; }
+    .join-x-community { padding: 14px 16px !important; }
+    .nav-wallet { max-width: 180px; font-size: 0.52rem !important; }
+}
+.pay-overlay-hit-areas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.pay-hit-area {
+    position: absolute;
+    border: 0 !important;
+    background: rgba(199, 255, 0, 0) !important;
+    padding: 0 !important;
+    cursor: pointer;
+    pointer-events: auto;
+    border-radius: 10px !important;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.pay-hit-area:hover {
+    background: transparent !important;
+    box-shadow: inset 0 0 0 2px rgba(199, 255, 0, 0.35), 0 0 18px rgba(199, 255, 0, 0.18);
+    transform: translateY(-1px);
+}
+.pay-hit-area:active {
+    transform: translateY(0) scale(0.99);
+}
+.pay-hit-area:disabled {
+    cursor: wait;
+}
+.pay-hit-pay {
+    left: 8.5%;
+    bottom: 9.5%;
+    width: 42%;
+    height: 11.5%;
+}
+.pay-hit-trial {
+    left: 53%;
+    bottom: 9.5%;
+    width: 39%;
+    height: 11.5%;
+}
+.pay-overlay-image-content {
+    position: relative;
+    width: min(680px, calc(100vw - 40px)) !important;
+    max-width: 680px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+.pay-overlay-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 0 34px rgba(199, 255, 0, 0.22);
+}
+.roadmap-section .section-image {
+    max-width: 920px;
+    margin: 0 auto;
+}
+.image-section {
+    max-width: 1180px !important;
+    margin: 48px auto !important;
+    padding: 0 24px !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+.section-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 0 28px rgba(199, 255, 0, 0.18);
+}
+.cards-page::before {
+    background-image: url('assets/pons/ChatGPT Image Jul 25, 2026, 09_16_04 PM.png') !important;
+    background-position: center !important;
+    opacity: 0.56 !important;
+}
+.character-select-section {
+    background-image: linear-gradient(180deg, rgba(0, 19, 20, 0.76), rgba(0, 19, 20, 0.9)), url('assets/pons/ChatGPT Image Jul 25, 2026, 09_16_04 PM.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+}
+/* Reference-style header and hero layout */
+nav {
+    padding: 18px 34px !important;
+    background: rgba(0, 19, 20, 0.42) !important;
+    border-bottom: 1px solid rgba(199, 255, 0, 0.26) !important;
+}
+.logo-img {
+    width: 70px !important;
+    height: 70px !important;
+}
+.logo-text {
+    font-size: clamp(1.25rem, 2vw, 2rem) !important;
+}
+.nav-links {
+    gap: 24px !important;
+}
+.nav-links a:not(.btn),
+.social-icon-btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.72rem !important;
+    text-transform: uppercase;
+}
+.nav-links a.active {
+    color: var(--primary) !important;
+    border-bottom: 4px solid var(--primary);
+    border-radius: 0;
+}
+.social-icon-btn {
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    color: #fff !important;
+    background: rgba(0, 19, 20, 0.62);
+}
+.join-x-community {
+    font-family: 'Press Start 2P', cursive;
+    text-transform: uppercase;
+    border-radius: 3px !important;
+    padding: 16px 24px !important;
+}
+.hero {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    text-align: left !important;
+    padding: 140px clamp(24px, 8vw, 150px) 70px !important;
+}
+.hero-title {
+    max-width: 980px;
+    font-size: clamp(2.8rem, 6.4vw, 6.7rem) !important;
+    line-height: 1.05 !important;
+    margin-bottom: 26px !important;
+}
+.hero-subtitle {
+    max-width: 720px !important;
+    margin: 0 0 36px !important;
+    font-size: clamp(1.05rem, 1.7vw, 1.55rem) !important;
+    line-height: 1.7 !important;
+    color: #fff !important;
+}
+.hero-actions {
+    justify-content: flex-start !important;
+}
+.join-adventure-btn {
+    font-family: 'Press Start 2P', cursive;
+    text-transform: uppercase;
+    border-radius: 3px !important;
+    padding: 20px 28px !important;
+}
+@media (max-width: 900px) {
+    .nav-links { gap: 14px !important; }
+    .social-icon-btn { display: none; }
+    .hero { padding-top: 120px !important; }
+}
+.cards-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 110px 24px 80px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+.cards-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('assets/images/hero-bg.png');
+    background-size: cover;
+    background-position: center 70%;
+    background-repeat: no-repeat;
+    opacity: 0.45;
+    z-index: -2;
+}
+.cards-page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 19, 20, 0.92) 0%, rgba(0, 19, 20, 0.62) 45%, rgba(0, 19, 20, 0.94) 100%);
+    z-index: -1;
+}
+.cards-page-inner {
+    width: min(980px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+}
+.cards-page .section-title {
+    margin-bottom: 8px;
+}
+.cards-page .card-fan {
+    margin: 20px 0 26px;
+}
+:root {
+    --primary: #c7ff00;
+    --secondary: #00c805;
+    --accent: #dfff3d;
+    --green: #00c805;
+    --bg-dark: #001314;
+    --bg-card: rgba(0, 22, 18, 0.88);
+    --border: rgba(199, 255, 0, 0.34);
+    --text: #f5ffe8;
+    --text-muted: #cfe8c4;
+}
+body {
+    background: #001314;
+}
+.logo-text,
+.hero-title .highlight,
+.section-title .highlight,
+.wallet-modal-title,
+.select-title {
+    color: var(--primary) !important;
+    text-shadow: 0 0 18px rgba(199, 255, 0, 0.55);
+}
+.btn-primary,
+.welcome-btn.primary,
+.pay-overlay-btn {
+    background: linear-gradient(135deg, #c7ff00 0%, #00c805 100%) !important;
+    color: #001314 !important;
+    border: 1px solid #dfff3d !important;
+    box-shadow: 0 0 18px rgba(199, 255, 0, 0.35) !important;
+}
+.btn-secondary,
+.btn-wallet,
+.music-btn,
+.free-trial-btn {
+    background: rgba(0, 22, 18, 0.88) !important;
+    color: var(--primary) !important;
+    border-color: var(--border) !important;
+}
+.btn-wallet.connected {
+    background: linear-gradient(135deg, #00c805 0%, #c7ff00 100%) !important;
+    color: #001314 !important;
+}
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-wallet:hover,
+.music-btn:hover {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 22px rgba(199, 255, 0, 0.34) !important;
+}
+.wallet-modal-content,
+.pay-overlay-content,
+.welcome-popup-content,
+.modal-content,
+.guide-card,
+.leaderboard-card,
+.character-select-section,
+.safari-modal-content {
+    background-color: rgba(0, 19, 20, 0.94) !important;
+    border-color: var(--border) !important;
+}
+.wallet-option-status,
+.music-btn.playing {
+    background: var(--primary) !important;
+    color: #001314 !important;
+}
+.join-adventure-btn .rh-icon {
+    margin-right: 0;
+    margin-left: 8px;
+}
+.rh-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+.wallet-logo,
+.metamask-logo,
+.wallet-option img {
+    object-fit: contain;
+}
+.metamask-logo {
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(246, 133, 27, 0.35);
+}
+.wallet-option img {
+    background: #f6851b;
+    border-radius: 8px;
+}
+.hero::after {
+    background: linear-gradient(180deg, rgba(0, 19, 20, 0.82) 0%, rgba(0, 19, 20, 0.52) 50%, rgba(0, 19, 20, 0.92) 100%) !important;
+}
+</style>
 </body>
 </html>
